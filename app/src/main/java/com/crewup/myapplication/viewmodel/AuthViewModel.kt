@@ -28,6 +28,27 @@ class AuthViewModel : ViewModel() {
     )
     val authState: StateFlow<AuthState> = _authState
 
+    // Listener para detectar cambios en el estado de autenticación de Firebase
+    private val authStateListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
+        val currentUser = firebaseAuth.currentUser
+        _authState.value = _authState.value.copy(
+            user = currentUser,
+            isAuthenticated = currentUser != null,
+            isLoading = false
+        )
+    }
+
+    init {
+        // Registrar el listener cuando se crea el ViewModel
+        auth.addAuthStateListener(authStateListener)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        // Remover el listener cuando se destruye el ViewModel
+        auth.removeAuthStateListener(authStateListener)
+    }
+
     fun signInWithCredential(credential: AuthCredential) {
         _authState.value = _authState.value.copy(isLoading = true, error = null)
 

@@ -7,7 +7,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.runtime.*
-import androidx.credentials.CredentialManager
 import androidx.lifecycle.lifecycleScope
 import com.crewup.myapplication.auth.FacebookAuth
 import com.crewup.myapplication.auth.GoogleAuth
@@ -15,7 +14,6 @@ import com.crewup.myapplication.ui.screens.HomeScreen
 import com.crewup.myapplication.ui.screens.LoginScreen
 import com.crewup.myapplication.ui.theme.CrewUpTheme
 import com.crewup.myapplication.viewmodel.AuthViewModel
-import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -60,34 +58,12 @@ class MainActivity : ComponentActivity() {
                         },
                         onGoogleLogin = {
                             lifecycleScope.launch {
-                                try {
-                                    val credentialManager = CredentialManager.create(this@MainActivity)
-                                    val request = googleAuth.getGoogleIdCredentialRequest()
-
-                                    val response = credentialManager.getCredential(
-                                        context = this@MainActivity,
-                                        request = request
-                                    )
-
-                                    googleAuth.signInWithGoogleCredential(response) { success, message ->
-                                        if (success) {
-                                            val credential = GoogleAuthProvider.getCredential(
-                                                com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
-                                                    .createFrom(response.credential.data).idToken,
-                                                null
-                                            )
-                                            authViewModel.signInWithCredential(credential)
-                                        } else {
-                                            println("❌ Google credential error: $message")
-                                        }
-                                    }
-                                } catch (e: androidx.credentials.exceptions.GetCredentialException) {
-                                    println("❌ Google Sign-In GetCredentialException: ${e.message}")
-                                    println("❌ Error type: ${e.type}")
-                                } catch (e: Exception) {
-                                    println("❌ Google Sign-In failed: ${e.message}")
-                                    e.printStackTrace()
+                                val result = googleAuth.signInWithGoogle()
+                                result.onFailure { exception ->
+                                    // Mostrar error en el UI si falla
+                                    println("❌ Google Sign-In error: ${exception.message}")
                                 }
+                                // Si tiene éxito, el AuthStateListener actualizará automáticamente el estado
                             }
                         },
                         onFacebookLogin = {
