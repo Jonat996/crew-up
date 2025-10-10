@@ -66,15 +66,6 @@ class MainActivity : ComponentActivity() {
                                 // Si tiene éxito, el AuthStateListener actualizará automáticamente el estado
                             }
                         },
-                        onFacebookLogin = {
-                            facebookAuth.login { success, message ->
-                                if (success) {
-                                    println("✅ Facebook login exitoso")
-                                } else {
-                                    println("❌ Facebook login error: $message")
-                                }
-                            }
-                        },
                         onClearError = {
                             authViewModel.clearError()
                         }

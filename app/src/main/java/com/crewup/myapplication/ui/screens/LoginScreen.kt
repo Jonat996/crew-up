@@ -1,10 +1,13 @@
 package com.crewup.myapplication.ui.screens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -26,10 +29,11 @@ fun LoginScreen(
     onEmailLogin: (String, String) -> Unit,
     onEmailRegister: (String, String) -> Unit,
     onGoogleLogin: () -> Unit,
-    onFacebookLogin: () -> Unit,
     onClearError: () -> Unit
 ) {
     var isRegistering by remember { mutableStateOf(false) }
+    val scrollState = rememberScrollState()
+
 
     Box(
         modifier = Modifier
@@ -41,6 +45,7 @@ fun LoginScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .verticalScroll(scrollState)
                 .padding(bottom = 24.dp),
             verticalArrangement = Arrangement.Bottom,
             horizontalAlignment = Alignment.CenterHorizontally
@@ -48,6 +53,7 @@ fun LoginScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
+
                     .offset(y = (-50).dp)
             ) {
                 LoginFormSection(
@@ -56,14 +62,13 @@ fun LoginScreen(
                     onEmailLogin = onEmailLogin,
                     onEmailRegister = onEmailRegister,
                     onGoogleLogin = onGoogleLogin,
-                    onFacebookLogin = onFacebookLogin,
                     onClearError = onClearError
                 )
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // 🔹 Texto fijo al fondo para alternar entre login y registro
+            //Texto fijo al fondo para alternar entre login y registro
             Row(
                 horizontalArrangement = Arrangement.Center,
                 modifier = Modifier
@@ -118,13 +123,13 @@ fun LoginFormSection(
     onEmailLogin: (String, String) -> Unit,
     onEmailRegister: (String, String) -> Unit,
     onGoogleLogin: () -> Unit,
-    onFacebookLogin: () -> Unit,
     onClearError: () -> Unit
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
     var rememberData by remember { mutableStateOf(false) }
+
 
     Card(
         modifier = Modifier
@@ -133,14 +138,15 @@ fun LoginFormSection(
             .shadow(8.dp, shape = RoundedCornerShape(20.dp))
             .zIndex(1f),
         colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.95f)),
-        shape = RoundedCornerShape(20.dp)
+        shape = RoundedCornerShape(10.dp)
     ) {
         Column(
             modifier = Modifier
                 .padding(horizontal = 24.dp, vertical = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
+
         ) {
-            // 🔹 Botones sociales solo si no está registrándose
+            //Botones sociales solo si no está registrándose
             if (!isRegistering) {
                 OutlinedButton(
                     onClick = onGoogleLogin,
@@ -152,38 +158,23 @@ fun LoginFormSection(
                         modifier = Modifier.size(20.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Continuar con Google")
+                    Text("Continúa con Google")
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
-
-                OutlinedButton(
-                    onClick = onFacebookLogin,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_facebook),
-                        contentDescription = "Facebook",
-                        tint = Color(0xFF1877F2),
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Continuar con Facebook")
-                }
-
                 Spacer(modifier = Modifier.height(24.dp))
                 Divider()
                 Spacer(modifier = Modifier.height(24.dp))
             }
 
-            // 🔹 Campos de correo y contraseña
+            //Campos de correo y contraseña
             OutlinedTextField(
                 value = email,
                 onValueChange = {
                     email = it
                     if (authState.error != null) onClearError()
                 },
-                label = { Text("Correo electrónico") },
+                label = { Text("Ingresa tu correo") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                 modifier = Modifier.fillMaxWidth()
             )
@@ -196,13 +187,13 @@ fun LoginFormSection(
                     password = it
                     if (authState.error != null) onClearError()
                 },
-                label = { Text("Contraseña") },
+                label = { Text("Ingresa tu contraseña") },
                 visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 modifier = Modifier.fillMaxWidth()
             )
 
-            // 🔹 Confirmar contraseña solo en modo registro
+            //Confirmar contraseña solo en modo registro
             if (isRegistering) {
                 Spacer(modifier = Modifier.height(16.dp))
                 OutlinedTextField(
@@ -254,7 +245,7 @@ fun LoginFormSection(
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
-            // 🔹 Botón principal
+            //Botón principal
             Button(
                 onClick = {
                     if (isRegistering) {
