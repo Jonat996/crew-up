@@ -3,8 +3,10 @@ package com.crewup.myapplication.ui.screens
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -31,54 +33,49 @@ fun LoginScreen(
 ) {
     var isRegistering by remember { mutableStateOf(false) }
 
-    Box(
+    val scrollState = rememberScrollState()
+
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
+            .verticalScroll(scrollState)
     ) {
         HeaderSection(isRegistering)
 
-        Column(
+        Box(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(bottom = 24.dp),
-            verticalArrangement = Arrangement.Bottom,
-            horizontalAlignment = Alignment.CenterHorizontally
+                .fillMaxWidth()
+                .offset(y = (-50).dp)
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .offset(y = (-50).dp)
-            ) {
-                LoginFormSection(
-                    authState = authState,
-                    isRegistering = isRegistering,
-                    onEmailLogin = onEmailLogin,
-                    onEmailRegister = onEmailRegister,
-                    onGoogleLogin = onGoogleLogin,
-                    onFacebookLogin = onFacebookLogin,
-                    onClearError = onClearError
-                )
-            }
+            LoginFormSection(
+                authState = authState,
+                isRegistering = isRegistering,
+                onEmailLogin = onEmailLogin,
+                onEmailRegister = onEmailRegister,
+                onGoogleLogin = onGoogleLogin,
+                onFacebookLogin = onFacebookLogin,
+                onClearError = onClearError
+            )
+        }
 
-            Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
-            // 🔹 Texto fijo al fondo para alternar entre login y registro
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 2.dp)
-            ) {
-                Text(
-                    if (isRegistering)
-                        "¿Ya tienes una cuenta?"
-                    else
-                        "¿No tienes una cuenta?"
-                )
-                TextButton(onClick = { isRegistering = !isRegistering }) {
-                    Text(if (isRegistering) "Inicia sesión" else "Crear una")
-                }
+        // 🔹 Texto fijo al fondo para alternar entre login y registro
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 24.dp)
+        ) {
+            Text(
+                if (isRegistering)
+                    "¿Ya tienes una cuenta?"
+                else
+                    "¿No tienes una cuenta?"
+            )
+            TextButton(onClick = { isRegistering = !isRegistering }) {
+                Text(if (isRegistering) "Inicia sesión" else "Crear una")
             }
         }
     }
@@ -140,7 +137,7 @@ fun LoginFormSection(
                 .padding(horizontal = 24.dp, vertical = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // 🔹 Botones sociales solo si no está registrándose
+            // 🔹 Botón social solo si no está registrándose
             if (!isRegistering) {
                 OutlinedButton(
                     onClick = onGoogleLogin,
@@ -153,22 +150,6 @@ fun LoginFormSection(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text("Continuar con Google")
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                OutlinedButton(
-                    onClick = onFacebookLogin,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_facebook),
-                        contentDescription = "Facebook",
-                        tint = Color(0xFF1877F2),
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Continuar con Facebook")
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))
