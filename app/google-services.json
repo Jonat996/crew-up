@@ -12,7 +12,20 @@
           "package_name": "com.crewup.myapplication"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "885733307091-9gm33skc6k4s0f3p7ht3e9a227nns2if.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.crewup.myapplication",
+            "certificate_hash": "5985afdfa64b2fe4d1d2718b9aec4536767fb6e0"
+          }
+        },
+        {
+          "client_id": "885733307091-8oeqasptg7s7ll17gi2h3mlf0v2fu9k5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDav74zOCY1JLIFZaoQ2pQO-L9EyUbshK4"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "885733307091-8oeqasptg7s7ll17gi2h3mlf0v2fu9k5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

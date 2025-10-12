@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">CrewUp</string>
+    <string name="default_web_client_id">885733307091-8oeqasptg7s7ll17gi2h3mlf0v2fu9k5.apps.googleusercontent.com</string>
+    <string name="facebook_app_id">1376981000429957</string>
+    <string name="fb_login_protocol_scheme">fb1376981000429957</string>
+    <string name="facebook_client_token">3ae4a66de3860669cb0cb15c149e60bd</string>
 </resources>
