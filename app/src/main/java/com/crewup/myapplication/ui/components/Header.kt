@@ -1,6 +1,10 @@
+package com.crewup.myapplication.ui.components
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -11,46 +15,45 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-// Reemplaza con tu R.drawable.logo_pizza real
-// import com.ejemplo.miapp.R
-// En este ejemplo, usaré un recurso ficticio para la demostración
-// Solo funciona si ya has importado tus recursos.
-// Asume que R.drawable.logo_pizza existe.
+import com.crewup.myapplication.R
 
 @Composable
-fun Header(
-    title: String,
-    // Puedes pasar un ID de recurso para el logo si lo quieres hacer flexible
-    logoResId: Int
-) {
+fun Header(title: String) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(250.dp)
+            .height(300.dp)
             .background(Color(0xFF0056B3)),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.TopCenter
     ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            image
-            // Usamos un simple texto si no tienes el recurso de imagen
-            Text(
-                text = "🍕", // Placeholder para el logo si no tienes la imagen
-                fontSize = 80.sp,
-                color = Color.White,
-                modifier = Modifier.padding(bottom = 8.dp)
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_pizza_logo),
+                contentDescription = "Logo CrewUp",
+                modifier = Modifier
+                    .size(210.dp)
+
             )
+            Spacer(modifier = Modifier.height(1.dp))
 
             Text(
                 text = title,
-                fontSize = 28.sp,
+                fontSize = 34.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.White
+                color = Color.White,
+                modifier = Modifier.padding(bottom = 50.dp)
+
             )
         }
     }
 }
 
-@Preview
-fun HeaderPreview (
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun HeaderPreview() {
+    Header(title = "CrewUp")
+}
 
-)

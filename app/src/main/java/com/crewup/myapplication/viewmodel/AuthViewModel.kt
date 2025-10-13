@@ -1,5 +1,6 @@
 package com.crewup.myapplication.viewmodel
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
@@ -8,7 +9,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import com.crewup.myapplication.auth.EmailPasswordAuth
-
 data class AuthState(
     val isLoading: Boolean = false,
     val user: com.google.firebase.auth.FirebaseUser? = null,
@@ -122,4 +122,5 @@ class AuthViewModel : ViewModel() {
     fun clearError() {
         _authState.value = _authState.value.copy(error = null)
     }
+
 }
