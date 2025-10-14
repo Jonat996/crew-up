@@ -16,7 +16,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.crewup.myapplication.viewmodel.AuthState
+import com.crewup.myapplication.viewmodel.AuthViewModel
 
 @Composable
 fun LoginScreen(
@@ -64,11 +66,11 @@ Box(modifier = Modifier.fillMaxSize()) {
             .padding(vertical = 32.dp, horizontal = 0.dp)
 
     ) {
-            Text(text = "¿Ya tienes una cuenta? ")
+            Text(text = "¿No tienes una cuenta? ")
 
             TextButton(onClick = { isRegistering = !isRegistering }){
                 Text(
-                    text = "Iniciar Sesión",
+                    text = "Crea una",
                     color = Color(0xFF0056B3),
                     fontWeight = FontWeight.SemiBold,
                 )
