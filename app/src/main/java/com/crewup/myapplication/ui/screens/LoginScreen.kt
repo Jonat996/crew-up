@@ -22,62 +22,69 @@ import com.crewup.myapplication.viewmodel.AuthState
 fun LoginScreen(
     authState: AuthState,
     onEmailLogin: (String, String) -> Unit,
+    onEmailRegister: (String, String) -> Unit,
     onGoogleLogin: () -> Unit,
     onClearError: () -> Unit
 ) {
     var isRegistering by remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
 
+Box(modifier = Modifier.fillMaxSize()) {
+
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .padding(bottom = 60.dp)
             .verticalScroll(scrollState),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Header(title = "Iniciar Sesión")
 
         Box(
             modifier = Modifier
-                .background(Color.White, RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp))
-                .padding(top = 16.dp)
+                .offset(y = (-40).dp)
+                .padding(top = 10.dp)
         ) {
             Form(
                 authState = authState,
                 isRegistering = isRegistering,
                 onEmailLogin = onEmailLogin,
+                onEmailRegister = onEmailRegister,
                 onGoogleLogin = onGoogleLogin,
                 onClearError = onClearError
             )
-
-            Spacer(Modifier.height(20.dp))
-
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom =24.dp),
-
-            ) {
-                Text(text = "¿No tienes una cuenta? ")
-                Text(
-                    text = "Crear una",
-                    color = Color(0xFF0056B3),
-                    fontWeight = FontWeight.SemiBold,
-                    // modifier = Modifier.clickable(onClick = onCreateAccountClick)
-                )
-            }
         }
     }
+    Row(
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .align(Alignment.BottomCenter)
+            .padding(vertical = 32.dp, horizontal = 0.dp)
+
+    ) {
+            Text(text = "¿Ya tienes una cuenta? ")
+
+            TextButton(onClick = { isRegistering = !isRegistering }){
+                Text(
+                    text = "Iniciar Sesión",
+                    color = Color(0xFF0056B3),
+                    fontWeight = FontWeight.SemiBold,
+                )
+            }
+    }
+  }
 }
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun PreviewLoginScreen(){
     LoginScreen(
-    authState= AuthState(),
-    onEmailLogin = { email, pass -> },
-    onGoogleLogin = {  },
-    onClearError = {  }
-)
+        authState= AuthState(),
+        onEmailLogin = { email, pass -> },
+        onEmailRegister = {email, pass ->},
+        onGoogleLogin = {  },
+        onClearError = {  }
+    )
 }

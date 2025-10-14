@@ -8,6 +8,7 @@ import com.google.firebase.auth.AuthCredential
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import com.crewup.myapplication.auth.GoogleAuth
 import com.crewup.myapplication.auth.EmailPasswordAuth
 data class AuthState(
     val isLoading: Boolean = false,

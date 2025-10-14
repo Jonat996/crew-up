@@ -33,14 +33,15 @@ fun Form(
     authState: AuthState,
     isRegistering: Boolean,
     onEmailLogin: (String, String) -> Unit,
+    onEmailRegister: (String, String) -> Unit,
     onGoogleLogin: () -> Unit,
     onClearError: () -> Unit,
     modifier : Modifier = Modifier
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var rememberData by remember { mutableStateOf(false) }
     var showPassword by remember { mutableStateOf(false) }
+    var rememberData by remember { mutableStateOf(false) }
 
     Card(
         modifier = Modifier
@@ -50,9 +51,10 @@ fun Form(
             .zIndex(1f),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         shape = RoundedCornerShape(10.dp)
-    ){
-    Column(modifier = modifier
-            .padding(horizontal = 24.dp, vertical = 24.dp),
+    ) {
+        Column(
+            modifier = modifier
+                .padding(horizontal = 24.dp, vertical = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             if (!isRegistering) {
@@ -65,146 +67,171 @@ fun Form(
                         contentColor = Color.Black,
                         containerColor = Color.White
                     )
-                ){
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_google),
-                            contentDescription = "Google",
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("Continúa con Google")
-                    }
-                    Spacer(Modifier.height(8.dp))
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_google),
+                        contentDescription = "Icono de Google",
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Continúa con Google")
+                }
+                Spacer(Modifier.height(8.dp))
 
-                    Row(
-                        modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Divider(Modifier.weight(1f), color = Color.LightGray)
-                        Text("o", Modifier.padding(horizontal = 8.dp), color = Color.Gray)
-                        Divider(Modifier.weight(1f), color = Color.LightGray)
-                    }
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Divider(Modifier.weight(1f), color = Color.LightGray)
+                    Text("o", Modifier.padding(horizontal = 8.dp), color = Color.Gray)
+                    Divider(Modifier.weight(1f), color = Color.LightGray)
+                }
 
-                    // Campo de Correo
-                    OutlinedTextField(
-                        value = email,
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Color.Gray,
-                            unfocusedBorderColor = Color.Gray,
-                            errorBorderColor = Color.Red
-                        ),
-                        onValueChange = {
-                            email = it
-                            if (authState.error != null) onClearError()
-                        },
-                        label = {
-                            Text("Ingresa tu correo",
+                // Campo de Correo
+                OutlinedTextField(
+                    value = email,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = Color.Gray,
+                        unfocusedBorderColor = Color.Gray,
+                        errorBorderColor = Color.Red
+                    ),
+                    onValueChange = {
+                        email = it
+                        if (authState.error != null) onClearError()
+                    },
+                    label = {
+                        Text(
+                            "Ingresa tu correo",
                             color = Color.Black,
-                            ) },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 2.dp),
-                        shape = RoundedCornerShape(10.dp),
-                    )
-                    Spacer(Modifier.height(25.dp))
-                    // Campo de Contraseña
-                    OutlinedTextField(
-                        value = password,
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Color.Gray,
-                            unfocusedBorderColor = Color.Gray,
-                            errorBorderColor = Color.Red
+                        )
+                    },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 2.dp),
+                    shape = RoundedCornerShape(10.dp),
+                )
 
-                        ),
-                        onValueChange = {
-                            password = it
-                            if (authState.error != null) onClearError()
-                        },
-                        label = {
-                            Text("Ingresa tu contraseña",
-                            color = Color.Black,) },
-                        visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 2.dp),
-                        shape = RoundedCornerShape(10.dp),
-                        trailingIcon = {
-                            val icon = if (showPassword) {
-                                Icons.Filled.VisibilityOff
-                            } else {
-                                Icons.Filled.Visibility
-                            }
+                Spacer(Modifier.height(25.dp))
 
-                            Icon(
-                                imageVector = icon,
-                                contentDescription = "Mostrar contraseña",
-                                modifier = Modifier.clickable { showPassword = !showPassword }
-                            )
+                // Campo de Contraseña
+                OutlinedTextField(
+                    value = password,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = Color.Gray,
+                        unfocusedBorderColor = Color.Gray,
+                        errorBorderColor = Color.Red
+                    ),
+                    onValueChange = {
+                        password = it
+                        if (authState.error != null) onClearError()
+                    },
+                    label = {
+                        Text(
+                            "Ingresa tu contraseña",
+                            color = Color.Black,
+                        )
+                    },
+                    visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 2.dp),
+                    shape = RoundedCornerShape(10.dp),
+                    trailingIcon = {
+                        val icon = if (showPassword) {
+                            Icons.Filled.VisibilityOff
+                        } else {
+                            Icons.Filled.Visibility
                         }
-                    )
-                    if (authState.error != null) {
-                        Card(
-                            modifier = Modifier.fillMaxWidth(),
-                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)
-                        ) {
-                            Text(
-                                text = authState.error,
-                                modifier = Modifier.padding(16.dp),
-                                color = MaterialTheme.colorScheme.onErrorContainer
-                            )
-                        }
-                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Icon(
+                            imageVector = icon,
+                            contentDescription = "Mostrar contraseña",
+                            modifier = Modifier.clickable { showPassword = !showPassword }
+                        )
                     }
+                )
 
-                    // 4. Recordar datos y Olvidaste tu contraseña
-                    Row(
-                        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Checkbox(
-                                checked = rememberData,
-                                onCheckedChange = { rememberData = it },
-                                colors = CheckboxDefaults.colors(
-                                    checkedColor = Color(0xFF0056B3),
-                                    uncheckedColor = Color.Gray,
-                                    checkmarkColor = Color.White
-                                )
+
+                if (authState.error != null) {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .offset(y = (-50).dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer),
+
+                        ) {
+                        Text(
+                            text = authState.error,
+                            modifier = Modifier.padding(16.dp),
+                            color = MaterialTheme.colorScheme.onErrorContainer
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(1.dp))
+                }
+
+                // 4. Recordar datos y Olvidaste tu contraseña
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Checkbox(
+                            checked = rememberData,
+                            onCheckedChange = { rememberData = it },
+                            colors = CheckboxDefaults.colors(
+                                checkedColor = Color(0xFF0056B3),
+                                uncheckedColor = Color.Gray,
+                                checkmarkColor = Color.White
                             )
-                            Text("Recordar datos", fontSize = 14.sp)
-                        }
-
+                        )
+                        Text("Recordar datos", fontSize = 14.sp)
+                    }
+                    TextButton(onClick = { /* TODO: Recuperar contraseña */ }) {
                         Text(
                             text = "¿Olvidaste tu contraseña?",
                             color = Color(0xFF0056B3),
                             fontWeight = FontWeight.SemiBold,
                             fontSize = 12.sp
-                            //modifier = Modifier.clickable(onClick = onForgotPasswordClick)
                         )
                     }
+                }
 
-                    // 5. Botón iniciar sesion
-                    Button(
-                        onClick = { onEmailLogin(email, password) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(50.dp)
-                            .padding(vertical = 4.dp),
-                        shape = RoundedCornerShape(10.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF0056B3),
-                            contentColor = Color.White
-                        )
-                    ) {
+                // 5. Botón iniciar sesion
+                Button(
+                    onClick = {
+                        if (isRegistering) {
+                            // Si está registrando, llama a la función de registro
+                            onEmailRegister(email, password)
+                        } else {
+                            onEmailLogin(email, password)
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp)
+                        .padding(vertical = 4.dp),
+                    shape = RoundedCornerShape(10.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF0056B3),
+                        contentColor = Color.White
+                    ),
+                    enabled = !authState.isLoading &&
+                            email.isNotBlank() &&
+                            password.isNotBlank()
+                ) {
+                    if (authState.isLoading) {
+                        CircularProgressIndicator(modifier = Modifier.size(16.dp))
+                    } else {
                         Text("Iniciar Sesión", fontSize = 16.sp, fontWeight = FontWeight.Bold)
                     }
                 }
             }
         }
     }
+}
 
 @Preview (showSystemUi = true, showBackground = true)
 @Composable
@@ -214,6 +241,7 @@ fun PreviewForm(){
             authState = AuthState(),
             isRegistering = false,
             onEmailLogin = { email, pass -> },
+            onEmailRegister = { email, pass -> },
             onGoogleLogin = {},
             onClearError = {}
         )

@@ -20,7 +20,6 @@ class MainActivity : ComponentActivity() {
     private lateinit var googleAuth: GoogleAuth
     private val authViewModel: AuthViewModel by viewModels()
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -41,6 +40,9 @@ class MainActivity : ComponentActivity() {
                         onEmailLogin = { email, password ->
                             authViewModel.signInWithEmailPassword(email, password)
                         },
+                        onEmailRegister = { email, password ->
+                            authViewModel.registerWithEmailPassword(email, password)
+                        },
                         onGoogleLogin = {
                             lifecycleScope.launch {
                                 val result = googleAuth.signInWithGoogle()
@@ -51,6 +53,7 @@ class MainActivity : ComponentActivity() {
                                 // Si tiene éxito, el AuthStateListener actualizará automáticamente el estado
                             }
                         },
+
                         onClearError = {
                             authViewModel.clearError()
                         }
@@ -60,4 +63,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+    }
 }
