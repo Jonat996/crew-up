@@ -35,7 +35,6 @@ fun CrewUpTheme(
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
-
         darkTheme -> LightColorScheme
         else -> LightColorScheme
     }
