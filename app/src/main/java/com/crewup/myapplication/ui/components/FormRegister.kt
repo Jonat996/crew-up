@@ -193,13 +193,13 @@ fun FormRegister(
                 shape = RoundedCornerShape(10.dp)
             )
 
-            // -------------------------
+
             // CAMPOS NUEVOS: PAÍS / TELÉFONO / CIUDAD
-            // -------------------------
+
             Spacer(Modifier.height(8.dp))
 
 
-            // Selector de país y número
+
             // Selector de país y número
             Row(
                 modifier = Modifier
@@ -300,36 +300,38 @@ fun FormRegister(
 
 
 
-            // Selector de ciudad
+            // Campo de ciudad
             ExposedDropdownMenuBox(
                 expanded = expandedCity,
-                onExpandedChange = { expandedCity = !expandedCity }
-            ) {
-                OutlinedTextField(
+                onExpandedChange = { expandedCity = !expandedCity },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp)
+            ) { OutlinedTextField(
                     value = selectedCity,
-                    onValueChange = {},
-                    readOnly = true,
-                    label = { Text("Ciudad") },
-                    leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.LocationOn,
-                            contentDescription = null,
-                            tint = Color.Gray
-                        )
-                    },
-                    trailingIcon = {
-                        ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedCity)
-                    },
-                    modifier = Modifier
-                        .menuAnchor()
-                        .fillMaxWidth()
-                        .padding(top = 4.dp),
-                    shape = RoundedCornerShape(10.dp)
-                )
-                ExposedDropdownMenu(
+            onValueChange = {},
+            readOnly = true,
+            label = { Text("Ciudad") },
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedCity) },
+            modifier = Modifier
+                .menuAnchor(MenuAnchorType.PrimaryNotEditable, enabled = true)
+                .fillMaxWidth()
+                .height(60.dp),
+            shape = RoundedCornerShape(10.dp),
+            colors = OutlinedTextFieldDefaults.colors(
+                unfocusedContainerColor = Color.Transparent,
+                focusedContainerColor = Color.Transparent,
+                unfocusedBorderColor = Color.LightGray,
+                focusedBorderColor = MaterialTheme.colorScheme.primary
+            )
+            )
+
+
+            ExposedDropdownMenu(
                     expanded = expandedCity,
                     onDismissRequest = { expandedCity = false }
                 ) {
+                    // 🔹 Primero las ciudades del país seleccionado
                     selectedCountry.cities.forEach { city ->
                         DropdownMenuItem(
                             text = { Text(city) },
@@ -339,8 +341,28 @@ fun FormRegister(
                             }
                         )
                     }
+
+                    // 🔹 Separador visual (opcional)
+                    Divider()
+
+                    // 🔹 Luego las ciudades de los demás países
+                    countries
+                        .filter { it != selectedCountry }
+                        .forEach { country ->
+                            country.cities.forEach { city ->
+                                DropdownMenuItem(
+                                    text = { Text("${city} (${country.name})") },
+                                    onClick = {
+                                        selectedCity = city
+                                        selectedCountry = country
+                                        expandedCity = false
+                                    }
+                                )
+                            }
+                        }
                 }
             }
+
 
             Spacer(Modifier.height(8.dp))
 
