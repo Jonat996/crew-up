@@ -1,4 +1,4 @@
-package com.example.qta_jw_3.ui.screens
+package com.crewup.myapplication.ui.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
