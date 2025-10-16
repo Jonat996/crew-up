@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -24,13 +26,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.crewup.myapplication.R
+import com.crewup.myapplication.viewmodel.AuthViewModel
 
 @Composable
-fun HeaderUserPhoto(title: String, photoUrl: String?) {
+fun HeaderUserPhoto(title: String, authViewModel: AuthViewModel = viewModel()) {
+
+    val authState by authViewModel.authState.collectAsState()
+    val user = authState.user
+    val photoUrl =user?.photoUrl ?: "undefined"
+
     HeaderBase {
-        if (photoUrl.isNullOrEmpty()) {
+        if (photoUrl == "undefined") {
             Image(
                 painter = painterResource(id = R.drawable.ic_pizza_logo),
                 contentDescription = "Logo por defecto",
@@ -56,5 +65,5 @@ fun HeaderUserPhoto(title: String, photoUrl: String?) {
 @Preview
 @Composable
 fun previewHeaderUserPhoto(){
-    HeaderUserPhoto(title = "Juan Monroy", photoUrl = "")
+    HeaderUserPhoto(title = "Juan Monroy")
 }

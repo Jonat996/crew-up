@@ -19,8 +19,7 @@ fun HeaderUserInfo(
     HeaderBase {
         if (user != null) {
             HeaderUserPhoto(
-                title = user.displayName ?: "Sin nombre",
-                photoUrl = user.photoUrl?.toString()
+                title = user.displayName ?: "Sin nombre"
             )
             // TODO: Ocupación y localización deben ser obtenidos desde tu base de datos de perfil de usuario
             Text(text = "Ocupación", color = Color.White.copy(alpha = 0.8f))
