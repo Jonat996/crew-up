@@ -25,39 +25,38 @@ fun HeaderBase(content: @Composable ColumnScope.() -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(250.dp) // ajusta según tu diseño
+            .height(300.dp),
+        contentAlignment = Alignment.TopCenter
     ) {
-        // 🔹 Capa 1: fondo azul sólido
         Box(
             modifier = Modifier
                 .matchParentSize()
                 .background(Color(0xFF0056B3))
         )
-
-        // 🔹 Capa 2: imagen decorativa con puntos blancos
         Image(
-            painter = painterResource(id = R.drawable.dots), // tu imagen de puntos
+            painter = painterResource(id = R.drawable.dots),
             contentDescription = null,
-            contentScale = ContentScale.Crop, // para cubrir bien el fondo
+            contentScale = ContentScale.Crop,
             modifier = Modifier
                 .matchParentSize()
+                .graphicsLayer {
+                    alpha = 0.8f
+                }
         )
 
-        // 🔹 Capa 3: contenido dinámico
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(vertical = 10.dp),
+                .padding(vertical = 0.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             content = content
         )
     }
 }
 
-@Preview (showBackground = true)
+@Preview(showBackground = true)
 @Composable
-fun previewContent(){
-    HeaderBase(){
-
-    }
+fun PreviewContent() {
+    HeaderBase { }
 }
