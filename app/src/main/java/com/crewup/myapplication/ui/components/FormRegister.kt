@@ -75,10 +75,9 @@ fun FormRegister(
                     value = name,
                     onValueChange = { name = it },
                     label = { Text("Nombre") },
-                    // 2. Usar weight(1f) para que ocupe el 50%
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(10.dp)
-                    // ... (colores, etc.)
+
                 )
 
                 // Campo de Apellido
