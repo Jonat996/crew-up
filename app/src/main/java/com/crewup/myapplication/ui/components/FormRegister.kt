@@ -123,6 +123,7 @@ fun FormRegister(
                     label = { Text("Nombre") },
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(10.dp)
+
                 )
                 OutlinedTextField(
                     value = lastName,

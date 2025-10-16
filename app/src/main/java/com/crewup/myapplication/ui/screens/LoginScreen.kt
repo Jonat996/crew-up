@@ -13,10 +13,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.crewup.myapplication.auth.GoogleAuth
 import com.crewup.myapplication.viewmodel.AuthState
 import com.crewup.myapplication.viewmodel.AuthViewModel
 
@@ -29,6 +31,8 @@ fun LoginScreen(
     onClearError: () -> Unit
 ) {
     var isRegistering by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val googleAuth = remember { GoogleAuth(context) }
     val scrollState = rememberScrollState()
 
 Box(modifier = Modifier.fillMaxSize()) {
