@@ -1,43 +1,48 @@
 package com.crewup.myapplication.ui.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Security
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.crewup.myapplication.R
 
-// 1. Clase de datos para representar cada opción
 data class ProfileOption(
-    val icon: ImageVector,
+    val iconRes: Int,
     val text: String,
-    val badgeCount: Int? = null, // Opcional, para el número de notificaciones
     val onClick: () -> Unit
 )
+@Composable
+fun SectionTitle(title: String) {
+    Text(
+        text = title,
+        fontSize = 18.sp,
+        fontWeight = FontWeight.SemiBold,
+        color = Color.Black,
+        modifier = Modifier
+        .padding(horizontal = 26.dp, vertical = 8.dp)
+    )
+}
 
 @Composable
-fun ProfileOptionsList(
+fun ProfileOptionList(
     options: List<ProfileOption>,
     modifier: Modifier = Modifier
 ) {
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp), // Padding a los lados de la Card
+            .padding(horizontal = 26.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp) // Sombra
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(
             modifier = Modifier.fillMaxWidth()
@@ -46,14 +51,14 @@ fun ProfileOptionsList(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable(onClick = option.onClick) // Hace toda la fila clickeable
-                        .padding(vertical = 12.dp, horizontal = 16.dp), // Padding interno de cada opción
+                        .clickable(onClick = option.onClick)
+                        .padding(vertical = 16.dp, horizontal = 16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        imageVector = option.icon,
+                        painter = painterResource(id = option.iconRes),
                         contentDescription = option.text,
-                        tint = Color(0xFF0056B3), // Color del icono (azul)
+                        tint = Color(0xFF0056B3),
                         modifier = Modifier.size(24.dp)
                     )
                     Spacer(Modifier.width(16.dp))
@@ -62,9 +67,8 @@ fun ProfileOptionsList(
                         text = option.text,
                         fontSize = 16.sp,
                         color = Color.Black,
-                        modifier = Modifier.weight(1f) // Ocupa el espacio restante
+                        modifier = Modifier.weight(1f)
                     )
-
 
                 }
             }
@@ -72,51 +76,29 @@ fun ProfileOptionsList(
     }
 }
 
-// --- Preview del Componente ---
-
-@Preview(showBackground = true, showSystemUi = true)
+@Preview(showBackground = true, widthDp = 360, name = "Profile Options List Preview")
 @Composable
-fun ProfileOptionsListPreview() {
+fun ProfileOptionListPreview() {
+
+    SectionTitle("Crear cuenta")
+
+
     val sampleOptions = listOf(
         ProfileOption(
-            icon = Icons.Default.Person,
+            iconRes = R.drawable.icon_profile,
             text = "Editar perfil",
-            onClick = { /* Navegar a editar perfil */ }
+            onClick = { /* Acción */ }
         ),
         ProfileOption(
-            icon = Icons.Default.Security,
+            iconRes = R.drawable.icon_privacy,
             text = "Seguridad",
-            onClick = { /* Navegar a seguridad */ }
-        ),
-        ProfileOption(
-            icon = Icons.Default.Notifications,
-            text = "Notificaciones",
-            badgeCount = 9, // Con un badge
-            onClick = { /* Navegar a notificaciones */ }
-        ),
-        ProfileOption(
-            icon = Icons.Default.Lock,
-            text = "Privacidad",
-            onClick = { /* Navegar a privacidad */ }
-        )
+            onClick = { /* Acción */ }
     )
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.LightGray.copy(alpha = 0.3f)) // Un fondo para que se vea la Card
-            .padding(top = 20.dp), // Espacio arriba
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        // Título "Cuenta"
-        Text(
-            text = "Cuenta",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp, start = 16.dp)
-        )
-        ProfileOptionsList(options = sampleOptions)
+    )
+
+    Column(modifier = Modifier.padding(vertical = 16.dp)) {
+        ProfileOptionList(options = sampleOptions)
     }
 }
+

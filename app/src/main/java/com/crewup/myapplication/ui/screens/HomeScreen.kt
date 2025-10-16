@@ -6,12 +6,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseUser
 
 @Composable
 fun HomeScreen(
     user: FirebaseUser?,
-    onSignOut: () -> Unit
+    navController: NavController
 ) {
     Column(
         modifier = Modifier
@@ -59,10 +60,10 @@ fun HomeScreen(
         Spacer(modifier = Modifier.height(32.dp))
 
         Button(
-            onClick = onSignOut,
+            onClick = { navController.navigate("profile") },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Cerrar Sesión")
+            Text("Ir a Perfil")
         }
     }
 }
