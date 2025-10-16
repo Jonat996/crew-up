@@ -47,7 +47,7 @@ fun ProfileScreen(
         )
     }
 
-    fun getSuportOptions(onSignOut: () -> Unit): List<ProfileOption> {
+    fun getSupportOptions(onSignOut: () -> Unit): List<ProfileOption> {
         return listOf(
             ProfileOption(R.drawable.icon_help, "Ayuda y Soorte", onClick = {}),
             ProfileOption(R.drawable.icon_term, "Términos  y Políticas", onClick = {}),
@@ -66,7 +66,7 @@ fun ProfileScreen(
         ProfileOptionList(options =  getActionsOptions {})
         Spacer(Modifier.height(24.dp))
         SectionTitle("Soporte")
-        ProfileOptionList(options =  getSuportOptions{})
+        ProfileOptionList(options =  getSupportOptions{})
     }
 }
 
