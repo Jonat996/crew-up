@@ -4,8 +4,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -14,18 +12,17 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.crewup.myapplication.R
-import com.crewup.myapplication.ui.components.Header
 import com.crewup.myapplication.ui.components.ProfileOption
 import com.crewup.myapplication.ui.components.ProfileOptionList
 import com.crewup.myapplication.ui.components.SectionTitle
+import com.crewup.myapplication.ui.components.header.HeaderUserInfo
+import com.crewup.myapplication.ui.layout.MainLayout
 
 @Composable
 fun ProfileScreen(
     navController: NavController,
     onSignOut: () -> Unit
 ){
-    val scrollState = rememberScrollState()
-
     fun getAccountOptions(): List<ProfileOption> {
         return listOf(
             ProfileOption(R.drawable.icon_profile, "Editar perfil", onClick = {}),
@@ -50,21 +47,24 @@ fun ProfileScreen(
         )
     }
 
-    Column (
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(scrollState)
-    ) {
-        Header("Perfil")
-        SectionTitle("Cuenta")
-        ProfileOptionList(options = getAccountOptions())
-        Spacer(Modifier.height(24.dp))
-        SectionTitle("Acciones")
-        ProfileOptionList(options = getActionsOptions())
-        Spacer(Modifier.height(24.dp))
-        SectionTitle("Soporte")
-        ProfileOptionList(options = getSupportOptions())
-    }
+    MainLayout(
+        header = { HeaderUserInfo() },
+        content = {
+            Column (
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                SectionTitle("Cuenta")
+                ProfileOptionList(options = getAccountOptions())
+                Spacer(Modifier.height(24.dp))
+                SectionTitle("Acciones")
+                ProfileOptionList(options = getActionsOptions())
+                Spacer(Modifier.height(24.dp))
+                SectionTitle("Soporte")
+                ProfileOptionList(options = getSupportOptions())
+            }
+        }
+    )
 }
 
 @Preview(showSystemUi = true, showBackground = true, name = "Full Profile Screen")
