@@ -13,7 +13,7 @@ import androidx.compose.ui.graphics.Color
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen() {
+fun SecuritySection() {
     var passwordLock by remember { mutableStateOf(true) }
     var autoLogout by remember { mutableStateOf(false) }
     var notifyChanges by remember { mutableStateOf(true) }
@@ -102,6 +102,6 @@ fun SettingSwitch(
 @Composable
 fun SettingsScreenPreview() {
     MaterialTheme {
-        SettingsScreen()
+        SecuritySection()
     }
 }

@@ -15,7 +15,7 @@ import androidx.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NotificationsScreen() {
+fun NotificationsSection() {
     var generalNotification by remember { mutableStateOf(true) }
     var sound by remember { mutableStateOf(false) }
     var vibrate by remember { mutableStateOf(true) }
@@ -106,6 +106,6 @@ fun NotificationSwitch(
 @Composable
 fun NotificationsScreenPreview() {
     MaterialTheme {
-        NotificationsScreen()
+        NotificationsSection()
     }
 }
