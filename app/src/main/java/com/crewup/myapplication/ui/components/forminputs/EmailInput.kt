@@ -16,7 +16,8 @@ fun EmailInput(
     email: String,
     onEmailChange: (String) -> Unit,
     onClearError: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true
 ) {
     OutlinedTextField(
         value = email,
@@ -30,5 +31,6 @@ fun EmailInput(
             .fillMaxWidth()
             .padding(vertical = 2.dp),
         shape = RoundedCornerShape(10.dp),
+        enabled = enabled
     )
 }

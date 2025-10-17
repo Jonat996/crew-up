@@ -4,4 +4,54 @@
     <string name="facebook_app_id">1376981000429957</string>
     <string name="fb_login_protocol_scheme">fb1376981000429957</string>
     <string name="facebook_client_token">3ae4a66de3860669cb0cb15c149e60bd</string>
+
+    <!-- LoginScreen -->
+    <string name="login_title">Iniciar Sesión</string>
+    <string name="no_account">¿No tienes una cuenta?</string>
+    <string name="create_one">Crea una</string>
+
+    <!-- HomeScreen -->
+    <string name="welcome_crewup">¡Bienvenido a CrewUp!</string>
+    <string name="user_label">Usuario:</string>
+    <string name="email_label">Email:</string>
+    <string name="no_name">Sin nombre</string>
+    <string name="no_email">Sin email</string>
+    <string name="go_to_profile">Ir a Perfil</string>
+
+    <!-- ProfileScreen -->
+    <string name="edit_profile">Editar perfil</string>
+    <string name="security">Seguridad</string>
+    <string name="notifications">Notificaciones</string>
+    <string name="privacy">Privacidad</string>
+    <string name="report_problem">Reportar un problema</string>
+    <string name="your_created_plans">Tus Planes creados</string>
+    <string name="logout">Cerrar Sesión</string>
+    <string name="help_support">Ayuda y Soorte</string>
+    <string name="terms_policies">Términos  y Políticas</string>
+    <string name="account_section">Cuenta</string>
+    <string name="actions_section">Acciones</string>
+    <string name="support_section">Soporte</string>
+
+    <!-- EditProfileSection -->
+    <string name="save_changes">Guardar cambios</string>
+    <string name="error_prefix">Error: %s</string>
+
+    <!-- HeaderUserInfo -->
+    <string name="no_occupation">Sin ocupación</string>
+    <string name="no_location">Sin localización</string>
+
+    <!-- BottomNavBar -->
+    <string name="home">Inicio</string>
+    <string name="profile">Perfil</string>
+
+    <!-- Form -->
+    <string name="continue_with_google">Continúa con Google</string>
+    <string name="or_separator">o</string>
+    <string name="enter_email">Ingresa tu correo</string>
+    <string name="enter_password">Ingresa tu contraseña</string>
+    <string name="show_password">Mostrar contraseña</string>
+    <string name="remember_data">Recordar datos</string>
+    <string name="forgot_password">¿Olvidaste tu contraseña?</string>
+    <string name="login_button">Iniciar Sesión</string>
+    <string name="google_icon_description">Icono de Google</string>
 </resources>

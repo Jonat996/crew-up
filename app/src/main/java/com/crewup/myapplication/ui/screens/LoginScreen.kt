@@ -21,6 +21,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.crewup.myapplication.auth.GoogleAuth
 import com.crewup.myapplication.viewmodel.AuthState
 import com.crewup.myapplication.viewmodel.AuthViewModel
+import androidx.compose.ui.res.stringResource
+import com.crewup.myapplication.R
 
 @Composable
 fun LoginScreen(
@@ -45,7 +47,7 @@ Box(modifier = Modifier.fillMaxSize()) {
             .verticalScroll(scrollState),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Header(title = "Iniciar Sesión")
+        Header(title = stringResource(R.string.login_title))
 
         Box(
             modifier = Modifier
@@ -71,11 +73,11 @@ Box(modifier = Modifier.fillMaxSize()) {
             .padding(vertical = 32.dp, horizontal = 0.dp)
 
     ) {
-            Text(text = "¿No tienes una cuenta? ")
+            Text(text = stringResource(R.string.no_account) + " ")
 
             TextButton(onClick = onNavigateToRegister){
                 Text(
-                    text = "Crea una",
+                    text = stringResource(R.string.create_one),
                     color = Color(0xFF0056B3),
                     fontWeight = FontWeight.SemiBold,
                 )

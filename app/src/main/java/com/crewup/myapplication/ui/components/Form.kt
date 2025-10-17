@@ -26,6 +26,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.zIndex
+import androidx.compose.ui.res.stringResource
 
 
 @Composable
@@ -70,11 +71,11 @@ fun Form(
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_google),
-                        contentDescription = "Icono de Google",
+                        contentDescription = stringResource(R.string.google_icon_description),
                         modifier = Modifier.size(20.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Continúa con Google")
+                    Text(stringResource(R.string.continue_with_google))
                 }
                 Spacer(Modifier.height(8.dp))
 
@@ -83,7 +84,7 @@ fun Form(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Divider(Modifier.weight(1f), color = Color.LightGray)
-                    Text("o", Modifier.padding(horizontal = 8.dp), color = Color.Gray)
+                    Text(stringResource(R.string.or_separator), Modifier.padding(horizontal = 8.dp), color = Color.Gray)
                     Divider(Modifier.weight(1f), color = Color.LightGray)
                 }
 
@@ -101,7 +102,7 @@ fun Form(
                     },
                     label = {
                         Text(
-                            "Ingresa tu correo",
+                            stringResource(R.string.enter_email),
                             color = Color.Black,
                         )
                     },
@@ -128,7 +129,7 @@ fun Form(
                     },
                     label = {
                         Text(
-                            "Ingresa tu contraseña",
+                            stringResource(R.string.enter_password),
                             color = Color.Black,
                         )
                     },
@@ -147,7 +148,7 @@ fun Form(
 
                         Icon(
                             imageVector = icon,
-                            contentDescription = "Mostrar contraseña",
+                            contentDescription = stringResource(R.string.show_password),
                             modifier = Modifier.clickable { showPassword = !showPassword }
                         )
                     }
@@ -187,11 +188,11 @@ fun Form(
                                 checkmarkColor = Color.White
                             )
                         )
-                        Text("Recordar datos", fontSize = 14.sp)
+                        Text(stringResource(R.string.remember_data), fontSize = 14.sp)
                     }
                     TextButton(onClick = { /* TODO: Recuperar contraseña */ }) {
                         Text(
-                            text = "¿Olvidaste tu contraseña?",
+                            text = stringResource(R.string.forgot_password),
                             color = Color(0xFF0056B3),
                             fontWeight = FontWeight.SemiBold,
                             fontSize = 12.sp
@@ -225,7 +226,7 @@ fun Form(
                     if (authState.isLoading) {
                         CircularProgressIndicator(modifier = Modifier.size(16.dp))
                     } else {
-                        Text("Iniciar Sesión", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.login_button), fontSize = 16.sp, fontWeight = FontWeight.Bold)
                     }
                 }
             }

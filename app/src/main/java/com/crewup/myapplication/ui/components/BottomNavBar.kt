@@ -13,6 +13,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.crewup.myapplication.ui.navigation.Routes
+import androidx.compose.ui.res.stringResource
+import com.crewup.myapplication.R
 
 data class BottomNavItem(
     val route: String,
@@ -22,9 +24,12 @@ data class BottomNavItem(
 
 @Composable
 fun BottomNavBar(navController: NavController) {
+    val homeLabel = stringResource(R.string.home)
+    val profileLabel = stringResource(R.string.profile)
+
     val items = listOf(
-        BottomNavItem(Routes.Home.route, Icons.Default.Home, "Inicio"),
-        BottomNavItem(Routes.Profile.route, Icons.Default.Person, "Perfil")
+        BottomNavItem(Routes.Home.route, Icons.Default.Home, homeLabel),
+        BottomNavItem(Routes.Profile.route, Icons.Default.Person, profileLabel)
     )
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()

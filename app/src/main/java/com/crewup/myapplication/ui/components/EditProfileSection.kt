@@ -30,6 +30,8 @@ import com.crewup.myapplication.ui.components.forminputs.GenderInput
 import com.crewup.myapplication.ui.components.forminputs.NameAndLastNameInput
 import com.crewup.myapplication.ui.components.forminputs.OccupationInput
 import com.crewup.myapplication.viewmodel.UserViewModel
+import androidx.compose.ui.res.stringResource
+import com.crewup.myapplication.R
 
 
 
@@ -84,7 +86,7 @@ fun EditProfileSection(){
             CircularProgressIndicator()
         }
     } else if (userState.error != null) {
-        Text(text = "Error: ${userState.error}", color = Color.Red, modifier = Modifier.padding(16.dp))
+        Text(text = stringResource(R.string.error_prefix, userState.error ?: ""), color = Color.Red, modifier = Modifier.padding(16.dp))
     } else {
         Column(modifier = Modifier.padding(16.dp)) {
             NameAndLastNameInput(
@@ -96,7 +98,8 @@ fun EditProfileSection(){
             EmailInput(
                 email = email,
                 onEmailChange = { email = it },
-                onClearError = {} // El email se actualiza en Firestore, no en Firebase Auth
+                onClearError = {},
+                enabled = false // Email deshabilitado, no se puede cambiar
             )
             if (selectedCountry != null) {
                 CityInput(
@@ -149,7 +152,7 @@ fun EditProfileSection(){
                 if (userState.isLoading) {
                     CircularProgressIndicator(color = Color.White)
                 } else {
-                    Text("Guardar cambios", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.save_changes), fontSize = 16.sp, fontWeight = FontWeight.Bold)
                 }
             }
         }
