@@ -28,7 +28,8 @@ fun LoginScreen(
     onEmailLogin: (String, String) -> Unit,
     onEmailRegister: (String, String) -> Unit,
     onGoogleLogin: () -> Unit,
-    onClearError: () -> Unit
+    onClearError: () -> Unit,
+    onNavigateToRegister: () -> Unit
 ) {
     var isRegistering by remember { mutableStateOf(false) }
     val context = LocalContext.current
@@ -72,7 +73,7 @@ Box(modifier = Modifier.fillMaxSize()) {
     ) {
             Text(text = "¿No tienes una cuenta? ")
 
-            TextButton(onClick = { isRegistering = !isRegistering }){
+            TextButton(onClick = onNavigateToRegister){
                 Text(
                     text = "Crea una",
                     color = Color(0xFF0056B3),
@@ -91,6 +92,7 @@ fun PreviewLoginScreen(){
         onEmailLogin = { email, pass -> },
         onEmailRegister = {email, pass ->},
         onGoogleLogin = {  },
-        onClearError = {  }
+        onClearError = {  },
+        onNavigateToRegister = {  }
     )
 }

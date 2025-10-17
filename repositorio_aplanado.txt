@@ -403,6 +403,182 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+========== archivo: ./app/src/main/java/com/crewup/myapplication/ui/components/BackButton.kt ==========
+package com.example.qta_jw_3.ui.components
+
+import androidx.compose.foundation.clickable
+import androidx.compose.material3.Icon
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ChevronLeft
+
+@Composable
+fun BackIcon(
+    navController: NavController,
+    tint: Color = Color.White,
+    size: Int = 32
+) {
+    Icon(
+        imageVector = Icons.Default.ChevronLeft,
+        contentDescription = "Volver",
+        tint = tint,
+        modifier = Modifier
+            .size(size.dp)
+            .clickable { navController.popBackStack() }
+    )
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF1976D2)
+@Composable
+fun BackIconPreview() {
+    val navController = rememberNavController()
+    BackIcon(navController = navController)
+}
+
+
+========== archivo: ./app/src/main/java/com/crewup/myapplication/ui/components/CountryData.kt ==========
+package com.crewup.myapplication.ui.components
+
+// ----------------------
+// MODELO DE DATOS
+// ----------------------
+data class CountryStructure(
+    val name: String,
+    val code: String,
+    val flagUrl: String,
+    val cities: List<String>
+)
+
+// ----------------------
+// LISTA DE PAÍSES
+// ----------------------
+val countriesList = listOf(
+    CountryStructure(
+        name = "Colombia",
+        code = "+57",
+        flagUrl = "https://flagcdn.com/w320/co.png",
+        cities = listOf("Bogotá D.C.", "Medellín", "Cali", "Barranquilla")
+    ),
+    CountryStructure(
+        name = "México",
+        code = "+52",
+        flagUrl = "https://flagcdn.com/w320/mx.png",
+        cities = listOf("Ciudad de México", "Guadalajara", "Monterrey")
+    ),
+    CountryStructure(
+        name = "Argentina",
+        code = "+54",
+        flagUrl = "https://flagcdn.com/w320/ar.png",
+        cities = listOf("Buenos Aires", "Córdoba", "Rosario")
+    ),
+    CountryStructure(name = "Peru",
+    code = "+12",
+    flagUrl = "https://flagcdn.com/w320/ar.png",
+    cities = listOf("lima")
+)
+)
+
+
+========== archivo: ./app/src/main/java/com/crewup/myapplication/ui/components/EditProfileSection.kt ==========
+package com.crewup.myapplication.ui.components
+
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.crewup.myapplication.ui.components.forminputs.CityInput
+import com.crewup.myapplication.ui.components.forminputs.EmailInput
+import com.crewup.myapplication.ui.components.forminputs.GenderInput
+import com.crewup.myapplication.ui.components.forminputs.NameAndLastNameInput
+import com.crewup.myapplication.ui.components.forminputs.OccupationInput
+
+@Composable
+fun EditProfileSection(){
+    var name by remember { mutableStateOf("Jonatan") }
+    var lastName by remember { mutableStateOf("Urrutia") }
+    var email by remember { mutableStateOf("jonatan@example.com") }
+    var occupation by remember { mutableStateOf("Android Developer") }
+    var gender by remember { mutableStateOf("Masculino") }
+
+    var selectedCountry by remember { mutableStateOf(countriesList[0]) }
+    var selectedCity by remember { mutableStateOf(selectedCountry.cities.first()) }
+    var expandedCity by remember { mutableStateOf(false) }
+
+
+    Column(modifier = Modifier.padding(16.dp)) {
+        NameAndLastNameInput(
+            name = name,
+            onNameChange = { name = it },
+            lastName = lastName,
+            onLastNameChange = { lastName = it }
+        )
+        EmailInput(
+            email = email,
+            onEmailChange = { email = it },
+            onClearError = {}
+        )
+        CityInput(
+            selectedCity = selectedCity,
+            onCitySelected = { selectedCity = it },
+            expandedCity = expandedCity,
+            onExpandedCityChange = { expandedCity = it },
+            selectedCountry = selectedCountry,
+            onCountrySelected = {
+                selectedCountry = it
+                selectedCity = it.cities.first()
+            },
+            countries = countriesList
+        )
+        OccupationInput(
+            occupation = occupation,
+            onOccupationChange = { occupation = it }
+        )
+        GenderInput(
+            gender = gender,
+            onGenderChange = { gender = it }
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(
+            onClick = { /* Handle save changes */ },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp),
+            shape = RoundedCornerShape(10.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFF0056B3),
+                contentColor = Color.White
+            )
+        ) {
+            Text("Guardar cambios", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+        }
+    }
+}
+
+
 ========== archivo: ./app/src/main/java/com/crewup/myapplication/ui/components/Form.kt ==========
 package com.crewup.myapplication.ui.components
 
@@ -653,6 +829,476 @@ fun PreviewForm(){
         )
     }
 }
+
+========== archivo: ./app/src/main/java/com/crewup/myapplication/ui/components/forminputs/CityInput.kt ==========
+package com.crewup.myapplication.ui.components.forminputs
+
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Divider
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.crewup.myapplication.ui.components.Country
+import com.crewup.myapplication.ui.components.CountryStructure
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CityInput(
+    selectedCity: String,
+    onCitySelected: (String) -> Unit,
+    expandedCity: Boolean,
+    onExpandedCityChange: (Boolean) -> Unit,
+    selectedCountry: CountryStructure,
+    onCountrySelected: (CountryStructure) -> Unit,
+    countries: List<CountryStructure>,
+    modifier: Modifier = Modifier
+) {
+    ExposedDropdownMenuBox(
+        expanded = expandedCity,
+        onExpandedChange = onExpandedCityChange,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(top = 8.dp)
+    ) {
+        OutlinedTextField(
+            value = selectedCity,
+            onValueChange = {},
+            readOnly = true,
+            label = { Text("Ciudad") },
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedCity) },
+            modifier = Modifier
+                .menuAnchor(MenuAnchorType.PrimaryNotEditable, enabled = true)
+                .fillMaxWidth()
+                .height(60.dp),
+            shape = RoundedCornerShape(10.dp),
+            colors = OutlinedTextFieldDefaults.colors(
+                unfocusedContainerColor = Color.Transparent,
+                focusedContainerColor = Color.Transparent,
+                unfocusedBorderColor = Color.LightGray,
+                focusedBorderColor = MaterialTheme.colorScheme.primary
+            )
+        )
+
+        ExposedDropdownMenu(
+            expanded = expandedCity,
+            onDismissRequest = { onExpandedCityChange(false) }
+        ) {
+            // 🔹 Primero las ciudades del país seleccionado
+            selectedCountry.cities.forEach { city ->
+                DropdownMenuItem(
+                    text = { Text(city) },
+                    onClick = {
+                        onCitySelected(city)
+                        onExpandedCityChange(false)
+                    }
+                )
+            }
+
+            // 🔹 Separador visual (opcional)
+            Divider()
+
+            // 🔹 Luego las ciudades de los demás países
+            countries
+                .filter { it != selectedCountry }
+                .forEach { country ->
+                    country.cities.forEach { city ->
+                        DropdownMenuItem(
+                            text = { Text("$city (${country.name})") },
+                            onClick = {
+                                onCitySelected(city)
+                                onCountrySelected(country)
+                                onExpandedCityChange(false)
+                            }
+                        )
+                    }
+                }
+        }
+    }
+}
+
+
+========== archivo: ./app/src/main/java/com/crewup/myapplication/ui/components/forminputs/CountryAndPhoneInput.kt ==========
+package com.crewup.myapplication.ui.components.forminputs
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
+import com.crewup.myapplication.ui.components.Country
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CountryAndPhoneInput(
+    countries: List<Country>,
+    selectedCountry: Country,
+    onCountrySelected: (Country) -> Unit,
+    expandedCountry: Boolean,
+    onExpandedCountryChange: (Boolean) -> Unit,
+    phoneNumber: String,
+    onPhoneNumberChange: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(top = 4.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        ExposedDropdownMenuBox(
+            expanded = expandedCountry,
+            onExpandedChange = onExpandedCountryChange,
+            modifier = Modifier
+                .weight(0.45f)
+                .height(56.dp)
+        ) {
+            OutlinedTextField(
+                value = selectedCountry.code,
+                onValueChange = {},
+                readOnly = true,
+                textStyle = LocalTextStyle.current.copy(fontSize = 15.sp),
+                leadingIcon = {
+                    AsyncImage(
+                        model = selectedCountry.flagUrl,
+                        contentDescription = selectedCountry.name,
+                        modifier = Modifier
+                            .size(22.dp)
+                            .clip(RoundedCornerShape(3.dp))
+                    )
+                },
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedCountry)
+                },
+                modifier = Modifier
+                    .menuAnchor(MenuAnchorType.PrimaryNotEditable, enabled = true)
+                    .fillMaxWidth(),
+                shape = RoundedCornerShape(5.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    unfocusedContainerColor = Color.Transparent,
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedBorderColor = Color.LightGray,
+                    focusedBorderColor = MaterialTheme.colorScheme.primary
+                )
+            )
+
+            ExposedDropdownMenu(
+                expanded = expandedCountry,
+                onDismissRequest = { onExpandedCountryChange(false) }
+            ) {
+                countries.forEach { country ->
+                    DropdownMenuItem(
+                        text = { Text("${country.name} (${country.code})") },
+                        onClick = {
+                            onCountrySelected(country)
+                        }
+                    )
+                }
+            }
+        }
+
+        OutlinedTextField(
+            value = phoneNumber,
+            onValueChange = {
+                if (it.all { char -> char.isDigit() }) {
+                    onPhoneNumberChange(it)
+                }
+            },
+            label = { Text("Número") },
+            singleLine = true,
+            modifier = Modifier
+                .weight(0.65f)
+                .height(60.dp),
+            shape = RoundedCornerShape(10.dp),
+            colors = OutlinedTextFieldDefaults.colors(
+                unfocusedContainerColor = Color.Transparent,
+                focusedContainerColor = Color.Transparent,
+                unfocusedBorderColor = Color.LightGray,
+                focusedBorderColor = MaterialTheme.colorScheme.primary
+            ),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            textStyle = LocalTextStyle.current.copy(
+                fontSize = 17.sp,
+                lineHeight = 22.sp
+            )
+        )
+    }
+}
+
+
+========== archivo: ./app/src/main/java/com/crewup/myapplication/ui/components/forminputs/EmailInput.kt ==========
+package com.crewup.myapplication.ui.components.forminputs
+
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
+
+@Composable
+fun EmailInput(
+    email: String,
+    onEmailChange: (String) -> Unit,
+    onClearError: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    OutlinedTextField(
+        value = email,
+        onValueChange = {
+            onEmailChange(it)
+            onClearError()
+        },
+        label = { Text("Ingresa tu correo") },
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 2.dp),
+        shape = RoundedCornerShape(10.dp),
+    )
+}
+
+
+========== archivo: ./app/src/main/java/com/crewup/myapplication/ui/components/forminputs/GenderInput.kt ==========
+package com.crewup.myapplication.ui.components.forminputs
+
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun GenderInput(
+    gender: String,
+    onGenderChange: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val genderOptions = listOf("Masculino", "Femenino", "Otro", "Prefiero no decirlo")
+    var expanded by remember { mutableStateOf(false) }
+
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = { expanded = !expanded },
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp)
+    ) {
+        OutlinedTextField(
+            value = gender,
+            onValueChange = {},
+            readOnly = true,
+            label = { Text("Género") },
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+            modifier = Modifier
+                .menuAnchor()
+                .fillMaxWidth(),
+            shape = RoundedCornerShape(10.dp)
+        )
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            genderOptions.forEach { selectionOption ->
+                DropdownMenuItem(
+                    text = { Text(selectionOption) },
+                    onClick = {
+                        onGenderChange(selectionOption)
+                        expanded = false
+                    }
+                )
+            }
+        }
+    }
+}
+
+
+========== archivo: ./app/src/main/java/com/crewup/myapplication/ui/components/forminputs/NameAndLastNameInput.kt ==========
+package com.crewup.myapplication.ui.components.forminputs
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+
+@Composable
+fun NameAndLastNameInput(
+    name: String,
+    onNameChange: (String) -> Unit,
+    lastName: String,
+    onLastNameChange: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        OutlinedTextField(
+            value = name,
+            onValueChange = onNameChange,
+            label = { Text("Nombre") },
+            modifier = Modifier.weight(1f),
+            shape = RoundedCornerShape(10.dp)
+
+        )
+        OutlinedTextField(
+            value = lastName,
+            onValueChange = onLastNameChange,
+            label = { Text("Apellido") },
+            modifier = Modifier.weight(1f),
+            shape = RoundedCornerShape(10.dp)
+        )
+    }
+}
+
+========== archivo: ./app/src/main/java/com/crewup/myapplication/ui/components/forminputs/OccupationInput.kt ==========
+package com.crewup.myapplication.ui.components.forminputs
+
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+
+@Composable
+fun OccupationInput(
+    occupation: String,
+    onOccupationChange: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    OutlinedTextField(
+        value = occupation,
+        onValueChange = onOccupationChange,
+        label = { Text("Ocupación") },
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        shape = RoundedCornerShape(10.dp)
+    )
+}
+
+
+========== archivo: ./app/src/main/java/com/crewup/myapplication/ui/components/forminputs/PasswordInput.kt ==========
+package com.crewup.myapplication.ui.components.forminputs
+
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.unit.dp
+
+@Composable
+fun PasswordInput(
+    password: String,
+    onPasswordChange: (String) -> Unit,
+    label: String,
+    onClearError: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var showPassword by remember { mutableStateOf(false) }
+
+    OutlinedTextField(
+        value = password,
+        onValueChange = {
+            onPasswordChange(it)
+            onClearError()
+        },
+        label = { Text(label) },
+        visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
+        trailingIcon = {
+            val icon = if (showPassword) Icons.Filled.VisibilityOff else Icons.Filled.Visibility
+            Icon(
+                imageVector = icon,
+                contentDescription = "Mostrar contraseña",
+                modifier = Modifier.clickable { showPassword = !showPassword }
+            )
+        },
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 2.dp),
+        shape = RoundedCornerShape(10.dp)
+    )
+}
+
 
 ========== archivo: ./app/src/main/java/com/crewup/myapplication/ui/components/FormRegister.kt ==========
 package com.crewup.myapplication.ui.components
@@ -1077,6 +1723,7 @@ package com.crewup.myapplication.ui.components.header
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -1084,6 +1731,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ChevronLeft
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -1093,10 +1744,16 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.crewup.myapplication.R
+import com.example.qta_jw_3.ui.components.BackIcon
 
 @Composable
-fun HeaderBase(content: @Composable ColumnScope.() -> Unit) {
+fun HeaderBase(
+    navController: NavController? = null,
+    content: @Composable ColumnScope.() -> Unit
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -1114,16 +1771,23 @@ fun HeaderBase(content: @Composable ColumnScope.() -> Unit) {
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .matchParentSize()
-                .graphicsLayer {
-                    alpha = 0.8f
-                }
+                .graphicsLayer { alpha = 0.8f }
         )
 
+        if (navController != null) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .padding(start = 16.dp, top = 16.dp)
+            ) {
+                BackIcon(navController = navController, size = 32, tint = Color.White)
+            }
+        }
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 10.dp),
+                .padding(top = 60.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             content = content
         )
@@ -1132,8 +1796,9 @@ fun HeaderBase(content: @Composable ColumnScope.() -> Unit) {
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewContent() {
-    HeaderBase { }
+fun PreviewHeaderBase() {
+    val navController = rememberNavController()
+    HeaderBase(navController = navController) { }
 }
 
 
@@ -1215,8 +1880,7 @@ fun HeaderUserInfo(
     HeaderBase {
         if (user != null) {
             HeaderUserPhoto(
-                title = user.displayName ?: "Sin nombre",
-                photoUrl = user.photoUrl?.toString()
+                title = user.displayName ?: "Sin nombre"
             )
             // TODO: Ocupación y localización deben ser obtenidos desde tu base de datos de perfil de usuario
             Text(text = "Ocupación", color = Color.White.copy(alpha = 0.8f))
@@ -1248,6 +1912,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -1259,13 +1925,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.crewup.myapplication.R
+import com.crewup.myapplication.viewmodel.AuthViewModel
 
 @Composable
-fun HeaderUserPhoto(title: String, photoUrl: String?) {
+fun HeaderUserPhoto(title: String, authViewModel: AuthViewModel = viewModel()) {
+
+    val authState by authViewModel.authState.collectAsState()
+    val user = authState.user
+    val photoUrl =user?.photoUrl ?: "undefined"
+
     HeaderBase {
-        if (photoUrl.isNullOrEmpty()) {
+        if (photoUrl == "undefined") {
             Image(
                 painter = painterResource(id = R.drawable.ic_pizza_logo),
                 contentDescription = "Logo por defecto",
@@ -1291,7 +1964,7 @@ fun HeaderUserPhoto(title: String, photoUrl: String?) {
 @Preview
 @Composable
 fun previewHeaderUserPhoto(){
-    HeaderUserPhoto(title = "Juan Monroy", photoUrl = "")
+    HeaderUserPhoto(title = "Juan Monroy")
 }
 
 ========== archivo: ./app/src/main/java/com/crewup/myapplication/ui/components/Header.kt ==========
@@ -1398,7 +2071,7 @@ import androidx.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NotificationsScreen() {
+fun NotificationsSection() {
     var generalNotification by remember { mutableStateOf(true) }
     var sound by remember { mutableStateOf(false) }
     var vibrate by remember { mutableStateOf(true) }
@@ -1489,7 +2162,7 @@ fun NotificationSwitch(
 @Composable
 fun NotificationsScreenPreview() {
     MaterialTheme {
-        NotificationsScreen()
+        NotificationsSection()
     }
 }
 
@@ -1617,7 +2290,7 @@ import androidx.compose.ui.graphics.Color
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen() {
+fun SecuritySection() {
     var passwordLock by remember { mutableStateOf(true) }
     var autoLogout by remember { mutableStateOf(false) }
     var notifyChanges by remember { mutableStateOf(true) }
@@ -1706,7 +2379,7 @@ fun SettingSwitch(
 @Composable
 fun SettingsScreenPreview() {
     MaterialTheme {
-        SettingsScreen()
+        SecuritySection()
     }
 }
 
@@ -1878,6 +2551,30 @@ fun AppNavigation(
     }
 }
 
+========== archivo: ./app/src/main/java/com/crewup/myapplication/ui/screens/EditProfileScreen.kt ==========
+package com.crewup.myapplication.ui.screens
+
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.tooling.preview.Preview
+import com.crewup.myapplication.ui.components.EditProfileSection
+import com.crewup.myapplication.ui.components.FormRegister
+import com.crewup.myapplication.ui.components.header.HeaderUserInfo
+import com.crewup.myapplication.ui.layout.MainLayout
+
+@Composable
+fun EditProfileScreen(){
+    MainLayout(
+        header = { HeaderUserInfo() },
+        content = { EditProfileSection() }
+    )
+}
+
+@Preview
+@Composable
+fun PreviewEditProfileScreen(){
+    EditProfileScreen()
+}
+
 ========== archivo: ./app/src/main/java/com/crewup/myapplication/ui/screens/HomeScreen.kt ==========
 package com.crewup.myapplication.ui.screens
 
@@ -2047,6 +2744,34 @@ fun PreviewLoginScreen(){
     )
 }
 
+========== archivo: ./app/src/main/java/com/crewup/myapplication/ui/screens/NotificationsScreen.kt ==========
+package com.crewup.myapplication.ui.screens
+
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.crewup.myapplication.ui.components.header.HeaderUserPhoto
+import com.crewup.myapplication.ui.layout.MainLayout
+import com.crewup.myapplication.viewmodel.AuthViewModel
+
+@Composable
+fun NotificationsScreen(
+    authViewModel: AuthViewModel = viewModel()
+){
+    MainLayout(
+        header = { HeaderUserPhoto(title = "Notificaciones")},
+        content = {NotificationsSection()}
+
+    )
+}
+
+@Preview
+@Composable
+fun PreviewNotificationsScreen(){
+    NotificationsScreen()
+}
+
+
 ========== archivo: ./app/src/main/java/com/crewup/myapplication/ui/screens/ProfileScreen.kt ==========
 package com.crewup.myapplication.ui.screens
 
@@ -2214,6 +2939,31 @@ fun PreviewRegisterScreen() {
         onClearError = {},
         onNavigateToLogin = {}
     )
+}
+
+
+========== archivo: ./app/src/main/java/com/crewup/myapplication/ui/screens/SecurityScreen.kt ==========
+package com.crewup.myapplication.ui.screens
+
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.crewup.myapplication.ui.components.header.HeaderUserPhoto
+import com.crewup.myapplication.ui.layout.MainLayout
+import com.crewup.myapplication.viewmodel.AuthViewModel
+
+@Composable
+fun SecurityScreen(){
+    MainLayout(
+        header = { HeaderUserPhoto(title = "Seguridad")},
+        content = {SecuritySection()}
+    )
+}
+
+@Preview
+@Composable
+fun PreviewSecurityScreen(){
+    SecurityScreen()
 }
 
 

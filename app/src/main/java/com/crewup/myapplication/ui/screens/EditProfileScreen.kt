@@ -1,22 +1,27 @@
 package com.crewup.myapplication.ui.screens
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavController
 import com.crewup.myapplication.ui.components.EditProfileSection
-import com.crewup.myapplication.ui.components.FormRegister
 import com.crewup.myapplication.ui.components.header.HeaderUserInfo
 import com.crewup.myapplication.ui.layout.MainLayout
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditProfileScreen(){
+fun EditProfileScreen(navController: NavController) {
     MainLayout(
-        header = { HeaderUserInfo() },
-        content = { EditProfileSection() }
+        header = {
+            HeaderUserInfo(navController = navController)
+        },
+        content = {
+            EditProfileSection()
+        }
     )
-}
-
-@Preview
-@Composable
-fun PreviewEditProfileScreen(){
-    EditProfileScreen()
 }

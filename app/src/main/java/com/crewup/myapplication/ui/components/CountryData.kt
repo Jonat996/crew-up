@@ -32,9 +32,10 @@ val countriesList = listOf(
         flagUrl = "https://flagcdn.com/w320/ar.png",
         cities = listOf("Buenos Aires", "Córdoba", "Rosario")
     ),
-    CountryStructure(name = "Peru",
-    code = "+12",
-    flagUrl = "https://flagcdn.com/w320/ar.png",
-    cities = listOf("lima")
-)
+    CountryStructure(
+        name = "Peru",
+        code = "+51",
+        flagUrl = "https://flagcdn.com/w320/pe.png",
+        cities = listOf("Lima")
+    )
 )

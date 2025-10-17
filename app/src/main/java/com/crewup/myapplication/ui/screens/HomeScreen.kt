@@ -7,6 +7,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.crewup.myapplication.ui.components.BottomNavBar
+import com.crewup.myapplication.ui.navigation.Routes
 import com.google.firebase.auth.FirebaseUser
 
 @Composable
@@ -14,13 +16,17 @@ fun HomeScreen(
     user: FirebaseUser?,
     navController: NavController
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+    Scaffold(
+        bottomBar = { BottomNavBar(navController = navController) }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(24.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
         Text(
             text = "¡Bienvenido a CrewUp!",
             style = MaterialTheme.typography.headlineLarge
@@ -60,10 +66,11 @@ fun HomeScreen(
         Spacer(modifier = Modifier.height(32.dp))
 
         Button(
-            onClick = { navController.navigate("profile") },
+            onClick = { navController.navigate(Routes.Profile.route) },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Ir a Perfil")
+        }
         }
     }
 }

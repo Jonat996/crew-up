@@ -10,6 +10,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import com.crewup.myapplication.auth.GoogleAuth
 import com.crewup.myapplication.auth.EmailPasswordAuth
+import com.crewup.myapplication.data.repository.UserRepository
+import com.crewup.myapplication.models.User
+import kotlinx.coroutines.tasks.await
+
 data class AuthState(
     val isLoading: Boolean = false,
     val user: com.google.firebase.auth.FirebaseUser? = null,
@@ -20,6 +24,7 @@ data class AuthState(
 class AuthViewModel : ViewModel() {
     private val auth = FirebaseAuth.getInstance()
     private val emailPasswordAuth = EmailPasswordAuth()
+    private val repository = UserRepository()
 
     private val _authState = MutableStateFlow(
         AuthState(
@@ -54,22 +59,37 @@ class AuthViewModel : ViewModel() {
         _authState.value = _authState.value.copy(isLoading = true, error = null)
 
         viewModelScope.launch {
-            auth.signInWithCredential(credential)
-                .addOnSuccessListener { result ->
-                    _authState.value = _authState.value.copy(
-                        isLoading = false,
-                        user = result.user,
-                        isAuthenticated = true,
-                        error = null
-                    )
+            try {
+                val authResult = auth.signInWithCredential(credential).await()
+                val firebaseUser = authResult.user
+                if (firebaseUser != null) {
+                    val userResult = repository.getCurrentUser()
+                    if (userResult.isSuccess && userResult.getOrNull() == null) {
+                        val displayName = firebaseUser.displayName ?: ""
+                        val name = displayName.substringBefore(" ").trim()
+                        val lastName = displayName.substringAfter(" ", "").trim()
+                        val newUser = User(
+                            uid = firebaseUser.uid,
+                            email = firebaseUser.email ?: "",
+                            name = name,
+                            lastName = lastName
+                        )
+                        repository.createUser(newUser)
+                    }
                 }
-                .addOnFailureListener { e ->
-                    _authState.value = _authState.value.copy(
-                        isLoading = false,
-                        error = e.message,
-                        isAuthenticated = false
-                    )
-                }
+                _authState.value = _authState.value.copy(
+                    isLoading = false,
+                    user = firebaseUser,
+                    isAuthenticated = true,
+                    error = null
+                )
+            } catch (e: Exception) {
+                _authState.value = _authState.value.copy(
+                    isLoading = false,
+                    error = e.message,
+                    isAuthenticated = false
+                )
+            }
         }
     }
 
@@ -99,6 +119,11 @@ class AuthViewModel : ViewModel() {
 
         emailPasswordAuth.register(email, password) { success, message ->
             if (success) {
+                 viewModelScope.launch {
+                    val uid = auth.currentUser?.uid ?: return@launch
+                    val initialUser = User(uid = uid, email = email)
+                    repository.createUser(initialUser)
+                }
                 _authState.value = _authState.value.copy(
                     isLoading = false,
                     user = auth.currentUser,

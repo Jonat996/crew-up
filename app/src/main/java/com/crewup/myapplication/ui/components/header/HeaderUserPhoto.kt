@@ -27,39 +27,41 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.crewup.myapplication.R
 import com.crewup.myapplication.viewmodel.AuthViewModel
 
 @Composable
-fun HeaderUserPhoto(title: String, authViewModel: AuthViewModel = viewModel()) {
+fun HeaderUserPhoto(
+    title: String,
+    authViewModel: AuthViewModel = viewModel()
+) {
 
     val authState by authViewModel.authState.collectAsState()
     val user = authState.user
     val photoUrl =user?.photoUrl ?: "undefined"
 
-    HeaderBase {
-        if (photoUrl == "undefined") {
-            Image(
-                painter = painterResource(id = R.drawable.ic_pizza_logo),
-                contentDescription = "Logo por defecto",
-                modifier = Modifier.size(90.dp)
-            )
-        } else {
-            AsyncImage(
-                model = photoUrl,
-                contentDescription = "Foto de perfil",
-                modifier = Modifier.size(90.dp).clip(CircleShape)
-            )
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = title,
-            fontSize = 22.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.White
+    if (photoUrl == "undefined") {
+        Image(
+            painter = painterResource(id = R.drawable.ic_pizza_logo),
+            contentDescription = "Logo por defecto",
+            modifier = Modifier.size(90.dp)
+        )
+    } else {
+        AsyncImage(
+            model = photoUrl,
+            contentDescription = "Foto de perfil",
+            modifier = Modifier.size(90.dp).clip(CircleShape)
         )
     }
+    Spacer(modifier = Modifier.height(8.dp))
+    Text(
+        text = title,
+        fontSize = 22.sp,
+        fontWeight = FontWeight.Bold,
+        color = Color.White
+    )
 }
 
 @Preview
