@@ -9,8 +9,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
-import com.crewup.myapplication.ui.components.EditProfileSection
 import com.crewup.myapplication.ui.components.header.HeaderUserInfo
+import com.crewup.myapplication.ui.components.sections.EditProfileSection
 import com.crewup.myapplication.ui.layout.MainLayout
 
 @OptIn(ExperimentalMaterial3Api::class)
