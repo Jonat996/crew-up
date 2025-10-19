@@ -27,14 +27,14 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.crewup.myapplication.ui.components.Country
+import com.crewup.myapplication.ui.components.CountryStructure
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CountryAndPhoneInput(
-    countries: List<Country>,
-    selectedCountry: Country,
-    onCountrySelected: (Country) -> Unit,
+    countries: List<CountryStructure>,
+    selectedCountry: CountryStructure,
+    onCountrySelected: (CountryStructure) -> Unit,
     expandedCountry: Boolean,
     onExpandedCountryChange: (Boolean) -> Unit,
     phoneNumber: String,
