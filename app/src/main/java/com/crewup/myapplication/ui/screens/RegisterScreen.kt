@@ -11,8 +11,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.crewup.myapplication.ui.components.FormRegister
 import com.crewup.myapplication.ui.components.Header
+import com.crewup.myapplication.ui.components.sections.FormRegister
 import com.crewup.myapplication.viewmodel.AuthState
 
 @Composable
@@ -21,7 +21,7 @@ fun RegisterScreen(
     onEmailRegister: (String, String) -> Unit,
     onGoogleLogin: () -> Unit,
     onClearError: () -> Unit,
-    onNavigateToLogin: () -> Unit // 👈 para volver al login si se quiere
+    onNavigateToLogin: () -> Unit // volver al login si se quiere
 ) {
     val scrollState = rememberScrollState()
 

@@ -18,7 +18,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.crewup.myapplication.ui.components.Country
 import com.crewup.myapplication.ui.components.CountryStructure
 
 @OptIn(ExperimentalMaterial3Api::class)
