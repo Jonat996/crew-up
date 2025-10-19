@@ -5,53 +5,55 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.graphics.Color
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen() {
-    var passwordLock by remember { mutableStateOf(true) }
-    var autoLogout by remember { mutableStateOf(false) }
-    var notifyChanges by remember { mutableStateOf(true) }
+fun NotificationsSection() {
+    var generalNotification by remember { mutableStateOf(true) }
+    var sound by remember { mutableStateOf(false) }
+    var vibrate by remember { mutableStateOf(true) }
 
-    var alertNewDevice by remember { mutableStateOf(false) }
-    var alertFailedLogin by remember { mutableStateOf(true) }
-    var confirmEmailChange by remember { mutableStateOf(false) }
+    var appUpdates by remember { mutableStateOf(false) }
+    var planReminder by remember { mutableStateOf(true) }
+    var attendanceConfirmation by remember { mutableStateOf(false) }
+    var planChange by remember { mutableStateOf(false) }
 
-    var suspiciousActivity by remember { mutableStateOf(false) }
-    var twoFactorAuth by remember { mutableStateOf(true) }
+    var newGroup by remember { mutableStateOf(false) }
+    var planSuggestions by remember { mutableStateOf(true) }
 
-    val lightBlue = Color(0xFF64B5F6) // Azul clarito (puedes ajustar el tono)
+    val lightBlue = Color(0xFF64B5F6)
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 20.dp, vertical = 18.dp),
+            .padding(horizontal = 20.dp, vertical = 16.dp),
         verticalArrangement = Arrangement.spacedBy(5.dp)
     ) {
-        SectionTitle("General")
-        SettingSwitch("Bloqueo con contraseña", passwordLock, lightBlue) { passwordLock = it }
-        SettingSwitch("Cerrar sesión automáticamente después de inactividad", autoLogout, lightBlue) { autoLogout = it }
-        SettingSwitch("Notificar cambios en la configuración de la cuenta", notifyChanges, lightBlue) { notifyChanges = it }
+        SectionTitle("Común")
+        NotificationSwitch("Notificación general", generalNotification, lightBlue) { generalNotification = it }
+        NotificationSwitch("Sonido", sound, lightBlue) { sound = it }
+        NotificationSwitch("Vibrar", vibrate, lightBlue) { vibrate = it }
 
         Divider(Modifier.padding(vertical = 8.dp))
 
-        SectionTitle("Accesos")
-        SettingSwitch("Alertar inicio de sesión en nuevo dispositivo", alertNewDevice, lightBlue) { alertNewDevice = it }
-        SettingSwitch("Alertar intento de inicio fallido", alertFailedLogin, lightBlue) { alertFailedLogin = it }
-        SettingSwitch("Confirmación por correo en cambios de contraseña", confirmEmailChange, lightBlue) { confirmEmailChange = it }
+        SectionTitle("Actualización de sistema y servicios")
+        NotificationSwitch("Actualizaciones de la aplicación", appUpdates, lightBlue) { appUpdates = it }
+        NotificationSwitch("Recordatorio de plan", planReminder, lightBlue) { planReminder = it }
+        NotificationSwitch("Confirmación de asistencia", attendanceConfirmation, lightBlue) { attendanceConfirmation = it }
+        NotificationSwitch("Cambio en el plan", planChange, lightBlue) { planChange = it }
 
         Divider(Modifier.padding(vertical = 8.dp))
 
         SectionTitle("Otros")
-        SettingSwitch("Actividad sospechosa detectada", suspiciousActivity, lightBlue) { suspiciousActivity = it }
-        SettingSwitch("Verificación en dos pasos", twoFactorAuth, lightBlue) { twoFactorAuth = it }
+        NotificationSwitch("Nuevo grupo creado", newGroup, lightBlue) { newGroup = it }
+        NotificationSwitch("Sugerencias de planes", planSuggestions, lightBlue) { planSuggestions = it }
+        }
     }
-}
 
 
 @Composable
@@ -65,7 +67,7 @@ private fun SectionTitle(title: String) {
 
 
 @Composable
-fun SettingSwitch(
+fun NotificationSwitch(
     title: String,
     checked: Boolean,
     color: Color,
@@ -100,8 +102,8 @@ fun SettingSwitch(
 
 @Preview(showSystemUi = true)
 @Composable
-fun SettingsScreenPreview() {
+fun NotificationsScreenPreview() {
     MaterialTheme {
-        SettingsScreen()
+        NotificationsSection()
     }
 }

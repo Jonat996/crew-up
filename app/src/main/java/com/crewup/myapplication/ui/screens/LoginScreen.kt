@@ -21,6 +21,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.crewup.myapplication.auth.GoogleAuth
 import com.crewup.myapplication.viewmodel.AuthState
 import com.crewup.myapplication.viewmodel.AuthViewModel
+import androidx.compose.ui.res.stringResource
+import com.crewup.myapplication.R
 
 @Composable
 fun LoginScreen(
@@ -28,7 +30,8 @@ fun LoginScreen(
     onEmailLogin: (String, String) -> Unit,
     onEmailRegister: (String, String) -> Unit,
     onGoogleLogin: () -> Unit,
-    onClearError: () -> Unit
+    onClearError: () -> Unit,
+    onNavigateToRegister: () -> Unit
 ) {
     var isRegistering by remember { mutableStateOf(false) }
     val context = LocalContext.current
@@ -44,7 +47,7 @@ Box(modifier = Modifier.fillMaxSize()) {
             .verticalScroll(scrollState),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Header(title = "Iniciar Sesión")
+        Header(title = stringResource(R.string.login_title))
 
         Box(
             modifier = Modifier
@@ -70,11 +73,11 @@ Box(modifier = Modifier.fillMaxSize()) {
             .padding(vertical = 32.dp, horizontal = 0.dp)
 
     ) {
-            Text(text = "¿No tienes una cuenta? ")
+            Text(text = stringResource(R.string.no_account) + " ")
 
-            TextButton(onClick = { isRegistering = !isRegistering }){
+            TextButton(onClick = onNavigateToRegister){
                 Text(
-                    text = "Crea una",
+                    text = stringResource(R.string.create_one),
                     color = Color(0xFF0056B3),
                     fontWeight = FontWeight.SemiBold,
                 )
@@ -91,6 +94,7 @@ fun PreviewLoginScreen(){
         onEmailLogin = { email, pass -> },
         onEmailRegister = {email, pass ->},
         onGoogleLogin = {  },
-        onClearError = {  }
+        onClearError = {  },
+        onNavigateToRegister = {  }
     )
 }

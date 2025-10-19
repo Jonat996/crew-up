@@ -1,0 +1,5014 @@
+========== archivo: ./app/build.gradle.kts ==========
+plugins {
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.compose)
+    id("com.google.gms.google-services")
+}
+
+android {
+    namespace = "com.crewup.myapplication"
+    compileSdk = 36
+
+    defaultConfig {
+        applicationId = "com.crewup.myapplication"
+        minSdk = 26
+        targetSdk = 36
+        versionCode = 1
+        versionName = "1.0"
+
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            isMinifyEnabled = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+    kotlinOptions {
+        jvmTarget = "11"
+    }
+    buildFeatures {
+        compose = true
+    }
+}
+
+dependencies {
+
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.activity.compose)
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.ui.graphics)
+    implementation(libs.androidx.compose.ui.tooling.preview)
+    implementation(libs.androidx.compose.material3)
+    implementation("androidx.compose.material:material-icons-extended")
+    implementation(libs.androidx.compose.animation.core.lint)
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+    debugImplementation(libs.androidx.compose.ui.tooling)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.0")
+    implementation("androidx.navigation:navigation-compose:2.7.5")
+    implementation("com.google.android.material:material:1.12.0")
+    //Recorda datos
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
+    // Import the BoM for the Firebase platform
+    implementation(platform("com.google.firebase:firebase-bom:34.3.0"))
+    // Add the dependency for the Firebase Authentication library
+    // When using the BoM, you don't specify versions in Firebase library dependencies
+    implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-firestore")
+
+    // Credential Manager para Google Sign-In
+    implementation("androidx.credentials:credentials:1.3.0")
+    implementation("androidx.credentials:credentials-play-services-auth:1.3.0")
+    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
+
+    // Facebook SDK
+    implementation("com.facebook.android:facebook-android-sdk:17.0.2")
+    implementation("io.coil-kt:coil-compose:2.6.0")
+}
+
+========== archivo: ./app/google-services.json ==========
+{
+  "project_info": {
+    "project_number": "885733307091",
+    "project_id": "crewup-248e0",
+    "storage_bucket": "crewup-248e0.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:885733307091:android:9e46be837f9961fabcda26",
+        "android_client_info": {
+          "package_name": "com.crewup.myapplication"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "885733307091-9gm33skc6k4s0f3p7ht3e9a227nns2if.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.crewup.myapplication",
+            "certificate_hash": "5985afdfa64b2fe4d1d2718b9aec4536767fb6e0"
+          }
+        },
+        {
+          "client_id": "885733307091-8oeqasptg7s7ll17gi2h3mlf0v2fu9k5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDav74zOCY1JLIFZaoQ2pQO-L9EyUbshK4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "885733307091-8oeqasptg7s7ll17gi2h3mlf0v2fu9k5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
+
+========== archivo: ./app/src/androidTest/java/com/crewup/myapplication/ExampleInstrumentedTest.kt ==========
+package com.crewup.myapplication
+
+import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.ext.junit.runners.AndroidJUnit4
+
+import org.junit.Test
+import org.junit.runner.RunWith
+
+import org.junit.Assert.*
+
+/**
+ * Instrumented test, which will execute on an Android device.
+ *
+ * See [testing documentation](http://d.android.com/tools/testing).
+ */
+@RunWith(AndroidJUnit4::class)
+class ExampleInstrumentedTest {
+    @Test
+    fun useAppContext() {
+        // Context of the app under test.
+        val appContext = InstrumentationRegistry.getInstrumentation().targetContext
+        assertEquals("com.crewup.myapplication", appContext.packageName)
+    }
+}
+
+========== archivo: ./app/src/main/AndroidManifest.xml ==========
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:name=".CrewUpApplication"
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_pizza_logo"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_pizza_logo_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.CrewUp.NoActionBar">
+
+        <!-- Facebook Configuration -->
+        <meta-data android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id"/>
+        <meta-data android:name="com.facebook.sdk.ClientToken"
+            android:value="@string/facebook_client_token"/>
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Facebook Login Activity -->
+        <activity android:name="com.facebook.FacebookActivity"
+            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:label="@string/app_name" />
+
+        <activity
+            android:name="com.facebook.CustomTabActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="@string/fb_login_protocol_scheme" />
+            </intent-filter>
+        </activity>
+
+    </application>
+
+</manifest>
+
+========== archivo: ./app/src/main/java/com/crewup/myapplication/auth/EmailPasswordAuth.kt ==========
+package com.crewup.myapplication.auth
+
+import com.google.firebase.auth.FirebaseAuth
+
+class EmailPasswordAuth(private val auth: FirebaseAuth = FirebaseAuth.getInstance()) {
+
+    fun register(email: String, password: String, onResult: (Boolean, String?) -> Unit) {
+        auth.createUserWithEmailAndPassword(email, password)
+            .addOnCompleteListener { task ->
+                onResult(task.isSuccessful, task.exception?.message)
+            }
+    }
+
+    fun login(email: String, password: String, onResult: (Boolean, String?) -> Unit) {
+        auth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener { task ->
+                onResult(task.isSuccessful, task.exception?.message)
+            }
+    }
+}
+
+
+========== archivo: ./app/src/main/java/com/crewup/myapplication/auth/GoogleAuth.kt ==========
+package com.crewup.myapplication.auth
+
+import android.content.Context
+import android.util.Log
+import androidx.credentials.CredentialManager
+import androidx.credentials.CustomCredential
+import androidx.credentials.GetCredentialRequest
+import androidx.credentials.GetCredentialResponse
+import com.google.android.libraries.identity.googleid.GetGoogleIdOption
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
+import com.crewup.myapplication.R
+import kotlinx.coroutines.tasks.await
+
+class GoogleAuth(private val context: Context) {
+
+    private val auth = FirebaseAuth.getInstance()
+    private val credentialManager = CredentialManager.create(context)
+
+    /**
+     * Inicia sesión con Google usando Credential Manager y Firebase Auth.
+     * Según la documentación oficial de Firebase y Android.
+     */
+    suspend fun signInWithGoogle(): Result<com.google.firebase.auth.FirebaseUser?> {
+        return try {
+            // 1. Obtener el Web Client ID desde strings.xml
+            val webClientId = context.getString(R.string.default_web_client_id)
+            Log.d("GoogleAuth", "Web Client ID: $webClientId")
+            Log.d("GoogleAuth", "Package Name: ${context.packageName}")
+
+            // 2. Configurar la opción de Google ID según la documentación oficial
+            // Primero intentamos sin filtrar cuentas autorizadas
+            val googleIdOption = GetGoogleIdOption.Builder()
+                .setFilterByAuthorizedAccounts(false) // Mostrar todas las cuentas
+                .setServerClientId(webClientId)
+                .setAutoSelectEnabled(false) // Desactivar auto-select para debug
+                .build()
+
+            // 3. Crear la solicitud de credenciales
+            val request = GetCredentialRequest.Builder()
+                .addCredentialOption(googleIdOption)
+                .build()
+
+            Log.d("GoogleAuth", "Solicitando credenciales al Credential Manager...")
+
+            // 4. Obtener las credenciales del usuario
+            val result = credentialManager.getCredential(
+                context = context,
+                request = request
+            )
+
+            Log.d("GoogleAuth", "Credenciales recibidas, procesando...")
+
+            // 5. Manejar la respuesta
+            handleSignIn(result)
+
+        } catch (e: androidx.credentials.exceptions.NoCredentialException) {
+            Log.e("GoogleAuth", "No hay credenciales disponibles. Posibles causas:")
+            Log.e("GoogleAuth", "1. SHA-1 no registrado en Firebase Console")
+            Log.e("GoogleAuth", "2. Google Sign-In no habilitado en Firebase")
+            Log.e("GoogleAuth", "3. Web Client ID incorrecto")
+            Log.e("GoogleAuth", "4. Google Play Services desactualizado")
+            Result.failure(e)
+        } catch (e: Exception) {
+            Log.e("GoogleAuth", "Error durante Google Sign-In: ${e.javaClass.simpleName}", e)
+            Result.failure(e)
+        }
+    }
+
+    /**
+     * Maneja el resultado del sign-in y autentica con Firebase.
+     */
+    private suspend fun handleSignIn(result: GetCredentialResponse): Result<com.google.firebase.auth.FirebaseUser?> {
+        return try {
+            val credential = result.credential
+
+            // Verificar que sea una credencial de Google
+            if (credential is CustomCredential &&
+                credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
+
+                // Extraer el token de Google
+                val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
+                val idToken = googleIdTokenCredential.idToken
+
+                Log.d("GoogleAuth", "Google ID Token obtenido exitosamente")
+                Log.d("GoogleAuth", "Usuario: ${googleIdTokenCredential.displayName}")
+
+                // Autenticar con Firebase usando el token de Google
+                val firebaseCredential = GoogleAuthProvider.getCredential(idToken, null)
+                val authResult = auth.signInWithCredential(firebaseCredential).await()
+
+                Log.d("GoogleAuth", "Firebase Auth exitoso: ${authResult.user?.displayName}")
+                Result.success(authResult.user)
+            } else {
+                Log.e("GoogleAuth", "Tipo de credencial inesperado: ${credential.type}")
+                Result.failure(Exception("Tipo de credencial inválido"))
+            }
+        } catch (e: Exception) {
+            Log.e("GoogleAuth", "Error al procesar credenciales", e)
+            Result.failure(e)
+        }
+    }
+}
+
+
+========== archivo: ./app/src/main/java/com/crewup/myapplication/CrewUpApplication.kt ==========
+package com.crewup.myapplication
+
+import android.app.Application
+import com.facebook.FacebookSdk
+import com.facebook.appevents.AppEventsLogger
+
+class CrewUpApplication : Application() {
+
+    override fun onCreate() {
+        super.onCreate()
+
+        // Inicializar Facebook SDK
+        FacebookSdk.sdkInitialize(applicationContext)
+        AppEventsLogger.activateApp(this)
+    }
+}
+
+========== archivo: ./app/src/main/java/com/crewup/myapplication/MainActivity.kt ==========
+package com.crewup.myapplication
+
+import android.content.Intent
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
+import androidx.compose.runtime.*
+import androidx.lifecycle.lifecycleScope
+import com.crewup.myapplication.auth.GoogleAuth
+import com.crewup.myapplication.ui.navigation.AppNavigation
+import com.crewup.myapplication.ui.theme.CrewUpTheme
+import com.crewup.myapplication.viewmodel.AuthViewModel
+import kotlinx.coroutines.launch
+
+class MainActivity : ComponentActivity() {
+
+    private lateinit var googleAuth: GoogleAuth
+    private val authViewModel: AuthViewModel by viewModels()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        googleAuth = GoogleAuth(this)
+
+        setContent {
+            CrewUpTheme {
+                val authState by authViewModel.authState.collectAsState()
+                AppNavigation(
+                    authState = authState,
+                    authViewModel = authViewModel,
+                    googleAuth = googleAuth
+                )
+
+
+            }
+        }
+
+    }
+}
+
+========== archivo: ./app/src/main/java/com/crewup/myapplication/ui/components/BackButton.kt ==========
+package com.example.qta_jw_3.ui.components
+
+import androidx.compose.foundation.clickable
+import androidx.compose.material3.Icon
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ChevronLeft
+
+@Composable
+fun BackIcon(
+    navController: NavController,
+    tint: Color = Color.White,
+    size: Int = 32
+) {
+    Icon(
+        imageVector = Icons.Default.ChevronLeft,
+        contentDescription = "Volver",
+        tint = tint,
+        modifier = Modifier
+            .size(size.dp)
+            .clickable { navController.popBackStack() }
+    )
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF1976D2)
+@Composable
+fun BackIconPreview() {
+    val navController = rememberNavController()
+    BackIcon(navController = navController)
+}
+
+
+========== archivo: ./app/src/main/java/com/crewup/myapplication/ui/components/CountryData.kt ==========
+package com.crewup.myapplication.ui.components
+
+// ----------------------
+// MODELO DE DATOS
+// ----------------------
+data class CountryStructure(
+    val name: String,
+    val code: String,
+    val flagUrl: String,
+    val cities: List<String>
+)
+
+// ----------------------
+// LISTA DE PAÍSES
+// ----------------------
+val countriesList = listOf(
+    CountryStructure(
+        name = "Colombia",
+        code = "+57",
+        flagUrl = "https://flagcdn.com/w320/co.png",
+        cities = listOf("Bogotá D.C.", "Medellín", "Cali", "Barranquilla")
+    ),
+    CountryStructure(
+        name = "México",
+        code = "+52",
+        flagUrl = "https://flagcdn.com/w320/mx.png",
+        cities = listOf("Ciudad de México", "Guadalajara", "Monterrey")
+    ),
+    CountryStructure(
+        name = "Argentina",
+        code = "+54",
+        flagUrl = "https://flagcdn.com/w320/ar.png",
+        cities = listOf("Buenos Aires", "Córdoba", "Rosario")
+    ),
+    CountryStructure(name = "Peru",
+    code = "+12",
+    flagUrl = "https://flagcdn.com/w320/ar.png",
+    cities = listOf("lima")
+)
+)
+
+
+========== archivo: ./app/src/main/java/com/crewup/myapplication/ui/components/EditProfileSection.kt ==========
+package com.crewup.myapplication.ui.components
+
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.crewup.myapplication.ui.components.forminputs.CityInput
+import com.crewup.myapplication.ui.components.forminputs.EmailInput
+import com.crewup.myapplication.ui.components.forminputs.GenderInput
+import com.crewup.myapplication.ui.components.forminputs.NameAndLastNameInput
+import com.crewup.myapplication.ui.components.forminputs.OccupationInput
+
+@Composable
+fun EditProfileSection(){
+    var name by remember { mutableStateOf("Jonatan") }
+    var lastName by remember { mutableStateOf("Urrutia") }
+    var email by remember { mutableStateOf("jonatan@example.com") }
+    var occupation by remember { mutableStateOf("Android Developer") }
+    var gender by remember { mutableStateOf("Masculino") }
+
+    var selectedCountry by remember { mutableStateOf(countriesList[0]) }
+    var selectedCity by remember { mutableStateOf(selectedCountry.cities.first()) }
+    var expandedCity by remember { mutableStateOf(false) }
+
+
+    Column(modifier = Modifier.padding(16.dp)) {
+        NameAndLastNameInput(
+            name = name,
+            onNameChange = { name = it },
+            lastName = lastName,
+            onLastNameChange = { lastName = it }
+        )
+        EmailInput(
+            email = email,
+            onEmailChange = { email = it },
+            onClearError = {}
+        )
+        CityInput(
+            selectedCity = selectedCity,
+            onCitySelected = { selectedCity = it },
+            expandedCity = expandedCity,
+            onExpandedCityChange = { expandedCity = it },
+            selectedCountry = selectedCountry,
+            onCountrySelected = {
+                selectedCountry = it
+                selectedCity = it.cities.first()
+            },
+            countries = countriesList
+        )
+        OccupationInput(
+            occupation = occupation,
+            onOccupationChange = { occupation = it }
+        )
+        GenderInput(
+            gender = gender,
+            onGenderChange = { gender = it }
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(
+            onClick = { /* Handle save changes */ },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp),
+            shape = RoundedCornerShape(10.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFF0056B3),
+                contentColor = Color.White
+            )
+        ) {
+            Text("Guardar cambios", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+        }
+    }
+}
+
+
+========== archivo: ./app/src/main/java/com/crewup/myapplication/ui/components/Form.kt ==========
+package com.crewup.myapplication.ui.components
+
+
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.crewup.myapplication.viewmodel.AuthState
+import com.crewup.myapplication.R
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.Icon
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.zIndex
+
+
+@Composable
+fun Form(
+    authState: AuthState,
+    isRegistering: Boolean,
+    onEmailLogin: (String, String) -> Unit,
+    onEmailRegister: (String, String) -> Unit,
+    onGoogleLogin: () -> Unit,
+    onClearError: () -> Unit,
+    modifier : Modifier = Modifier
+) {
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var showPassword by remember { mutableStateOf(false) }
+    var rememberData by remember { mutableStateOf(false) }
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 10.dp)
+            .shadow(8.dp, shape = RoundedCornerShape(10.dp))
+            .zIndex(1f),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        shape = RoundedCornerShape(10.dp)
+    ) {
+        Column(
+            modifier = modifier
+                .padding(horizontal = 24.dp, vertical = 24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            if (!isRegistering) {
+                OutlinedButton(
+                    onClick = onGoogleLogin,
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    shape = RoundedCornerShape(10.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        contentColor = Color.Black,
+                        containerColor = Color.White
+                    )
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_google),
+                        contentDescription = "Icono de Google",
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Continúa con Google")
+                }
+                Spacer(Modifier.height(8.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Divider(Modifier.weight(1f), color = Color.LightGray)
+                    Text("o", Modifier.padding(horizontal = 8.dp), color = Color.Gray)
+                    Divider(Modifier.weight(1f), color = Color.LightGray)
+                }
+
+                // Campo de Correo
+                OutlinedTextField(
+                    value = email,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = Color.Gray,
+                        unfocusedBorderColor = Color.Gray,
+                        errorBorderColor = Color.Red
+                    ),
+                    onValueChange = {
+                        email = it
+                        if (authState.error != null) onClearError()
+                    },
+                    label = {
+                        Text(
+                            "Ingresa tu correo",
+                            color = Color.Black,
+                        )
+                    },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 2.dp),
+                    shape = RoundedCornerShape(10.dp),
+                )
+
+                Spacer(Modifier.height(25.dp))
+
+                // Campo de Contraseña
+                OutlinedTextField(
+                    value = password,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = Color.Gray,
+                        unfocusedBorderColor = Color.Gray,
+                        errorBorderColor = Color.Red
+                    ),
+                    onValueChange = {
+                        password = it
+                        if (authState.error != null) onClearError()
+                    },
+                    label = {
+                        Text(
+                            "Ingresa tu contraseña",
+                            color = Color.Black,
+                        )
+                    },
+                    visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 2.dp),
+                    shape = RoundedCornerShape(10.dp),
+                    trailingIcon = {
+                        val icon = if (showPassword) {
+                            Icons.Filled.VisibilityOff
+                        } else {
+                            Icons.Filled.Visibility
+                        }
+
+                        Icon(
+                            imageVector = icon,
+                            contentDescription = "Mostrar contraseña",
+                            modifier = Modifier.clickable { showPassword = !showPassword }
+                        )
+                    }
+                )
+
+
+                if (authState.error != null) {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .offset(y = (-50).dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer),
+
+                        ) {
+                        Text(
+                            text = authState.error,
+                            modifier = Modifier.padding(16.dp),
+                            color = MaterialTheme.colorScheme.onErrorContainer
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(1.dp))
+                }
+
+                // 4. Recordar datos y Olvidaste tu contraseña
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Checkbox(
+                            checked = rememberData,
+                            onCheckedChange = { rememberData = it },
+                            colors = CheckboxDefaults.colors(
+                                checkedColor = Color(0xFF0056B3),
+                                uncheckedColor = Color.Gray,
+                                checkmarkColor = Color.White
+                            )
+                        )
+                        Text("Recordar datos", fontSize = 14.sp)
+                    }
+                    TextButton(onClick = { /* TODO: Recuperar contraseña */ }) {
+                        Text(
+                            text = "¿Olvidaste tu contraseña?",
+                            color = Color(0xFF0056B3),
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 12.sp
+                        )
+                    }
+                }
+
+                // 5. Botón iniciar sesion
+                Button(
+                    onClick = {
+                        if (isRegistering) {
+                            // Si está registrando, llama a la función de registro
+                            onEmailRegister(email, password)
+                        } else {
+                            onEmailLogin(email, password)
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp)
+                        .padding(vertical = 4.dp),
+                    shape = RoundedCornerShape(10.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF0056B3),
+                        contentColor = Color.White
+                    ),
+                    enabled = !authState.isLoading &&
+                            email.isNotBlank() &&
+                            password.isNotBlank()
+                ) {
+                    if (authState.isLoading) {
+                        CircularProgressIndicator(modifier = Modifier.size(16.dp))
+                    } else {
+                        Text("Iniciar Sesión", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Preview (showSystemUi = true, showBackground = true)
+@Composable
+fun PreviewForm(){
+    MaterialTheme {
+        Form(
+            authState = AuthState(),
+            isRegistering = false,
+            onEmailLogin = { email, pass -> },
+            onEmailRegister = { email, pass -> },
+            onGoogleLogin = {},
+            onClearError = {}
+        )
+    }
+}
+
+========== archivo: ./app/src/main/java/com/crewup/myapplication/ui/components/forminputs/CityInput.kt ==========
+package com.crewup.myapplication.ui.components.forminputs
+
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Divider
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.crewup.myapplication.ui.components.Country
+import com.crewup.myapplication.ui.components.CountryStructure
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CityInput(
+    selectedCity: String,
+    onCitySelected: (String) -> Unit,
+    expandedCity: Boolean,
+    onExpandedCityChange: (Boolean) -> Unit,
+    selectedCountry: CountryStructure,
+    onCountrySelected: (CountryStructure) -> Unit,
+    countries: List<CountryStructure>,
+    modifier: Modifier = Modifier
+) {
+    ExposedDropdownMenuBox(
+        expanded = expandedCity,
+        onExpandedChange = onExpandedCityChange,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(top = 8.dp)
+    ) {
+        OutlinedTextField(
+            value = selectedCity,
+            onValueChange = {},
+            readOnly = true,
+            label = { Text("Ciudad") },
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedCity) },
+            modifier = Modifier
+                .menuAnchor(MenuAnchorType.PrimaryNotEditable, enabled = true)
+                .fillMaxWidth()
+                .height(60.dp),
+            shape = RoundedCornerShape(10.dp),
+            colors = OutlinedTextFieldDefaults.colors(
+                unfocusedContainerColor = Color.Transparent,
+                focusedContainerColor = Color.Transparent,
+                unfocusedBorderColor = Color.LightGray,
+                focusedBorderColor = MaterialTheme.colorScheme.primary
+            )
+        )
+
+        ExposedDropdownMenu(
+            expanded = expandedCity,
+            onDismissRequest = { onExpandedCityChange(false) }
+        ) {
+            // 🔹 Primero las ciudades del país seleccionado
+            selectedCountry.cities.forEach { city ->
+                DropdownMenuItem(
+                    text = { Text(city) },
+                    onClick = {
+                        onCitySelected(city)
+                        onExpandedCityChange(false)
+                    }
+                )
+            }
+
+            // 🔹 Separador visual (opcional)
+            Divider()
+
+            // 🔹 Luego las ciudades de los demás países
+            countries
+                .filter { it != selectedCountry }
+                .forEach { country ->
+                    country.cities.forEach { city ->
+                        DropdownMenuItem(
+                            text = { Text("$city (${country.name})") },
+                            onClick = {
+                                onCitySelected(city)
+                                onCountrySelected(country)
+                                onExpandedCityChange(false)
+                            }
+                        )
+                    }
+                }
+        }
+    }
+}
+
+
+========== archivo: ./app/src/main/java/com/crewup/myapplication/ui/components/forminputs/CountryAndPhoneInput.kt ==========
+package com.crewup.myapplication.ui.components.forminputs
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
+import com.crewup.myapplication.ui.components.Country
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CountryAndPhoneInput(
+    countries: List<Country>,
+    selectedCountry: Country,
+    onCountrySelected: (Country) -> Unit,
+    expandedCountry: Boolean,
+    onExpandedCountryChange: (Boolean) -> Unit,
+    phoneNumber: String,
+    onPhoneNumberChange: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(top = 4.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        ExposedDropdownMenuBox(
+            expanded = expandedCountry,
+            onExpandedChange = onExpandedCountryChange,
+            modifier = Modifier
+                .weight(0.45f)
+                .height(56.dp)
+        ) {
+            OutlinedTextField(
+                value = selectedCountry.code,
+                onValueChange = {},
+                readOnly = true,
+                textStyle = LocalTextStyle.current.copy(fontSize = 15.sp),
+                leadingIcon = {
+                    AsyncImage(
+                        model = selectedCountry.flagUrl,
+                        contentDescription = selectedCountry.name,
+                        modifier = Modifier
+                            .size(22.dp)
+                            .clip(RoundedCornerShape(3.dp))
+                    )
+                },
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedCountry)
+                },
+                modifier = Modifier
+                    .menuAnchor(MenuAnchorType.PrimaryNotEditable, enabled = true)
+                    .fillMaxWidth(),
+                shape = RoundedCornerShape(5.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    unfocusedContainerColor = Color.Transparent,
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedBorderColor = Color.LightGray,
+                    focusedBorderColor = MaterialTheme.colorScheme.primary
+                )
+            )
+
+            ExposedDropdownMenu(
+                expanded = expandedCountry,
+                onDismissRequest = { onExpandedCountryChange(false) }
+            ) {
+                countries.forEach { country ->
+                    DropdownMenuItem(
+                        text = { Text("${country.name} (${country.code})") },
+                        onClick = {
+                            onCountrySelected(country)
+                        }
+                    )
+                }
+            }
+        }
+
+        OutlinedTextField(
+            value = phoneNumber,
+            onValueChange = {
+                if (it.all { char -> char.isDigit() }) {
+                    onPhoneNumberChange(it)
+                }
+            },
+            label = { Text("Número") },
+            singleLine = true,
+            modifier = Modifier
+                .weight(0.65f)
+                .height(60.dp),
+            shape = RoundedCornerShape(10.dp),
+            colors = OutlinedTextFieldDefaults.colors(
+                unfocusedContainerColor = Color.Transparent,
+                focusedContainerColor = Color.Transparent,
+                unfocusedBorderColor = Color.LightGray,
+                focusedBorderColor = MaterialTheme.colorScheme.primary
+            ),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            textStyle = LocalTextStyle.current.copy(
+                fontSize = 17.sp,
+                lineHeight = 22.sp
+            )
+        )
+    }
+}
+
+
+========== archivo: ./app/src/main/java/com/crewup/myapplication/ui/components/forminputs/EmailInput.kt ==========
+package com.crewup.myapplication.ui.components.forminputs
+
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
+
+@Composable
+fun EmailInput(
+    email: String,
+    onEmailChange: (String) -> Unit,
+    onClearError: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    OutlinedTextField(
+        value = email,
+        onValueChange = {
+            onEmailChange(it)
+            onClearError()
+        },
+        label = { Text("Ingresa tu correo") },
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 2.dp),
+        shape = RoundedCornerShape(10.dp),
+    )
+}
+
+
+========== archivo: ./app/src/main/java/com/crewup/myapplication/ui/components/forminputs/GenderInput.kt ==========
+package com.crewup.myapplication.ui.components.forminputs
+
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun GenderInput(
+    gender: String,
+    onGenderChange: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val genderOptions = listOf("Masculino", "Femenino", "Otro", "Prefiero no decirlo")
+    var expanded by remember { mutableStateOf(false) }
+
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = { expanded = !expanded },
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp)
+    ) {
+        OutlinedTextField(
+            value = gender,
+            onValueChange = {},
+            readOnly = true,
+            label = { Text("Género") },
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+            modifier = Modifier
+                .menuAnchor()
+                .fillMaxWidth(),
+            shape = RoundedCornerShape(10.dp)
+        )
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            genderOptions.forEach { selectionOption ->
+                DropdownMenuItem(
+                    text = { Text(selectionOption) },
+                    onClick = {
+                        onGenderChange(selectionOption)
+                        expanded = false
+                    }
+                )
+            }
+        }
+    }
+}
+
+
+========== archivo: ./app/src/main/java/com/crewup/myapplication/ui/components/forminputs/NameAndLastNameInput.kt ==========
+package com.crewup.myapplication.ui.components.forminputs
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+
+@Composable
+fun NameAndLastNameInput(
+    name: String,
+    onNameChange: (String) -> Unit,
+    lastName: String,
+    onLastNameChange: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        OutlinedTextField(
+            value = name,
+            onValueChange = onNameChange,
+            label = { Text("Nombre") },
+            modifier = Modifier.weight(1f),
+            shape = RoundedCornerShape(10.dp)
+
+        )
+        OutlinedTextField(
+            value = lastName,
+            onValueChange = onLastNameChange,
+            label = { Text("Apellido") },
+            modifier = Modifier.weight(1f),
+            shape = RoundedCornerShape(10.dp)
+        )
+    }
+}
+
+========== archivo: ./app/src/main/java/com/crewup/myapplication/ui/components/forminputs/OccupationInput.kt ==========
+package com.crewup.myapplication.ui.components.forminputs
+
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+
+@Composable
+fun OccupationInput(
+    occupation: String,
+    onOccupationChange: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    OutlinedTextField(
+        value = occupation,
+        onValueChange = onOccupationChange,
+        label = { Text("Ocupación") },
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        shape = RoundedCornerShape(10.dp)
+    )
+}
+
+
+========== archivo: ./app/src/main/java/com/crewup/myapplication/ui/components/forminputs/PasswordInput.kt ==========
+package com.crewup.myapplication.ui.components.forminputs
+
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.unit.dp
+
+@Composable
+fun PasswordInput(
+    password: String,
+    onPasswordChange: (String) -> Unit,
+    label: String,
+    onClearError: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var showPassword by remember { mutableStateOf(false) }
+
+    OutlinedTextField(
+        value = password,
+        onValueChange = {
+            onPasswordChange(it)
+            onClearError()
+        },
+        label = { Text(label) },
+        visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
+        trailingIcon = {
+            val icon = if (showPassword) Icons.Filled.VisibilityOff else Icons.Filled.Visibility
+            Icon(
+                imageVector = icon,
+                contentDescription = "Mostrar contraseña",
+                modifier = Modifier.clickable { showPassword = !showPassword }
+            )
+        },
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 2.dp),
+        shape = RoundedCornerShape(10.dp)
+    )
+}
+
+
+========== archivo: ./app/src/main/java/com/crewup/myapplication/ui/components/FormRegister.kt ==========
+package com.crewup.myapplication.ui.components
+
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
+import coil.compose.AsyncImage
+import com.crewup.myapplication.viewmodel.AuthState
+
+// ----------------------
+// MODELO DE DATOS
+// ----------------------
+data class Country(
+    val name: String,
+    val code: String,
+    val flagUrl: String,
+    val cities: List<String>
+)
+
+
+
+
+// ----------------------
+// LISTA DE PAÍSES
+// ----------------------
+val countries = listOf(
+    Country(
+        name = "Colombia",
+        code = "+57",
+        flagUrl = "https://flagcdn.com/w320/co.png",
+        cities = listOf("Bogotá D.C.", "Medellín", "Cali", "Barranquilla")
+    ),
+    Country(
+        name = "México",
+        code = "+52",
+        flagUrl = "https://flagcdn.com/w320/mx.png",
+        cities = listOf("Ciudad de México", "Guadalajara", "Monterrey")
+    ),
+    Country(
+        name = "Argentina",
+        code = "+54",
+        flagUrl = "https://flagcdn.com/w320/ar.png",
+        cities = listOf("Buenos Aires", "Córdoba", "Rosario")
+    ),
+    Country(name = "Peru",
+    code = "+12",
+    flagUrl = "https://flagcdn.com/w320/ar.png",
+    cities = listOf("lima")
+)
+)
+
+// ----------------------
+// FORMULARIO
+// ----------------------
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun FormRegister(
+    authState: AuthState,
+    isRegistering: Boolean,
+    onEmailRegister: (String, String) -> Unit,
+    onGoogleLogin: () -> Unit,
+    onClearError: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var name by remember { mutableStateOf("") }
+    var lastName by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var confirmPassword by remember { mutableStateOf("") }
+    var showPassword by remember { mutableStateOf(false) }
+
+    // Estados nuevos para país, número y ciudad
+    var selectedCountry by remember { mutableStateOf(countries[0]) }
+    var expandedCountry by remember { mutableStateOf(false) }
+    var phoneNumber by remember { mutableStateOf("") }
+
+    var selectedCity by remember { mutableStateOf(selectedCountry.cities.first()) }
+    var expandedCity by remember { mutableStateOf(false) }
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(10.dp)
+            .shadow(8.dp, shape = RoundedCornerShape(10.dp))
+            .zIndex(1f),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        shape = RoundedCornerShape(10.dp)
+    ) {
+        Column(
+            modifier = modifier.padding(horizontal = 14.dp)
+        ) {
+            Spacer(Modifier.height(8.dp))
+
+            // Campo nombre y apellido
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                OutlinedTextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    label = { Text("Nombre") },
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(10.dp)
+
+                )
+                OutlinedTextField(
+                    value = lastName,
+                    onValueChange = { lastName = it },
+                    label = { Text("Apellido") },
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(10.dp)
+                )
+            }
+
+            // Campo correo
+            OutlinedTextField(
+                value = email,
+                onValueChange = {
+                    email = it
+                    if (authState.error != null) onClearError()
+                },
+                label = { Text("Ingresa tu correo") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 2.dp),
+                shape = RoundedCornerShape(10.dp),
+            )
+
+            // Campo contraseña
+            OutlinedTextField(
+                value = password,
+                onValueChange = {
+                    password = it
+                    if (authState.error != null) onClearError()
+                },
+                label = { Text("Ingresa tu contraseña") },
+                visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
+                trailingIcon = {
+                    val icon = if (showPassword) Icons.Filled.VisibilityOff else Icons.Filled.Visibility
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = "Mostrar contraseña",
+                        modifier = Modifier.clickable { showPassword = !showPassword }
+                    )
+                },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 2.dp),
+                shape = RoundedCornerShape(10.dp)
+            )
+
+            // Campo confirmar contraseña
+            OutlinedTextField(
+                value = confirmPassword,
+                onValueChange = { confirmPassword = it },
+                label = { Text("Confirmar tu contraseña") },
+                visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
+                trailingIcon = {
+                    val icon = if (showPassword) Icons.Filled.VisibilityOff else Icons.Filled.Visibility
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = "Mostrar contraseña",
+                        modifier = Modifier.clickable { showPassword = !showPassword }
+                    )
+                },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 2.dp),
+                shape = RoundedCornerShape(10.dp)
+            )
+
+
+            // CAMPOS NUEVOS: PAÍS / TELÉFONO / CIUDAD
+
+            Spacer(Modifier.height(8.dp))
+
+
+
+            // Selector de país y número
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 4.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Selector de país (indicativo)
+                ExposedDropdownMenuBox(
+                    expanded = expandedCountry,
+                    onExpandedChange = { expandedCountry = !expandedCountry },
+                    modifier = Modifier
+                        .weight(0.45f) // más espacio para mostrar bandera y código
+                        .height(56.dp)
+                ) {
+                    OutlinedTextField(
+                        value = selectedCountry.code,
+                        onValueChange = {},
+                        readOnly = true,
+                        textStyle = LocalTextStyle.current.copy(fontSize = 15.sp),
+                        leadingIcon = {
+                            AsyncImage(
+                                model = selectedCountry.flagUrl,
+                                contentDescription = selectedCountry.name,
+                                modifier = Modifier
+                                    .size(22.dp)
+                                    .clip(RoundedCornerShape(3.dp))
+                            )
+                        },
+                        trailingIcon = {
+                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedCountry)
+                        },
+                        modifier = Modifier
+                            .menuAnchor(MenuAnchorType.PrimaryNotEditable, enabled = true)
+                            .fillMaxWidth(),
+                        shape = RoundedCornerShape(5.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            unfocusedContainerColor = Color.Transparent,
+                            focusedContainerColor = Color.Transparent,
+                            unfocusedBorderColor = Color.LightGray,
+                            focusedBorderColor = MaterialTheme.colorScheme.primary
+                        )
+                    )
+
+                    ExposedDropdownMenu(
+                        expanded = expandedCountry,
+                        onDismissRequest = { expandedCountry = false }
+                    ) {
+                        countries.forEach { country ->
+                            DropdownMenuItem(
+                                text = { Text("${country.name} (${country.code})") },
+                                onClick = {
+                                    selectedCountry = country
+                                    selectedCity = country.cities.first()
+                                    expandedCountry = false
+                                }
+                            )
+                        }
+                    }
+                }
+
+                // Campo de número
+                OutlinedTextField(
+                    value = phoneNumber,
+                    onValueChange = { input ->
+                        // 🔹 Solo permite dígitos numéricos
+                        if (input.all { it.isDigit() }) {
+                            phoneNumber = input
+                        }
+                    },
+                    label = { Text("Número") },
+                    singleLine = true,
+                    modifier = Modifier
+                        .weight(0.65f)
+                        .height(60.dp), // 🔹 un poco más alto para dar aire
+                    shape = RoundedCornerShape(10.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        unfocusedContainerColor = Color.Transparent,
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedBorderColor = Color.LightGray,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary
+                    ),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), // 🔹 solo números
+                    textStyle = LocalTextStyle.current.copy(
+                        fontSize = 17.sp, // 🔹 tamaño equilibrado
+                        lineHeight = 22.sp // 🔹 más espacio interno vertical
+                    )
+                )
+
+
+
+            }
+
+
+
+
+
+
+
+            // Campo de ciudad
+            ExposedDropdownMenuBox(
+                expanded = expandedCity,
+                onExpandedChange = { expandedCity = !expandedCity },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp)
+            ) { OutlinedTextField(
+                    value = selectedCity,
+            onValueChange = {},
+            readOnly = true,
+            label = { Text("Ciudad") },
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedCity) },
+            modifier = Modifier
+                .menuAnchor(MenuAnchorType.PrimaryNotEditable, enabled = true)
+                .fillMaxWidth()
+                .height(60.dp),
+            shape = RoundedCornerShape(10.dp),
+            colors = OutlinedTextFieldDefaults.colors(
+                unfocusedContainerColor = Color.Transparent,
+                focusedContainerColor = Color.Transparent,
+                unfocusedBorderColor = Color.LightGray,
+                focusedBorderColor = MaterialTheme.colorScheme.primary
+            )
+            )
+
+
+            ExposedDropdownMenu(
+                    expanded = expandedCity,
+                    onDismissRequest = { expandedCity = false }
+                ) {
+                    // 🔹 Primero las ciudades del país seleccionado
+                    selectedCountry.cities.forEach { city ->
+                        DropdownMenuItem(
+                            text = { Text(city) },
+                            onClick = {
+                                selectedCity = city
+                                expandedCity = false
+                            }
+                        )
+                    }
+
+                    // 🔹 Separador visual (opcional)
+                    Divider()
+
+                    // 🔹 Luego las ciudades de los demás países
+                    countries
+                        .filter { it != selectedCountry }
+                        .forEach { country ->
+                            country.cities.forEach { city ->
+                                DropdownMenuItem(
+                                    text = { Text("${city} (${country.name})") },
+                                    onClick = {
+                                        selectedCity = city
+                                        selectedCountry = country
+                                        expandedCity = false
+                                    }
+                                )
+                            }
+                        }
+                }
+            }
+
+
+            Spacer(Modifier.height(8.dp))
+
+            // Mostrar error
+            if (authState.error != null) {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)
+                ) {
+                    Text(
+                        text = authState.error,
+                        modifier = Modifier.padding(16.dp),
+                        color = MaterialTheme.colorScheme.onErrorContainer
+                    )
+                }
+            }
+
+            // Botón Registro
+            Button(
+                onClick = { onEmailRegister(email, password) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
+                    .padding(vertical = 4.dp),
+                shape = RoundedCornerShape(10.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF0056B3),
+                    contentColor = Color.White
+                )
+            ) {
+                Text("Registrar", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+            }
+        }
+    }
+}
+
+@Preview(showSystemUi = true, showBackground = true)
+@Composable
+fun PreviewFormRegister() {
+    MaterialTheme {
+        FormRegister(
+            authState = AuthState(),
+            isRegistering = false,
+            onEmailRegister = { _, _ -> },
+            onGoogleLogin = {},
+            onClearError = {}
+        )
+    }
+}
+
+
+========== archivo: ./app/src/main/java/com/crewup/myapplication/ui/components/header/HeaderBase.kt ==========
+package com.crewup.myapplication.ui.components.header
+
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ChevronLeft
+import androidx.compose.material3.Icon
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import com.crewup.myapplication.R
+import com.example.qta_jw_3.ui.components.BackIcon
+
+@Composable
+fun HeaderBase(
+    navController: NavController? = null,
+    content: @Composable ColumnScope.() -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(300.dp),
+        contentAlignment = Alignment.TopCenter
+    ) {
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .background(Color(0xFF0056B3))
+        )
+        Image(
+            painter = painterResource(id = R.drawable.dots),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .matchParentSize()
+                .graphicsLayer { alpha = 0.8f }
+        )
+
+        if (navController != null) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .padding(start = 16.dp, top = 16.dp)
+            ) {
+                BackIcon(navController = navController, size = 32, tint = Color.White)
+            }
+        }
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 60.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            content = content
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewHeaderBase() {
+    val navController = rememberNavController()
+    HeaderBase(navController = navController) { }
+}
+
+
+========== archivo: ./app/src/main/java/com/crewup/myapplication/ui/components/header/HeaderLogo.kt ==========
+package com.crewup.myapplication.ui.components.header
+
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.crewup.myapplication.R
+
+@Composable
+fun HeaderLogo(title: String) {
+    HeaderBase {
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(vertical = 5.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_pizza_logo),
+                contentDescription = "Logo CrewUp",
+                modifier = Modifier
+                    .size(210.dp)
+            )
+
+
+            Text(
+                text = title,
+                fontSize = 34.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White,
+                modifier = Modifier.padding(bottom = 40.dp)
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun PreviewHeaderLogo() {
+    HeaderLogo(title = "CrewUp")
+}
+
+
+========== archivo: ./app/src/main/java/com/crewup/myapplication/ui/components/header/HeaderUserInfo.kt ==========
+package com.crewup.myapplication.ui.components.header
+
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.crewup.myapplication.viewmodel.AuthViewModel
+
+@Composable
+fun HeaderUserInfo(
+    authViewModel: AuthViewModel = viewModel()
+) {
+    val authState by authViewModel.authState.collectAsState()
+    val user = authState.user
+
+    HeaderBase {
+        if (user != null) {
+            HeaderUserPhoto(
+                title = user.displayName ?: "Sin nombre"
+            )
+            // TODO: Ocupación y localización deben ser obtenidos desde tu base de datos de perfil de usuario
+            Text(text = "Ocupación", color = Color.White.copy(alpha = 0.8f))
+            Text(text = "Localización", color = Color.White.copy(alpha = 0.8f))
+        }
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun HeaderUserInfoPreview() {
+    HeaderUserInfo()
+}
+
+
+========== archivo: ./app/src/main/java/com/crewup/myapplication/ui/components/header/HeaderUserPhoto.kt ==========
+package com.crewup.myapplication.ui.components.header
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
+import com.crewup.myapplication.R
+import com.crewup.myapplication.viewmodel.AuthViewModel
+
+@Composable
+fun HeaderUserPhoto(title: String, authViewModel: AuthViewModel = viewModel()) {
+
+    val authState by authViewModel.authState.collectAsState()
+    val user = authState.user
+    val photoUrl =user?.photoUrl ?: "undefined"
+
+    HeaderBase {
+        if (photoUrl == "undefined") {
+            Image(
+                painter = painterResource(id = R.drawable.ic_pizza_logo),
+                contentDescription = "Logo por defecto",
+                modifier = Modifier.size(90.dp)
+            )
+        } else {
+            AsyncImage(
+                model = photoUrl,
+                contentDescription = "Foto de perfil",
+                modifier = Modifier.size(90.dp).clip(CircleShape)
+            )
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = title,
+            fontSize = 22.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.White
+        )
+    }
+}
+
+@Preview
+@Composable
+fun previewHeaderUserPhoto(){
+    HeaderUserPhoto(title = "Juan Monroy")
+}
+
+========== archivo: ./app/src/main/java/com/crewup/myapplication/ui/components/Header.kt ==========
+package com.crewup.myapplication.ui.components
+
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.crewup.myapplication.R
+
+@Composable
+fun Header(title: String) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(300.dp)
+            .background(Color(0xFF0056B3)),
+        contentAlignment = Alignment.TopCenter
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_pizza_logo),
+                contentDescription = "Logo CrewUp",
+                modifier = Modifier
+                    .size(210.dp)
+
+            )
+            Spacer(modifier = Modifier.height(1.dp))
+
+            Text(
+                text = title,
+                fontSize = 34.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White,
+                modifier = Modifier.padding(bottom = 50.dp)
+
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun HeaderPreview() {
+    Header(title = "CrewUp")
+}
+
+
+
+========== archivo: ./app/src/main/java/com/crewup/myapplication/ui/components/Inputselector.kt ==========
+package com.crewup.myapplication.ui.components
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.tooling.preview.Preview
+
+
+fun Inputselector (
+    cities: List<String>,
+    onCitySelected: (String) -> Unit
+){
+
+
+}
+
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewCitySelector() {
+
+}
+
+========== archivo: ./app/src/main/java/com/crewup/myapplication/ui/components/NotificationsButtoms.kt ==========
+package com.crewup.myapplication.ui.screens
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun NotificationsSection() {
+    var generalNotification by remember { mutableStateOf(true) }
+    var sound by remember { mutableStateOf(false) }
+    var vibrate by remember { mutableStateOf(true) }
+
+    var appUpdates by remember { mutableStateOf(false) }
+    var planReminder by remember { mutableStateOf(true) }
+    var attendanceConfirmation by remember { mutableStateOf(false) }
+    var planChange by remember { mutableStateOf(false) }
+
+    var newGroup by remember { mutableStateOf(false) }
+    var planSuggestions by remember { mutableStateOf(true) }
+
+    val lightBlue = Color(0xFF64B5F6)
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 20.dp, vertical = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(5.dp)
+    ) {
+        SectionTitle("Común")
+        NotificationSwitch("Notificación general", generalNotification, lightBlue) { generalNotification = it }
+        NotificationSwitch("Sonido", sound, lightBlue) { sound = it }
+        NotificationSwitch("Vibrar", vibrate, lightBlue) { vibrate = it }
+
+        Divider(Modifier.padding(vertical = 8.dp))
+
+        SectionTitle("Actualización de sistema y servicios")
+        NotificationSwitch("Actualizaciones de la aplicación", appUpdates, lightBlue) { appUpdates = it }
+        NotificationSwitch("Recordatorio de plan", planReminder, lightBlue) { planReminder = it }
+        NotificationSwitch("Confirmación de asistencia", attendanceConfirmation, lightBlue) { attendanceConfirmation = it }
+        NotificationSwitch("Cambio en el plan", planChange, lightBlue) { planChange = it }
+
+        Divider(Modifier.padding(vertical = 8.dp))
+
+        SectionTitle("Otros")
+        NotificationSwitch("Nuevo grupo creado", newGroup, lightBlue) { newGroup = it }
+        NotificationSwitch("Sugerencias de planes", planSuggestions, lightBlue) { planSuggestions = it }
+        }
+    }
+
+
+@Composable
+private fun SectionTitle(title: String) {
+    Text(
+        text = title,
+        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+        modifier = Modifier.padding(bottom = 4.dp)
+    )
+}
+
+
+@Composable
+fun NotificationSwitch(
+    title: String,
+    checked: Boolean,
+    color: Color,
+    onCheckedChange: (Boolean) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.bodyMedium,
+            textAlign = TextAlign.Start,
+            modifier = Modifier
+                .weight(1f)
+                .padding(end = 8.dp)
+        )
+        Switch(
+            checked = checked,
+            onCheckedChange = onCheckedChange,
+            colors = SwitchDefaults.colors(
+                checkedThumbColor = color,
+                checkedTrackColor = color.copy(alpha = 0.4f),
+                uncheckedThumbColor = Color.LightGray,
+                uncheckedTrackColor = Color.Gray.copy(alpha = 0.3f)
+            )
+        )
+    }
+}
+
+@Preview(showSystemUi = true)
+@Composable
+fun NotificationsScreenPreview() {
+    MaterialTheme {
+        NotificationsSection()
+    }
+}
+
+
+========== archivo: ./app/src/main/java/com/crewup/myapplication/ui/components/ProfileOptionList.kt ==========
+package com.crewup.myapplication.ui.components
+
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.crewup.myapplication.R
+
+data class ProfileOption(
+    val iconRes: Int,
+    val text: String,
+    val onClick: () -> Unit
+)
+@Composable
+fun SectionTitle(title: String) {
+    Text(
+        text = title,
+        fontSize = 18.sp,
+        fontWeight = FontWeight.SemiBold,
+        color = Color.Black,
+        modifier = Modifier
+        .padding(horizontal = 26.dp, vertical = 8.dp)
+    )
+}
+
+@Composable
+fun ProfileOptionList(
+    options: List<ProfileOption>,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 26.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            options.forEachIndexed { index, option ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable(onClick = option.onClick)
+                        .padding(vertical = 16.dp, horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        painter = painterResource(id = option.iconRes),
+                        contentDescription = option.text,
+                        tint = Color(0xFF0056B3),
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(Modifier.width(16.dp))
+
+                    Text(
+                        text = option.text,
+                        fontSize = 16.sp,
+                        color = Color.Black,
+                        modifier = Modifier.weight(1f)
+                    )
+
+                }
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true, widthDp = 360, name = "Profile Options List Preview")
+@Composable
+fun ProfileOptionListPreview() {
+
+    SectionTitle("Crear cuenta")
+
+
+    val sampleOptions = listOf(
+        ProfileOption(
+            iconRes = R.drawable.icon_profile,
+            text = "Editar perfil",
+            onClick = { /* Acción */ }
+        ),
+        ProfileOption(
+            iconRes = R.drawable.icon_privacy,
+            text = "Seguridad",
+            onClick = { /* Acción */ }
+    )
+
+    )
+
+    Column(modifier = Modifier.padding(vertical = 16.dp)) {
+        ProfileOptionList(options = sampleOptions)
+    }
+}
+
+
+
+========== archivo: ./app/src/main/java/com/crewup/myapplication/ui/components/SecurityButtoms.kt ==========
+package com.crewup.myapplication.ui.screens
+
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.graphics.Color
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SecuritySection() {
+    var passwordLock by remember { mutableStateOf(true) }
+    var autoLogout by remember { mutableStateOf(false) }
+    var notifyChanges by remember { mutableStateOf(true) }
+
+    var alertNewDevice by remember { mutableStateOf(false) }
+    var alertFailedLogin by remember { mutableStateOf(true) }
+    var confirmEmailChange by remember { mutableStateOf(false) }
+
+    var suspiciousActivity by remember { mutableStateOf(false) }
+    var twoFactorAuth by remember { mutableStateOf(true) }
+
+    val lightBlue = Color(0xFF64B5F6) // Azul clarito (puedes ajustar el tono)
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 20.dp, vertical = 18.dp),
+        verticalArrangement = Arrangement.spacedBy(5.dp)
+    ) {
+        SectionTitle("General")
+        SettingSwitch("Bloqueo con contraseña", passwordLock, lightBlue) { passwordLock = it }
+        SettingSwitch("Cerrar sesión automáticamente después de inactividad", autoLogout, lightBlue) { autoLogout = it }
+        SettingSwitch("Notificar cambios en la configuración de la cuenta", notifyChanges, lightBlue) { notifyChanges = it }
+
+        Divider(Modifier.padding(vertical = 8.dp))
+
+        SectionTitle("Accesos")
+        SettingSwitch("Alertar inicio de sesión en nuevo dispositivo", alertNewDevice, lightBlue) { alertNewDevice = it }
+        SettingSwitch("Alertar intento de inicio fallido", alertFailedLogin, lightBlue) { alertFailedLogin = it }
+        SettingSwitch("Confirmación por correo en cambios de contraseña", confirmEmailChange, lightBlue) { confirmEmailChange = it }
+
+        Divider(Modifier.padding(vertical = 8.dp))
+
+        SectionTitle("Otros")
+        SettingSwitch("Actividad sospechosa detectada", suspiciousActivity, lightBlue) { suspiciousActivity = it }
+        SettingSwitch("Verificación en dos pasos", twoFactorAuth, lightBlue) { twoFactorAuth = it }
+    }
+}
+
+
+@Composable
+private fun SectionTitle(title: String) {
+    Text(
+        text = title,
+        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+        modifier = Modifier.padding(bottom = 4.dp)
+    )
+}
+
+
+@Composable
+fun SettingSwitch(
+    title: String,
+    checked: Boolean,
+    color: Color,
+    onCheckedChange: (Boolean) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.bodyMedium,
+            textAlign = TextAlign.Start,
+            modifier = Modifier
+                .weight(1f)
+                .padding(end = 8.dp)
+        )
+        Switch(
+            checked = checked,
+            onCheckedChange = onCheckedChange,
+            colors = SwitchDefaults.colors(
+                checkedThumbColor = color,
+                checkedTrackColor = color.copy(alpha = 0.4f),
+                uncheckedThumbColor = Color.LightGray,
+                uncheckedTrackColor = Color.Gray.copy(alpha = 0.3f)
+            )
+        )
+    }
+}
+
+@Preview(showSystemUi = true)
+@Composable
+fun SettingsScreenPreview() {
+    MaterialTheme {
+        SecuritySection()
+    }
+}
+
+
+========== archivo: ./app/src/main/java/com/crewup/myapplication/ui/components/SocialButton.kt ==========
+package com.crewup.myapplication.ui.components
+
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+
+
+@Composable
+fun SocialButton(
+    text: String,
+    icon: @Composable () -> Unit,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    OutlinedButton(
+        onClick = onClick,
+        modifier = modifier
+            .padding(horizontal = 16.dp)
+            .fillMaxWidth(),
+        shape = RoundedCornerShape(8.dp),
+        colors = ButtonDefaults.outlinedButtonColors(
+            containerColor = Color.White,
+            contentColor = Color.Black
+        ),
+        border = ButtonDefaults.outlinedButtonBorder.copy(
+        brush = androidx.compose.ui.graphics.SolidColor(Color.White)
+        )
+    ) {
+        icon()
+        Spacer(Modifier.width(8.dp))
+        Text(text = text, fontWeight = FontWeight.SemiBold)
+    }
+}
+
+
+
+@Preview(showBackground = true, showSystemUi = true,name = "SocialButton Ancho Personalizado")
+@Composable
+fun SocialButtonPreview() {
+    // MiAplicacionTheme {
+    SocialButton(
+        text = "Google",
+        onClick = { /* Acción */ },
+        icon = {
+            Icon(
+                imageVector = Icons.Filled.Info,
+                contentDescription = "Google Logo"
+            )
+        },
+        modifier = Modifier.width(200.dp) )
+}
+
+========== archivo: ./app/src/main/java/com/crewup/myapplication/ui/layout/MainLayout.kt ==========
+package com.crewup.myapplication.ui.layout
+
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+
+@Composable
+fun MainLayout(
+    header: @Composable ColumnScope.() -> Unit,
+    content: @Composable ColumnScope.() -> Unit
+) {
+    val scrollState = rememberScrollState()
+    Column(
+        modifier = Modifier.verticalScroll(scrollState)
+    ) {
+        header(this)
+        content(this)
+    }
+}
+
+
+========== archivo: ./app/src/main/java/com/crewup/myapplication/ui/navigation/AppNavigation.kt ==========
+package com.crewup.myapplication.ui.navigation
+
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.composable
+import com.crewup.myapplication.auth.GoogleAuth
+import com.crewup.myapplication.ui.screens.HomeScreen
+import com.crewup.myapplication.ui.screens.LoginScreen
+import com.crewup.myapplication.ui.screens.ProfileScreen
+import com.crewup.myapplication.viewmodel.AuthViewModel
+import com.crewup.myapplication.viewmodel.AuthState
+import kotlinx.coroutines.launch
+
+@Composable
+fun AppNavigation(
+    authState: AuthState,
+    authViewModel: AuthViewModel,
+    googleAuth: GoogleAuth
+) {
+    val navController = rememberNavController()
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(authState.isAuthenticated) {
+        if (authState.isAuthenticated) {
+            navController.navigate("home") {
+                popUpTo("login") { inclusive = true }
+            }
+        } else {
+            navController.navigate("login") {
+                popUpTo("home") { inclusive = true }
+            }
+        }
+    }
+
+    NavHost(navController = navController, startDestination = "login") {
+        composable("login") {
+            LoginScreen(
+                authState = authState,
+                onEmailLogin = { email, password ->
+                    authViewModel.signInWithEmailPassword(email, password)
+                },
+                onEmailRegister = { email, password ->
+                    authViewModel.registerWithEmailPassword(email, password)
+                },
+                onGoogleLogin = {
+                    coroutineScope.launch {
+                        val result = googleAuth.signInWithGoogle()
+                        result.onFailure {
+                            println("❌ Google Sign-In error: ${it.message}")
+                        }
+                    }
+                },
+                onClearError = {
+                    authViewModel.clearError()
+                }
+            )
+        }
+
+        composable("home") {
+            HomeScreen(
+                user = authState.user,
+                navController = navController
+            )
+        }
+
+        composable("profile") {
+            ProfileScreen(
+                navController = navController,
+                onSignOut = { authViewModel.signOut() }
+            )
+        }
+
+    }
+}
+
+========== archivo: ./app/src/main/java/com/crewup/myapplication/ui/screens/EditProfileScreen.kt ==========
+package com.crewup.myapplication.ui.screens
+
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.tooling.preview.Preview
+import com.crewup.myapplication.ui.components.EditProfileSection
+import com.crewup.myapplication.ui.components.FormRegister
+import com.crewup.myapplication.ui.components.header.HeaderUserInfo
+import com.crewup.myapplication.ui.layout.MainLayout
+
+@Composable
+fun EditProfileScreen(){
+    MainLayout(
+        header = { HeaderUserInfo() },
+        content = { EditProfileSection() }
+    )
+}
+
+@Preview
+@Composable
+fun PreviewEditProfileScreen(){
+    EditProfileScreen()
+}
+
+========== archivo: ./app/src/main/java/com/crewup/myapplication/ui/screens/HomeScreen.kt ==========
+package com.crewup.myapplication.ui.screens
+
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import com.google.firebase.auth.FirebaseUser
+
+@Composable
+fun HomeScreen(
+    user: FirebaseUser?,
+    navController: NavController
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "¡Bienvenido a CrewUp!",
+            style = MaterialTheme.typography.headlineLarge
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        user?.let {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    Text(
+                        text = "Usuario:",
+                        style = MaterialTheme.typography.labelMedium
+                    )
+                    Text(
+                        text = it.displayName ?: "Sin nombre",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "Email:",
+                        style = MaterialTheme.typography.labelMedium
+                    )
+                    Text(
+                        text = it.email ?: "Sin email",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        Button(
+            onClick = { navController.navigate("profile") },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Ir a Perfil")
+        }
+    }
+}
+
+========== archivo: ./app/src/main/java/com/crewup/myapplication/ui/screens/LoginScreen.kt ==========
+package com.crewup.myapplication.ui.screens
+
+import com.crewup.myapplication.ui.components.Form
+import com.crewup.myapplication.ui.components.Header
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.crewup.myapplication.auth.GoogleAuth
+import com.crewup.myapplication.viewmodel.AuthState
+import com.crewup.myapplication.viewmodel.AuthViewModel
+
+@Composable
+fun LoginScreen(
+    authState: AuthState,
+    onEmailLogin: (String, String) -> Unit,
+    onEmailRegister: (String, String) -> Unit,
+    onGoogleLogin: () -> Unit,
+    onClearError: () -> Unit
+) {
+    var isRegistering by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val googleAuth = remember { GoogleAuth(context) }
+    val scrollState = rememberScrollState()
+
+Box(modifier = Modifier.fillMaxSize()) {
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(bottom = 60.dp)
+            .verticalScroll(scrollState),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Header(title = "Iniciar Sesión")
+
+        Box(
+            modifier = Modifier
+                .offset(y = (-40).dp)
+                .padding(top = 10.dp)
+        ) {
+            Form(
+                authState = authState,
+                isRegistering = isRegistering,
+                onEmailLogin = onEmailLogin,
+                onEmailRegister = onEmailRegister,
+                onGoogleLogin = onGoogleLogin,
+                onClearError = onClearError
+            )
+        }
+    }
+    Row(
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .align(Alignment.BottomCenter)
+            .padding(vertical = 32.dp, horizontal = 0.dp)
+
+    ) {
+            Text(text = "¿No tienes una cuenta? ")
+
+            TextButton(onClick = { isRegistering = !isRegistering }){
+                Text(
+                    text = "Crea una",
+                    color = Color(0xFF0056B3),
+                    fontWeight = FontWeight.SemiBold,
+                )
+            }
+    }
+  }
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun PreviewLoginScreen(){
+    LoginScreen(
+        authState= AuthState(),
+        onEmailLogin = { email, pass -> },
+        onEmailRegister = {email, pass ->},
+        onGoogleLogin = {  },
+        onClearError = {  }
+    )
+}
+
+========== archivo: ./app/src/main/java/com/crewup/myapplication/ui/screens/NotificationsScreen.kt ==========
+package com.crewup.myapplication.ui.screens
+
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.crewup.myapplication.ui.components.header.HeaderUserPhoto
+import com.crewup.myapplication.ui.layout.MainLayout
+import com.crewup.myapplication.viewmodel.AuthViewModel
+
+@Composable
+fun NotificationsScreen(
+    authViewModel: AuthViewModel = viewModel()
+){
+    MainLayout(
+        header = { HeaderUserPhoto(title = "Notificaciones")},
+        content = {NotificationsSection()}
+
+    )
+}
+
+@Preview
+@Composable
+fun PreviewNotificationsScreen(){
+    NotificationsScreen()
+}
+
+
+========== archivo: ./app/src/main/java/com/crewup/myapplication/ui/screens/ProfileScreen.kt ==========
+package com.crewup.myapplication.ui.screens
+
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import com.crewup.myapplication.R
+import com.crewup.myapplication.ui.components.ProfileOption
+import com.crewup.myapplication.ui.components.ProfileOptionList
+import com.crewup.myapplication.ui.components.SectionTitle
+import com.crewup.myapplication.ui.components.header.HeaderUserInfo
+import com.crewup.myapplication.ui.layout.MainLayout
+
+@Composable
+fun ProfileScreen(
+    navController: NavController,
+    onSignOut: () -> Unit
+){
+    fun getAccountOptions(): List<ProfileOption> {
+        return listOf(
+            ProfileOption(R.drawable.icon_profile, "Editar perfil", onClick = {}),
+            ProfileOption(R.drawable.icon_privacy, "Seguridad", onClick = {}),
+            ProfileOption(R.drawable.icon_notification, "Notificaciones", onClick = {}),
+            ProfileOption(R.drawable.icon_lock, "Privacidad", onClick = {})
+        )
+    }
+
+    fun getActionsOptions(): List<ProfileOption> {
+        return listOf(
+            ProfileOption(R.drawable.icon_report, "Reportar un problema", onClick = {}),
+            ProfileOption(R.drawable.icon_plans, "Tus Planes creados", onClick = {}),
+            ProfileOption(R.drawable.icon_logout, "Cerrar Sesión", onClick = onSignOut),
+        )
+    }
+
+    fun getSupportOptions(): List<ProfileOption> {
+        return listOf(
+            ProfileOption(R.drawable.icon_help, "Ayuda y Soorte", onClick = {}),
+            ProfileOption(R.drawable.icon_term, "Términos  y Políticas", onClick = {}),
+        )
+    }
+
+    MainLayout(
+        header = { HeaderUserInfo() },
+        content = {
+            Column (
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                SectionTitle("Cuenta")
+                ProfileOptionList(options = getAccountOptions())
+                Spacer(Modifier.height(24.dp))
+                SectionTitle("Acciones")
+                ProfileOptionList(options = getActionsOptions())
+                Spacer(Modifier.height(24.dp))
+                SectionTitle("Soporte")
+                ProfileOptionList(options = getSupportOptions())
+            }
+        }
+    )
+}
+
+@Preview(showSystemUi = true, showBackground = true, name = "Full Profile Screen")
+@Composable
+fun ProfileScreenPreview() {
+    MaterialTheme {
+        val navController = rememberNavController()
+        ProfileScreen(navController = navController, onSignOut = {})
+    }
+}
+
+
+========== archivo: ./app/src/main/java/com/crewup/myapplication/ui/screens/RegisterScreen.kt ==========
+package com.crewup.myapplication.ui.screens
+
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import com.crewup.myapplication.ui.components.FormRegister
+import com.crewup.myapplication.ui.components.Header
+import com.crewup.myapplication.viewmodel.AuthState
+
+@Composable
+fun RegisterScreen(
+    authState: AuthState,
+    onEmailRegister: (String, String) -> Unit,
+    onGoogleLogin: () -> Unit,
+    onClearError: () -> Unit,
+    onNavigateToLogin: () -> Unit // 👈 para volver al login si se quiere
+) {
+    val scrollState = rememberScrollState()
+
+    Box(modifier = Modifier.fillMaxSize()) {
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = 60.dp)
+                .verticalScroll(scrollState),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // 🔹 Usa el mismo header pero cambia el título
+            Header(title = "Crear cuenta")
+
+            Box(
+                modifier = Modifier
+                    .offset(y = (-40).dp)
+                    .padding(top = 10.dp)
+            ) {
+                FormRegister(
+                    authState = authState,
+                    isRegistering = true, // ✅ Siempre en modo registro
+                    onEmailRegister = onEmailRegister,
+                    onGoogleLogin = onGoogleLogin,
+                    onClearError = onClearError
+                )
+            }
+        }
+
+        // 🔹 Texto para volver al login
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
+                .padding(vertical = 32.dp, horizontal = 0.dp)
+        ) {
+            Text(text = "¿Ya tienes una cuenta? ")
+
+            TextButton(onClick = { onNavigateToLogin() }) {
+                Text(
+                    text = "Inicia sesión",
+                    color = Color(0xFF0056B3),
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun PreviewRegisterScreen() {
+    RegisterScreen(
+        authState = AuthState(),
+        onEmailRegister = { _, _ -> },
+        onGoogleLogin = {},
+        onClearError = {},
+        onNavigateToLogin = {}
+    )
+}
+
+
+========== archivo: ./app/src/main/java/com/crewup/myapplication/ui/screens/SecurityScreen.kt ==========
+package com.crewup.myapplication.ui.screens
+
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.crewup.myapplication.ui.components.header.HeaderUserPhoto
+import com.crewup.myapplication.ui.layout.MainLayout
+import com.crewup.myapplication.viewmodel.AuthViewModel
+
+@Composable
+fun SecurityScreen(){
+    MainLayout(
+        header = { HeaderUserPhoto(title = "Seguridad")},
+        content = {SecuritySection()}
+    )
+}
+
+@Preview
+@Composable
+fun PreviewSecurityScreen(){
+    SecurityScreen()
+}
+
+
+========== archivo: ./app/src/main/java/com/crewup/myapplication/ui/theme/Color.kt ==========
+package com.crewup.myapplication.ui.theme
+
+import androidx.compose.ui.graphics.Color
+
+val Azul = Color(0xFF0056B3)
+
+========== archivo: ./app/src/main/java/com/crewup/myapplication/ui/theme/Theme.kt ==========
+package com.crewup.myapplication.ui.theme
+
+import android.app.Activity
+import android.os.Build
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.dynamicDarkColorScheme
+import androidx.compose.material3.dynamicLightColorScheme
+import androidx.compose.material3.lightColorScheme
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
+
+private val LightColorScheme = lightColorScheme(
+    primary = Azul,
+    /* Other default colors to override
+    background = Color(0xFFFFFBFE),
+    surface = Color(0xFFFFFBFE),
+    onPrimary = Color.White,
+    onSecondary = Color.White,
+    onTertiary = Color.White,
+    onBackground = Color(0xFF1C1B1F),
+    onSurface = Color(0xFF1C1B1F),
+    */
+)
+
+@Composable
+fun CrewUpTheme(
+    darkTheme: Boolean = isSystemInDarkTheme(),
+    // Dynamic color is available on Android 12+
+    dynamicColor: Boolean = true,
+    content: @Composable () -> Unit
+) {
+    val colorScheme = when {
+        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+            val context = LocalContext.current
+            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+        }
+        darkTheme -> LightColorScheme
+        else -> LightColorScheme
+    }
+
+    MaterialTheme(
+        colorScheme = colorScheme,
+        typography = Typography,
+        content = content
+    )
+}
+
+========== archivo: ./app/src/main/java/com/crewup/myapplication/ui/theme/Type.kt ==========
+package com.crewup.myapplication.ui.theme
+
+import androidx.compose.material3.Typography
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
+
+// Set of Material typography styles to start with
+val Typography = Typography(
+    bodyLarge = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Normal,
+        fontSize = 16.sp,
+        lineHeight = 24.sp,
+        letterSpacing = 0.5.sp
+    )
+    /* Other default text styles to override
+    titleLarge = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Normal,
+        fontSize = 22.sp,
+        lineHeight = 28.sp,
+        letterSpacing = 0.sp
+    ),
+    labelSmall = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Medium,
+        fontSize = 11.sp,
+        lineHeight = 16.sp,
+        letterSpacing = 0.5.sp
+    )
+    */
+)
+
+========== archivo: ./app/src/main/java/com/crewup/myapplication/viewmodel/AuthViewModel.kt ==========
+package com.crewup.myapplication.viewmodel
+
+import android.content.Context
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.AuthCredential
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+import com.crewup.myapplication.auth.GoogleAuth
+import com.crewup.myapplication.auth.EmailPasswordAuth
+data class AuthState(
+    val isLoading: Boolean = false,
+    val user: com.google.firebase.auth.FirebaseUser? = null,
+    val error: String? = null,
+    val isAuthenticated: Boolean = false
+)
+
+class AuthViewModel : ViewModel() {
+    private val auth = FirebaseAuth.getInstance()
+    private val emailPasswordAuth = EmailPasswordAuth()
+
+    private val _authState = MutableStateFlow(
+        AuthState(
+            user = auth.currentUser,
+            isAuthenticated = auth.currentUser != null
+        )
+    )
+    val authState: StateFlow<AuthState> = _authState
+
+    // Listener para detectar cambios en el estado de autenticación de Firebase
+    private val authStateListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
+        val currentUser = firebaseAuth.currentUser
+        _authState.value = _authState.value.copy(
+            user = currentUser,
+            isAuthenticated = currentUser != null,
+            isLoading = false
+        )
+    }
+
+    init {
+        // Registrar el listener cuando se crea el ViewModel
+        auth.addAuthStateListener(authStateListener)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        // Remover el listener cuando se destruye el ViewModel
+        auth.removeAuthStateListener(authStateListener)
+    }
+
+    fun signInWithCredential(credential: AuthCredential) {
+        _authState.value = _authState.value.copy(isLoading = true, error = null)
+
+        viewModelScope.launch {
+            auth.signInWithCredential(credential)
+                .addOnSuccessListener { result ->
+                    _authState.value = _authState.value.copy(
+                        isLoading = false,
+                        user = result.user,
+                        isAuthenticated = true,
+                        error = null
+                    )
+                }
+                .addOnFailureListener { e ->
+                    _authState.value = _authState.value.copy(
+                        isLoading = false,
+                        error = e.message,
+                        isAuthenticated = false
+                    )
+                }
+        }
+    }
+
+    fun signInWithEmailPassword(email: String, password: String) {
+        _authState.value = _authState.value.copy(isLoading = true, error = null)
+
+        emailPasswordAuth.login(email, password) { success, message ->
+            if (success) {
+                _authState.value = _authState.value.copy(
+                    isLoading = false,
+                    user = auth.currentUser,
+                    isAuthenticated = true,
+                    error = null
+                )
+            } else {
+                _authState.value = _authState.value.copy(
+                    isLoading = false,
+                    error = message,
+                    isAuthenticated = false
+                )
+            }
+        }
+    }
+
+    fun registerWithEmailPassword(email: String, password: String) {
+        _authState.value = _authState.value.copy(isLoading = true, error = null)
+
+        emailPasswordAuth.register(email, password) { success, message ->
+            if (success) {
+                _authState.value = _authState.value.copy(
+                    isLoading = false,
+                    user = auth.currentUser,
+                    isAuthenticated = true,
+                    error = null
+                )
+            } else {
+                _authState.value = _authState.value.copy(
+                    isLoading = false,
+                    error = message,
+                    isAuthenticated = false
+                )
+            }
+        }
+    }
+
+    fun signOut() {
+        auth.signOut()
+        _authState.value = AuthState()
+    }
+
+    fun clearError() {
+        _authState.value = _authState.value.copy(error = null)
+    }
+
+}
+
+
+========== archivo: ./app/src/main/res/drawable/dots.xml ==========
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="412dp"
+    android:height="911dp"
+    android:viewportWidth="412"
+    android:viewportHeight="911">
+  <path
+      android:pathData="M256.85,611.92a1.2,0.34 89.82,1 0,0.68 -0a1.2,0.34 89.82,1 0,-0.68 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M28.66,792.8a1.32,0.37 89.82,1 0,0.74 -0a1.32,0.37 89.82,1 0,-0.74 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.27"/>
+  <path
+      android:pathData="M316.55,791.84a1.28,0.36 89.82,1 0,0.72 -0a1.28,0.36 89.82,1 0,-0.72 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M311.02,225.21a1.17,0.33 89.82,1 0,0.66 -0a1.17,0.33 89.82,1 0,-0.66 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M153.93,461.97a1.49,0.42 89.82,1 0,0.84 -0a1.49,0.42 89.82,1 0,-0.84 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.27"/>
+  <path
+      android:pathData="M320.44,376.72a1.19,0.34 89.82,1 0,0.67 -0a1.19,0.34 89.82,1 0,-0.67 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M366.41,131.35a1.07,0.3 89.82,1 0,0.6 -0a1.07,0.3 89.82,1 0,-0.6 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M365.19,196.43a1.04,0.29 89.82,1 0,0.58 -0a1.04,0.29 89.82,1 0,-0.58 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M122.07,502.37a1.1,0.31 89.82,1 0,0.62 -0a1.1,0.31 89.82,1 0,-0.62 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M200.49,849.96a1.05,0.29 89.82,1 0,0.59 -0a1.05,0.29 89.82,1 0,-0.59 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M294.66,23.17a1.48,0.42 89.82,1 0,0.83 -0a1.48,0.42 89.82,1 0,-0.83 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M176.07,715.93a1.2,0.34 89.82,1 0,0.68 -0a1.2,0.34 89.82,1 0,-0.68 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M270.11,650.76a1.44,0.4 89.82,1 0,0.81 -0a1.44,0.4 89.82,1 0,-0.81 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M18.85,406.39a1.38,0.39 89.82,1 0,0.78 -0a1.38,0.39 89.82,1 0,-0.78 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.27"/>
+  <path
+      android:pathData="M119.74,398.6a1.07,0.3 89.82,1 0,0.6 -0a1.07,0.3 89.82,1 0,-0.6 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M308.88,716.6a1.29,0.36 89.82,1 0,0.72 -0a1.29,0.36 89.82,1 0,-0.72 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M113.2,791.6a1.41,0.4 89.82,1 0,0.79 -0a1.41,0.4 89.82,1 0,-0.79 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M108.32,874.95a1.33,0.37 89.82,1 0,0.75 -0a1.33,0.37 89.82,1 0,-0.75 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.27"/>
+  <path
+      android:pathData="M81.9,560.76a1.36,0.38 89.82,1 0,0.76 -0a1.36,0.38 89.82,1 0,-0.76 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M109.33,117.91a1.03,0.29 89.82,1 0,0.58 -0a1.03,0.29 89.82,1 0,-0.58 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M167.33,302.99a1.19,0.33 89.82,1 0,0.67 -0a1.19,0.33 89.82,1 0,-0.67 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M108.79,217.86a1.31,0.37 89.82,1 0,0.74 -0a1.31,0.37 89.82,1 0,-0.74 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M372.01,515.89a1.18,0.33 89.82,1 0,0.66 -0a1.18,0.33 89.82,1 0,-0.66 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M385.81,747.92a1.32,0.37 89.82,1 0,0.74 -0a1.32,0.37 89.82,1 0,-0.74 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M191.52,633.39a1.1,0.31 89.82,1 0,0.62 -0a1.1,0.31 89.82,1 0,-0.62 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M229.37,592.52a1.03,0.29 89.82,1 0,0.58 -0a1.03,0.29 89.82,1 0,-0.58 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.27"/>
+  <path
+      android:pathData="M215.16,793.09a1.19,0.33 89.82,1 0,0.67 -0a1.19,0.33 89.82,1 0,-0.67 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M141.41,860.46a1.2,0.34 89.82,1 0,0.67 -0a1.2,0.34 89.82,1 0,-0.67 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.27"/>
+  <path
+      android:pathData="M107.45,870.65a1.11,0.31 89.82,1 0,0.62 -0a1.11,0.31 89.82,1 0,-0.62 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M136.16,205.46a1.2,0.34 89.82,1 0,0.67 -0a1.2,0.34 89.82,1 0,-0.67 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M345.15,270.87a1.17,0.33 89.82,1 0,0.66 -0a1.17,0.33 89.82,1 0,-0.66 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M319.41,706.42a1.31,0.37 89.82,1 0,0.73 -0a1.31,0.37 89.82,1 0,-0.73 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M119.18,786.43a1.34,0.38 89.82,1 0,0.75 -0a1.34,0.38 89.82,1 0,-0.75 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.27"/>
+  <path
+      android:pathData="M64.62,605.48a1.27,0.36 89.82,1 0,0.71 -0a1.27,0.36 89.82,1 0,-0.71 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M378.07,205.92a1.42,0.4 89.82,1 0,0.8 -0a1.42,0.4 89.82,1 0,-0.8 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M357.96,168.41a1.48,0.41 89.82,1 0,0.83 -0a1.48,0.41 89.82,1 0,-0.83 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M327.99,797.09a1.48,0.42 89.82,1 0,0.83 -0a1.48,0.42 89.82,1 0,-0.83 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M33.18,597.22a1.04,0.29 89.82,1 0,0.59 -0a1.04,0.29 89.82,1 0,-0.59 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M218.59,704.91a1.52,0.43 89.82,1 0,0.85 -0a1.52,0.43 89.82,1 0,-0.85 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M36.12,356.34a1.23,0.34 89.82,1 0,0.69 -0a1.23,0.34 89.82,1 0,-0.69 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M396.61,822.14a1.33,0.37 89.82,1 0,0.75 -0a1.33,0.37 89.82,1 0,-0.75 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M229.59,305.88a1.22,0.34 89.82,1 0,0.69 -0a1.22,0.34 89.82,1 0,-0.69 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M244.27,72.77a1.08,0.3 89.82,1 0,0.61 -0a1.08,0.3 89.82,1 0,-0.61 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M165.81,811.58a1.21,0.34 89.82,1 0,0.68 -0a1.21,0.34 89.82,1 0,-0.68 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M121.61,537.36a1.51,0.42 89.82,1 0,0.85 -0a1.51,0.42 89.82,1 0,-0.85 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M384.78,784.26a1.04,0.29 89.82,1 0,0.58 -0a1.04,0.29 89.82,1 0,-0.58 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M283.89,851.14a1.49,0.42 89.82,1 0,0.84 -0a1.49,0.42 89.82,1 0,-0.84 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M78.55,317.62a1.29,0.36 89.82,1 0,0.73 -0a1.29,0.36 89.82,1 0,-0.73 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M56.43,814.9a1.13,0.32 89.82,1 0,0.64 -0a1.13,0.32 89.82,1 0,-0.64 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M25.06,470.49a1.42,0.4 89.82,1 0,0.8 -0a1.42,0.4 89.82,1 0,-0.8 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M387.39,795.74a1.34,0.38 89.82,1 0,0.75 -0a1.34,0.38 89.82,1 0,-0.75 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M6.49,200.88a1.29,0.36 89.82,1 0,0.72 -0a1.29,0.36 89.82,1 0,-0.72 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M388.43,318.75a1.37,0.39 89.82,1 0,0.77 -0a1.37,0.39 89.82,1 0,-0.77 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M216.89,887.84a1.35,0.38 89.82,1 0,0.76 -0a1.35,0.38 89.82,1 0,-0.76 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M326.46,560.09a1.5,0.42 89.82,1 0,0.84 -0a1.5,0.42 89.82,1 0,-0.84 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M255.76,806.29a1.3,0.37 89.82,1 0,0.73 -0a1.3,0.37 89.82,1 0,-0.73 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.27"/>
+  <path
+      android:pathData="M19.63,827.61a1.51,0.43 89.82,1 0,0.85 -0a1.51,0.43 89.82,1 0,-0.85 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M43.81,172.16a1.17,0.33 89.82,1 0,0.66 -0a1.17,0.33 89.82,1 0,-0.66 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M162.26,328.44a1.19,0.33 89.82,1 0,0.67 -0a1.19,0.33 89.82,1 0,-0.67 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.27"/>
+  <path
+      android:pathData="M282.79,239.53a1.15,0.32 89.82,1 0,0.65 -0a1.15,0.32 89.82,1 0,-0.65 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M20.6,328.03a1.35,0.38 89.82,1 0,0.76 -0a1.35,0.38 89.82,1 0,-0.76 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M103.24,180.19a1.25,0.35 89.82,1 0,0.7 -0a1.25,0.35 89.82,1 0,-0.7 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M5.37,654.28a1.06,0.3 89.82,1 0,0.59 -0a1.06,0.3 89.82,1 0,-0.59 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M66.07,792.63a1.27,0.36 89.82,1 0,0.71 -0a1.27,0.36 89.82,1 0,-0.71 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M3.98,578.42a1.47,0.41 89.82,1 0,0.82 -0a1.47,0.41 89.82,1 0,-0.82 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M294.54,699.4a1.33,0.37 89.82,1 0,0.75 -0a1.33,0.37 89.82,1 0,-0.75 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M396.69,553.79a1.52,0.43 89.82,1 0,0.85 -0a1.52,0.43 89.82,1 0,-0.85 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M213,295.72a1.19,0.33 89.82,1 0,0.67 -0a1.19,0.33 89.82,1 0,-0.67 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M357.8,652.57a1.49,0.42 89.82,1 0,0.84 -0a1.49,0.42 89.82,1 0,-0.84 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M397.27,47.87a1.08,0.3 89.82,1 0,0.61 -0a1.08,0.3 89.82,1 0,-0.61 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M182.76,370.17a1.31,0.37 89.82,1 0,0.74 -0a1.31,0.37 89.82,1 0,-0.74 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M58.25,42.96a1.19,0.33 89.82,1 0,0.67 -0a1.19,0.33 89.82,1 0,-0.67 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.27"/>
+  <path
+      android:pathData="M158.65,803.75a1.49,0.42 89.82,1 0,0.84 -0a1.49,0.42 89.82,1 0,-0.84 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M38.92,429.56a1.21,0.34 89.82,1 0,0.68 -0a1.21,0.34 89.82,1 0,-0.68 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M169.82,902.96a1.07,0.3 89.82,1 0,0.6 -0a1.07,0.3 89.82,1 0,-0.6 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M28.54,753a1.18,0.33 89.82,1 0,0.66 -0a1.18,0.33 89.82,1 0,-0.66 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M96.85,682.43a1.02,0.29 89.82,1 0,0.57 -0a1.02,0.29 89.82,1 0,-0.57 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M177.79,893.91a1.2,0.34 89.82,1 0,0.67 -0a1.2,0.34 89.82,1 0,-0.67 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M347.03,385.84a1.24,0.35 89.82,1 0,0.7 -0a1.24,0.35 89.82,1 0,-0.7 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.27"/>
+  <path
+      android:pathData="M202.33,265.3a1.23,0.35 89.82,1 0,0.69 -0a1.23,0.35 89.82,1 0,-0.69 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M59.62,382.67a1.19,0.33 89.82,1 0,0.67 -0a1.19,0.33 89.82,1 0,-0.67 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M127.33,746.85a1.45,0.41 89.82,1 0,0.82 -0a1.45,0.41 89.82,1 0,-0.82 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M391.13,2.11a1.07,0.3 89.82,1 0,0.6 -0a1.07,0.3 89.82,1 0,-0.6 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M374.41,668.66a1.36,0.38 89.82,1 0,0.76 -0a1.36,0.38 89.82,1 0,-0.76 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M73.24,442.81a1.36,0.38 89.82,1 0,0.76 -0a1.36,0.38 89.82,1 0,-0.76 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M393.86,50.11a1.28,0.36 89.82,1 0,0.72 -0a1.28,0.36 89.82,1 0,-0.72 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M158.89,878.99a1.48,0.41 89.82,1 0,0.83 -0a1.48,0.41 89.82,1 0,-0.83 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M50.9,782.4a1.16,0.33 89.82,1 0,0.65 -0a1.16,0.33 89.82,1 0,-0.65 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M140.79,670.14a1.08,0.3 89.82,1 0,0.61 -0a1.08,0.3 89.82,1 0,-0.61 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M402.95,750.91a1.31,0.37 89.82,1 0,0.74 -0a1.31,0.37 89.82,1 0,-0.74 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M141.72,689.62a1.23,0.35 89.82,1 0,0.69 -0a1.23,0.35 89.82,1 0,-0.69 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.27"/>
+  <path
+      android:pathData="M36.79,208.08a1.48,0.41 89.82,1 0,0.83 -0a1.48,0.41 89.82,1 0,-0.83 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M45.01,101.13a1.35,0.38 89.82,1 0,0.76 -0a1.35,0.38 89.82,1 0,-0.76 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M266.66,821.37a1.16,0.33 89.82,1 0,0.65 -0a1.16,0.33 89.82,1 0,-0.65 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M264.72,545a1.47,0.41 89.82,1 0,0.82 -0a1.47,0.41 89.82,1 0,-0.82 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M238.72,32.37a1.36,0.38 89.82,1 0,0.76 -0a1.36,0.38 89.82,1 0,-0.76 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M15.17,324.73a1.08,0.3 89.82,1 0,0.61 -0a1.08,0.3 89.82,1 0,-0.61 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M79.39,225.94a1.17,0.33 89.82,1 0,0.65 -0a1.17,0.33 89.82,1 0,-0.65 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.27"/>
+  <path
+      android:pathData="M71.41,498.51a1.12,0.31 89.82,1 0,0.63 -0a1.12,0.31 89.82,1 0,-0.63 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M23.8,701.35a1.4,0.39 89.82,1 0,0.78 -0a1.4,0.39 89.82,1 0,-0.78 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.27"/>
+  <path
+      android:pathData="M386.69,846.5a1.25,0.35 89.82,1 0,0.7 -0a1.25,0.35 89.82,1 0,-0.7 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M180.82,681.26a1.14,0.32 89.82,1 0,0.64 -0a1.14,0.32 89.82,1 0,-0.64 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.27"/>
+  <path
+      android:pathData="M30.87,234.57a1.49,0.42 89.82,1 0,0.84 -0a1.49,0.42 89.82,1 0,-0.84 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M125,731.61a1.48,0.41 89.82,1 0,0.83 -0a1.48,0.41 89.82,1 0,-0.83 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M307.27,660.86a1.48,0.42 89.82,1 0,0.83 -0a1.48,0.42 89.82,1 0,-0.83 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M36.27,849.6a1.18,0.33 89.82,1 0,0.67 -0a1.18,0.33 89.82,1 0,-0.67 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M209.46,500.16a1.2,0.34 89.82,1 0,0.67 -0a1.2,0.34 89.82,1 0,-0.67 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.27"/>
+  <path
+      android:pathData="M107.98,857.35a1.03,0.29 89.82,1 0,0.58 -0a1.03,0.29 89.82,1 0,-0.58 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M148.42,821.78a1.19,0.34 89.82,1 0,0.67 -0a1.19,0.34 89.82,1 0,-0.67 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M339.19,15.72a1.29,0.36 89.82,1 0,0.72 -0a1.29,0.36 89.82,1 0,-0.72 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M273.94,331.37a1.43,0.4 89.82,1 0,0.8 -0a1.43,0.4 89.82,1 0,-0.8 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M133.24,423.28a1.38,0.39 89.82,1 0,0.78 -0a1.38,0.39 89.82,1 0,-0.78 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M349.76,194.44a1.04,0.29 89.82,1 0,0.59 -0a1.04,0.29 89.82,1 0,-0.59 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.27"/>
+  <path
+      android:pathData="M306.65,911.97a1.36,0.38 89.82,1 0,0.76 -0a1.36,0.38 89.82,1 0,-0.76 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M325.58,849.01a1.52,0.43 89.82,1 0,0.85 -0a1.52,0.43 89.82,1 0,-0.85 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M143.8,512.82a1.46,0.41 89.82,1 0,0.82 -0a1.46,0.41 89.82,1 0,-0.82 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M98.27,769.12a1.26,0.35 89.82,1 0,0.71 -0a1.26,0.35 89.82,1 0,-0.71 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M215.71,696.65a1.38,0.39 89.82,1 0,0.78 -0a1.38,0.39 89.82,1 0,-0.78 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.27"/>
+  <path
+      android:pathData="M50.53,219.95a1.18,0.33 89.82,1 0,0.66 -0a1.18,0.33 89.82,1 0,-0.66 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M22.87,323.98a1.37,0.39 89.82,1 0,0.77 -0a1.37,0.39 89.82,1 0,-0.77 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M119.7,145.57a1.26,0.36 89.82,1 0,0.71 -0a1.26,0.36 89.82,1 0,-0.71 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M345.27,664.47a1.15,0.32 89.82,1 0,0.64 -0a1.15,0.32 89.82,1 0,-0.64 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.27"/>
+  <path
+      android:pathData="M377.74,432.32a1.03,0.29 89.82,1 0,0.58 -0a1.03,0.29 89.82,1 0,-0.58 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.27"/>
+  <path
+      android:pathData="M292.07,437.02a1.39,0.39 89.82,1 0,0.78 -0a1.39,0.39 89.82,1 0,-0.78 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M315.91,58.42a1.2,0.34 89.82,1 0,0.68 -0a1.2,0.34 89.82,1 0,-0.68 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M140.41,281.91a1.38,0.39 89.82,1 0,0.78 -0a1.38,0.39 89.82,1 0,-0.78 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M24.54,218.98a1.14,0.32 89.82,1 0,0.64 -0a1.14,0.32 89.82,1 0,-0.64 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M26.15,900.55a1.25,0.35 89.82,1 0,0.7 -0a1.25,0.35 89.82,1 0,-0.7 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M267.84,538.9a1.48,0.41 89.82,1 0,0.83 -0a1.48,0.41 89.82,1 0,-0.83 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M273.16,176.49a1.15,0.32 89.82,1 0,0.65 -0a1.15,0.32 89.82,1 0,-0.65 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M83.76,787.33a1.11,0.31 89.82,1 0,0.63 -0a1.11,0.31 89.82,1 0,-0.63 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M28.75,909.56a1.11,0.31 89.82,1 0,0.62 -0a1.11,0.31 89.82,1 0,-0.62 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M110.44,199.72a1.48,0.41 89.82,1 0,0.83 -0a1.48,0.41 89.82,1 0,-0.83 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M310.07,437.09a1.52,0.43 89.82,1 0,0.85 -0a1.52,0.43 89.82,1 0,-0.85 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M289.61,141.76a1.05,0.3 89.82,1 0,0.59 -0a1.05,0.3 89.82,1 0,-0.59 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M157.13,596.9a1.11,0.31 89.82,1 0,0.62 -0a1.11,0.31 89.82,1 0,-0.62 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.27"/>
+  <path
+      android:pathData="M353.8,448.81a1.18,0.33 89.82,1 0,0.66 -0a1.18,0.33 89.82,1 0,-0.66 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M307.13,79.92a1.32,0.37 89.82,1 0,0.74 -0a1.32,0.37 89.82,1 0,-0.74 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M219.93,229.87a1.46,0.41 89.82,1 0,0.82 -0a1.46,0.41 89.82,1 0,-0.82 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M62.6,420.41a1.3,0.37 89.82,1 0,0.73 -0a1.3,0.37 89.82,1 0,-0.73 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M390.68,755.18a1.48,0.42 89.82,1 0,0.83 -0a1.48,0.42 89.82,1 0,-0.83 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M315.25,654.71a1.46,0.41 89.82,1 0,0.82 -0a1.46,0.41 89.82,1 0,-0.82 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M357.57,375.91a1.52,0.43 89.82,1 0,0.85 -0a1.52,0.43 89.82,1 0,-0.85 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M56.33,872.06a1.33,0.37 89.82,1 0,0.75 -0a1.33,0.37 89.82,1 0,-0.75 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M177.39,564.37a1.23,0.34 89.82,1 0,0.69 -0a1.23,0.34 89.82,1 0,-0.69 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M309.2,522.49a1.48,0.42 89.82,1 0,0.83 -0a1.48,0.42 89.82,1 0,-0.83 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M243.04,45.73a1.5,0.42 89.82,1 0,0.84 -0a1.5,0.42 89.82,1 0,-0.84 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M351.68,258.59a1.12,0.31 89.82,1 0,0.63 -0a1.12,0.31 89.82,1 0,-0.63 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M350.92,351.36a1.35,0.38 89.82,1 0,0.76 -0a1.35,0.38 89.82,1 0,-0.76 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M249.7,492.09a1.4,0.39 89.82,1 0,0.79 -0a1.4,0.39 89.82,1 0,-0.79 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.27"/>
+  <path
+      android:pathData="M405.21,655.19a1.2,0.34 89.82,1 0,0.67 -0a1.2,0.34 89.82,1 0,-0.67 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M214.91,804.44a1.35,0.38 89.82,1 0,0.76 -0a1.35,0.38 89.82,1 0,-0.76 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M336.27,84.67a1.07,0.3 89.82,1 0,0.6 -0a1.07,0.3 89.82,1 0,-0.6 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M213.84,24.36a1.39,0.39 89.82,1 0,0.78 -0a1.39,0.39 89.82,1 0,-0.78 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M52.31,330.95a1.32,0.37 89.82,1 0,0.74 -0a1.32,0.37 89.82,1 0,-0.74 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M320.88,93.96a1.15,0.32 89.82,1 0,0.65 -0a1.15,0.32 89.82,1 0,-0.65 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M270.65,196.02a1.35,0.38 89.82,1 0,0.76 -0a1.35,0.38 89.82,1 0,-0.76 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.27"/>
+  <path
+      android:pathData="M240.59,260.02a1.17,0.33 89.82,1 0,0.65 -0a1.17,0.33 89.82,1 0,-0.65 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M181.68,480.08a1.38,0.39 89.82,1 0,0.77 -0a1.38,0.39 89.82,1 0,-0.77 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M145.96,472a1.31,0.37 89.82,1 0,0.74 -0a1.31,0.37 89.82,1 0,-0.74 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M235.96,778.03a1.46,0.41 89.82,1 0,0.82 -0a1.46,0.41 89.82,1 0,-0.82 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M251.72,792.88a1.09,0.31 89.82,1 0,0.61 -0a1.09,0.31 89.82,1 0,-0.61 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M355.62,480.6a1.44,0.4 89.82,1 0,0.81 -0a1.44,0.4 89.82,1 0,-0.81 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M23.6,550.66a1.24,0.35 89.82,1 0,0.7 -0a1.24,0.35 89.82,1 0,-0.7 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M67.86,546.29a1.08,0.3 89.82,1 0,0.61 -0a1.08,0.3 89.82,1 0,-0.61 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.27"/>
+  <path
+      android:pathData="M220.93,276.34a1.16,0.33 89.82,1 0,0.65 -0a1.16,0.33 89.82,1 0,-0.65 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M180,158.45a1.11,0.31 89.82,1 0,0.63 -0a1.11,0.31 89.82,1 0,-0.63 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M340.4,36.86a1.08,0.3 89.82,1 0,0.61 -0a1.08,0.3 89.82,1 0,-0.61 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M271.04,49.69a1.49,0.42 89.82,1 0,0.84 -0a1.49,0.42 89.82,1 0,-0.84 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M238.71,538.71a1.2,0.34 89.82,1 0,0.67 -0a1.2,0.34 89.82,1 0,-0.67 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M287.02,848.69a1.08,0.3 89.82,1 0,0.61 -0a1.08,0.3 89.82,1 0,-0.61 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M370.65,359.52a1.44,0.4 89.82,1 0,0.81 -0a1.44,0.4 89.82,1 0,-0.81 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M228.97,111.73a1.34,0.38 89.82,1 0,0.75 -0a1.34,0.38 89.82,1 0,-0.75 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M61.28,8.66a1.48,0.42 89.82,1 0,0.83 -0a1.48,0.42 89.82,1 0,-0.83 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M83.5,258.44a1.12,0.31 89.82,1 0,0.63 -0a1.12,0.31 89.82,1 0,-0.63 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M359.42,713.53a1.44,0.4 89.82,1 0,0.81 -0a1.44,0.4 89.82,1 0,-0.81 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M34.72,543.33a1.07,0.3 89.82,1 0,0.6 -0a1.07,0.3 89.82,1 0,-0.6 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M405.07,609.58a1.37,0.38 89.82,1 0,0.77 -0a1.37,0.38 89.82,1 0,-0.77 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M303.65,64.58a1.22,0.34 89.82,1 0,0.69 -0a1.22,0.34 89.82,1 0,-0.69 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M212.76,668.26a1.45,0.41 89.82,1 0,0.82 -0a1.45,0.41 89.82,1 0,-0.82 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M81.55,542.59a1.49,0.42 89.82,1 0,0.83 -0a1.49,0.42 89.82,1 0,-0.83 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M122.87,485.2a1.22,0.34 89.82,1 0,0.69 -0a1.22,0.34 89.82,1 0,-0.69 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M292.16,311.9a1.34,0.38 89.82,1 0,0.75 -0a1.34,0.38 89.82,1 0,-0.75 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M389.07,250.63a1.41,0.4 89.82,1 0,0.79 -0a1.41,0.4 89.82,1 0,-0.79 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.27"/>
+  <path
+      android:pathData="M24.46,14.62a1.23,0.34 89.82,1 0,0.69 -0a1.23,0.34 89.82,1 0,-0.69 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M259.94,238.81a1.38,0.39 89.82,1 0,0.78 -0a1.38,0.39 89.82,1 0,-0.78 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M129.72,64.2a1.31,0.37 89.82,1 0,0.73 -0a1.31,0.37 89.82,1 0,-0.73 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M9.58,274.91a1.08,0.3 89.82,1 0,0.61 -0a1.08,0.3 89.82,1 0,-0.61 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.27"/>
+  <path
+      android:pathData="M342.07,442.73a1.15,0.32 89.82,1 0,0.65 -0a1.15,0.32 89.82,1 0,-0.65 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M401.42,805.79a1.26,0.35 89.82,1 0,0.71 -0a1.26,0.35 89.82,1 0,-0.71 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M160.88,343.89a1.38,0.39 89.82,1 0,0.78 -0a1.38,0.39 89.82,1 0,-0.78 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M13.64,114.53a1.42,0.4 89.82,1 0,0.8 -0a1.42,0.4 89.82,1 0,-0.8 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M177.94,229.03a1.52,0.43 89.82,1 0,0.85 -0a1.52,0.43 89.82,1 0,-0.85 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M297.03,763.51a1.37,0.39 89.82,1 0,0.77 -0a1.37,0.39 89.82,1 0,-0.77 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M44.32,779.37a1.17,0.33 89.82,1 0,0.66 -0a1.17,0.33 89.82,1 0,-0.66 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M185.89,302.99a1.25,0.35 89.82,1 0,0.7 -0a1.25,0.35 89.82,1 0,-0.7 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M173.89,544.22a1.41,0.4 89.82,1 0,0.79 -0a1.41,0.4 89.82,1 0,-0.79 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M152.52,228.9a1.3,0.36 89.82,1 0,0.73 -0a1.3,0.36 89.82,1 0,-0.73 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M197.73,76.08a1.19,0.33 89.82,1 0,0.67 -0a1.19,0.33 89.82,1 0,-0.67 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M302.52,248.5a1.04,0.29 89.82,1 0,0.58 -0a1.04,0.29 89.82,1 0,-0.58 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.27"/>
+  <path
+      android:pathData="M292.77,859.88a1.1,0.31 89.82,1 0,0.62 -0a1.1,0.31 89.82,1 0,-0.62 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M135.58,21.5a1.34,0.38 89.82,1 0,0.75 -0a1.34,0.38 89.82,1 0,-0.75 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M335.78,643.36a1.36,0.38 89.82,1 0,0.77 -0a1.36,0.38 89.82,1 0,-0.77 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M103.17,604.09a1.02,0.29 89.82,1 0,0.57 -0a1.02,0.29 89.82,1 0,-0.57 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.27"/>
+  <path
+      android:pathData="M5.35,22.97a1.37,0.39 89.82,1 0,0.77 -0a1.37,0.39 89.82,1 0,-0.77 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M72.67,445.64a1.14,0.32 89.82,1 0,0.64 -0a1.14,0.32 89.82,1 0,-0.64 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M117.4,55.05a1.27,0.36 89.82,1 0,0.71 -0a1.27,0.36 89.82,1 0,-0.71 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M81.89,468.36a1.51,0.42 89.82,1 0,0.85 -0a1.51,0.42 89.82,1 0,-0.85 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M60.84,137.63a1.28,0.36 89.82,1 0,0.72 -0a1.28,0.36 89.82,1 0,-0.72 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M56.71,366.64a1.42,0.4 89.82,1 0,0.8 -0a1.42,0.4 89.82,1 0,-0.8 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M43.31,818.31a1.45,0.41 89.82,1 0,0.81 -0a1.45,0.41 89.82,1 0,-0.81 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M73.48,74.39a1.13,0.32 89.82,1 0,0.64 -0a1.13,0.32 89.82,1 0,-0.64 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M330.1,118.5a1.32,0.37 89.82,1 0,0.74 -0a1.32,0.37 89.82,1 0,-0.74 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M13.56,89.86a1.16,0.33 89.82,1 0,0.65 -0a1.16,0.33 89.82,1 0,-0.65 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M170.25,860.63a1.47,0.41 89.82,1 0,0.82 -0a1.47,0.41 89.82,1 0,-0.82 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M183.2,711.76a1.13,0.32 89.82,1 0,0.64 -0a1.13,0.32 89.82,1 0,-0.64 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M21.58,276.28a1.46,0.41 89.82,1 0,0.82 -0a1.46,0.41 89.82,1 0,-0.82 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M81.91,742.59a1.12,0.31 89.82,1 0,0.63 -0a1.12,0.31 89.82,1 0,-0.63 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M36.88,861.98a1.36,0.38 89.82,1 0,0.76 -0a1.36,0.38 89.82,1 0,-0.76 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M115.92,305.06a1.05,0.3 89.82,1 0,0.59 -0a1.05,0.3 89.82,1 0,-0.59 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M69.92,833.23a1.2,0.34 89.82,1 0,0.67 -0a1.2,0.34 89.82,1 0,-0.67 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M205.51,10.89a1.12,0.31 89.82,1 0,0.63 -0a1.12,0.31 89.82,1 0,-0.63 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M257.49,97.4a1.35,0.38 89.82,1 0,0.76 -0a1.35,0.38 89.82,1 0,-0.76 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M255.3,126.9a1.34,0.38 89.82,1 0,0.75 -0a1.34,0.38 89.82,1 0,-0.75 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M198.8,588.71a1.2,0.34 89.82,1 0,0.67 -0a1.2,0.34 89.82,1 0,-0.67 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M320.35,731.69a1.15,0.32 89.82,1 0,0.65 -0a1.15,0.32 89.82,1 0,-0.65 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.27"/>
+  <path
+      android:pathData="M102.52,667.17a1.03,0.29 89.82,1 0,0.58 -0a1.03,0.29 89.82,1 0,-0.58 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M394.22,495.49a1.19,0.33 89.82,1 0,0.67 -0a1.19,0.33 89.82,1 0,-0.67 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M210.73,837a1.35,0.38 89.82,1 0,0.76 -0a1.35,0.38 89.82,1 0,-0.76 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.27"/>
+  <path
+      android:pathData="M171.81,900.95a1.1,0.31 89.82,1 0,0.62 -0a1.1,0.31 89.82,1 0,-0.62 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M317.64,152.03a1.24,0.35 89.82,1 0,0.69 -0a1.24,0.35 89.82,1 0,-0.69 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M42.42,450.71a1.03,0.29 89.82,1 0,0.58 -0a1.03,0.29 89.82,1 0,-0.58 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.27"/>
+  <path
+      android:pathData="M189.79,184.1a1.37,0.39 89.82,1 0,0.77 -0a1.37,0.39 89.82,1 0,-0.77 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M391.79,655.15a1.13,0.32 89.82,1 0,0.63 -0a1.13,0.32 89.82,1 0,-0.63 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M313.45,183.67a1.34,0.38 89.82,1 0,0.75 -0a1.34,0.38 89.82,1 0,-0.75 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M121.37,132.29a1.21,0.34 89.82,1 0,0.68 -0a1.21,0.34 89.82,1 0,-0.68 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.27"/>
+  <path
+      android:pathData="M351.05,597.66a1.49,0.42 89.82,1 0,0.83 -0a1.49,0.42 89.82,1 0,-0.83 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M149.39,233.13a1.46,0.41 89.82,1 0,0.82 -0a1.46,0.41 89.82,1 0,-0.82 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M70.53,132.45a1.21,0.34 89.82,1 0,0.68 -0a1.21,0.34 89.82,1 0,-0.68 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M262.13,835.55a1.08,0.3 89.82,1 0,0.61 -0a1.08,0.3 89.82,1 0,-0.61 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M325.87,137.74a1.22,0.34 89.82,1 0,0.68 -0a1.22,0.34 89.82,1 0,-0.68 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M214.49,555.94a1.05,0.3 89.82,1 0,0.59 -0a1.05,0.3 89.82,1 0,-0.59 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.27"/>
+  <path
+      android:pathData="M150.79,669.3a1.28,0.36 89.82,1 0,0.72 -0a1.28,0.36 89.82,1 0,-0.72 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M350.83,618.97a1.44,0.4 89.82,1 0,0.81 -0a1.44,0.4 89.82,1 0,-0.81 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M62.94,437.71a1.31,0.37 89.82,1 0,0.74 -0a1.31,0.37 89.82,1 0,-0.74 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.27"/>
+  <path
+      android:pathData="M28.66,168.18a1.21,0.34 89.82,1 0,0.68 -0a1.21,0.34 89.82,1 0,-0.68 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.27"/>
+  <path
+      android:pathData="M29.55,624.93a1.28,0.36 89.82,1 0,0.72 -0a1.28,0.36 89.82,1 0,-0.72 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M346.82,168.43a1.45,0.41 89.82,1 0,0.82 -0a1.45,0.41 89.82,1 0,-0.82 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M130.17,653.21a1.41,0.4 89.82,1 0,0.79 -0a1.41,0.4 89.82,1 0,-0.79 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M313.82,538.66a1.38,0.39 89.82,1 0,0.78 -0a1.38,0.39 89.82,1 0,-0.78 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M242.2,229.42a1.1,0.31 89.82,1 0,0.62 -0a1.1,0.31 89.82,1 0,-0.62 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M270.91,719.58a1.09,0.31 89.82,1 0,0.61 -0a1.09,0.31 89.82,1 0,-0.61 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M189.4,241.94a1.24,0.35 89.82,1 0,0.69 -0a1.24,0.35 89.82,1 0,-0.69 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M275.72,886.35a1.07,0.3 89.82,1 0,0.6 -0a1.07,0.3 89.82,1 0,-0.6 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M118,393.81a1.36,0.38 89.82,1 0,0.76 -0a1.36,0.38 89.82,1 0,-0.76 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M80.52,221.76a1.06,0.3 89.82,1 0,0.59 -0a1.06,0.3 89.82,1 0,-0.59 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M225.54,644.42a1.05,0.3 89.82,1 0,0.59 -0a1.05,0.3 89.82,1 0,-0.59 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M234.32,889.71a1.25,0.35 89.82,1 0,0.7 -0a1.25,0.35 89.82,1 0,-0.7 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M304.21,595.77a1.47,0.41 89.82,1 0,0.83 -0a1.47,0.41 89.82,1 0,-0.83 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M231.79,367.1a1.43,0.4 89.82,1 0,0.8 -0a1.43,0.4 89.82,1 0,-0.8 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M68.82,401.07a1.3,0.37 89.82,1 0,0.73 -0a1.3,0.37 89.82,1 0,-0.73 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M8.39,170.38a1.31,0.37 89.82,1 0,0.74 -0a1.31,0.37 89.82,1 0,-0.74 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M264.74,132.72a1.09,0.31 89.82,1 0,0.61 -0a1.09,0.31 89.82,1 0,-0.61 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M271.59,42.52a1.44,0.4 89.82,1 0,0.81 -0a1.44,0.4 89.82,1 0,-0.81 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M11.73,588.17a1.07,0.3 89.82,1 0,0.6 -0a1.07,0.3 89.82,1 0,-0.6 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M40.46,17.67a1.27,0.36 89.82,1 0,0.71 -0a1.27,0.36 89.82,1 0,-0.71 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M91.72,506.74a1.27,0.36 89.82,1 0,0.71 -0a1.27,0.36 89.82,1 0,-0.71 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.27"/>
+  <path
+      android:pathData="M304.21,481.48a1.13,0.32 89.82,1 0,0.63 -0a1.13,0.32 89.82,1 0,-0.63 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M130.91,259.52a1.33,0.37 89.82,1 0,0.75 -0a1.33,0.37 89.82,1 0,-0.75 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.27"/>
+  <path
+      android:pathData="M399.72,187.21a1.09,0.31 89.82,1 0,0.61 -0a1.09,0.31 89.82,1 0,-0.61 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M76.81,576.91a1.21,0.34 89.82,1 0,0.68 -0a1.21,0.34 89.82,1 0,-0.68 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M92.71,906.38a1.18,0.33 89.82,1 0,0.66 -0a1.18,0.33 89.82,1 0,-0.66 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.27"/>
+  <path
+      android:pathData="M366.41,843.5a1.23,0.35 89.82,1 0,0.69 -0a1.23,0.35 89.82,1 0,-0.69 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M139.98,146.31a1.06,0.3 89.82,1 0,0.59 -0a1.06,0.3 89.82,1 0,-0.59 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.27"/>
+  <path
+      android:pathData="M198.12,822.51a1.07,0.3 89.82,1 0,0.6 -0a1.07,0.3 89.82,1 0,-0.6 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M160.91,261.53a1.41,0.4 89.82,1 0,0.79 -0a1.41,0.4 89.82,1 0,-0.79 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M366.11,215.99a1.28,0.36 89.82,1 0,0.72 -0a1.28,0.36 89.82,1 0,-0.72 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M190.87,698.48a1.1,0.31 89.82,1 0,0.62 -0a1.1,0.31 89.82,1 0,-0.62 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M199.1,682.39a1.3,0.37 89.82,1 0,0.73 -0a1.3,0.37 89.82,1 0,-0.73 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M162.52,140.1a1.02,0.29 89.82,1 0,0.57 -0a1.02,0.29 89.82,1 0,-0.57 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M384.65,299.1a1.05,0.29 89.82,1 0,0.59 -0a1.05,0.29 89.82,1 0,-0.59 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.27"/>
+  <path
+      android:pathData="M4.67,347.23a1.18,0.33 89.82,1 0,0.66 -0a1.18,0.33 89.82,1 0,-0.66 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M128.25,319.53a1.33,0.37 89.82,1 0,0.74 -0a1.33,0.37 89.82,1 0,-0.74 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.27"/>
+  <path
+      android:pathData="M237.07,385.19a1.26,0.35 89.82,1 0,0.71 -0a1.26,0.35 89.82,1 0,-0.71 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M81.1,133.58a1.36,0.38 89.82,1 0,0.76 -0a1.36,0.38 89.82,1 0,-0.76 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M388.78,607.51a1.29,0.36 89.82,1 0,0.72 -0a1.29,0.36 89.82,1 0,-0.72 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M403.68,175.08a1.17,0.33 89.82,1 0,0.66 -0a1.17,0.33 89.82,1 0,-0.66 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.27"/>
+  <path
+      android:pathData="M208.41,24.48a1.5,0.42 89.82,1 0,0.84 -0a1.5,0.42 89.82,1 0,-0.84 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.54"/>
+  <path
+      android:pathData="M81.29,102.82a1.11,0.31 89.82,1 0,0.62 -0a1.11,0.31 89.82,1 0,-0.62 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+  <path
+      android:pathData="M363.18,102.11a1.31,0.37 89.82,1 0,0.74 -0a1.31,0.37 89.82,1 0,-0.74 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M208.02,705.72a1.27,0.36 89.82,1 0,0.71 -0a1.27,0.36 89.82,1 0,-0.71 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.36"/>
+  <path
+      android:pathData="M163.9,305.04a1.19,0.33 89.82,1 0,0.67 -0a1.19,0.33 89.82,1 0,-0.67 0z"
+      android:strokeAlpha="0.9"
+      android:fillColor="#ffffff"
+      android:fillAlpha="0.45"/>
+</vector>
+
+
+========== archivo: ./app/src/main/res/drawable/icon_help.xml ==========
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="30dp"
+    android:height="30dp"
+    android:viewportWidth="30"
+    android:viewportHeight="30">
+  <path
+      android:pathData="M13.75,22.5H16.25V20H13.75V22.5ZM15,2.5C13.358,2.5 11.733,2.823 10.217,3.452C8.7,4.08 7.322,5 6.161,6.161C3.817,8.505 2.5,11.685 2.5,15C2.5,18.315 3.817,21.495 6.161,23.839C7.322,25 8.7,25.92 10.217,26.549C11.733,27.177 13.358,27.5 15,27.5C18.315,27.5 21.495,26.183 23.839,23.839C26.183,21.495 27.5,18.315 27.5,15C27.5,13.358 27.177,11.733 26.549,10.217C25.92,8.7 25,7.322 23.839,6.161C22.678,5 21.3,4.08 19.784,3.452C18.267,2.823 16.642,2.5 15,2.5ZM15,25C9.488,25 5,20.513 5,15C5,9.488 9.488,5 15,5C20.513,5 25,9.488 25,15C25,20.513 20.513,25 15,25ZM15,7.5C13.674,7.5 12.402,8.027 11.465,8.964C10.527,9.902 10,11.174 10,12.5H12.5C12.5,11.837 12.763,11.201 13.232,10.732C13.701,10.263 14.337,10 15,10C15.663,10 16.299,10.263 16.768,10.732C17.237,11.201 17.5,11.837 17.5,12.5C17.5,15 13.75,14.688 13.75,18.75H16.25C16.25,15.938 20,15.625 20,12.5C20,11.174 19.473,9.902 18.535,8.964C17.598,8.027 16.326,7.5 15,7.5Z"
+      android:fillColor="#165BB0"/>
+</vector>
+
+
+========== archivo: ./app/src/main/res/drawable/icon_lock.xml ==========
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="30dp"
+    android:height="30dp"
+    android:viewportWidth="30"
+    android:viewportHeight="30">
+  <path
+      android:pathData="M22.5,10H21.25V7.5C21.25,4.05 18.45,1.25 15,1.25C11.55,1.25 8.75,4.05 8.75,7.5V10H7.5C6.125,10 5,11.125 5,12.5V25C5,26.375 6.125,27.5 7.5,27.5H22.5C23.875,27.5 25,26.375 25,25V12.5C25,11.125 23.875,10 22.5,10ZM11.25,7.5C11.25,5.425 12.925,3.75 15,3.75C17.075,3.75 18.75,5.425 18.75,7.5V10H11.25V7.5ZM22.5,25H7.5V12.5H22.5V25ZM15,21.25C16.375,21.25 17.5,20.125 17.5,18.75C17.5,17.375 16.375,16.25 15,16.25C13.625,16.25 12.5,17.375 12.5,18.75C12.5,20.125 13.625,21.25 15,21.25Z"
+      android:fillColor="#165BB0"/>
+</vector>
+
+
+========== archivo: ./app/src/main/res/drawable/icon_logout.xml ==========
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="30dp"
+    android:height="30dp"
+    android:viewportWidth="30"
+    android:viewportHeight="30">
+  <path
+      android:pathData="M21.25,10L19.5,11.75L21.5,13.75H11.25V16.25H21.5L19.5,18.25L21.25,20L26.25,15L21.25,10ZM6.25,6.25H15V3.75H6.25C4.875,3.75 3.75,4.875 3.75,6.25V23.75C3.75,25.125 4.875,26.25 6.25,26.25H15V23.75H6.25V6.25Z"
+      android:fillColor="#165BB0"/>
+</vector>
+
+
+========== archivo: ./app/src/main/res/drawable/icon_notification.xml ==========
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="30dp"
+    android:height="30dp"
+    android:viewportWidth="30"
+    android:viewportHeight="30">
+  <path
+      android:pathData="M7.5,23.75V12.5C7.5,10.511 8.29,8.603 9.697,7.197C11.103,5.79 13.011,5 15,5C16.989,5 18.897,5.79 20.303,7.197C21.71,8.603 22.5,10.511 22.5,12.5V23.75M7.5,23.75H22.5M7.5,23.75H5M22.5,23.75H25M13.75,27.5H16.25"
+      android:strokeLineJoin="round"
+      android:strokeWidth="2.66667"
+      android:fillColor="#00000000"
+      android:strokeColor="#165BB0"
+      android:strokeLineCap="round"/>
+  <path
+      android:pathData="M15,5C15.69,5 16.25,4.44 16.25,3.75C16.25,3.06 15.69,2.5 15,2.5C14.31,2.5 13.75,3.06 13.75,3.75C13.75,4.44 14.31,5 15,5Z"
+      android:strokeWidth="2.66667"
+      android:fillColor="#00000000"
+      android:strokeColor="#165BB0"/>
+</vector>
+
+
+========== archivo: ./app/src/main/res/drawable/icon_plans.xml ==========
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="30dp"
+    android:height="30dp"
+    android:viewportWidth="30"
+    android:viewportHeight="30">
+  <path
+      android:pathData="M11.25,15C13.663,15 15.625,13.038 15.625,10.625C15.625,8.212 13.663,6.25 11.25,6.25C8.837,6.25 6.875,8.212 6.875,10.625C6.875,13.038 8.837,15 11.25,15ZM11.25,8.75C12.288,8.75 13.125,9.587 13.125,10.625C13.125,11.663 12.288,12.5 11.25,12.5C10.212,12.5 9.375,11.663 9.375,10.625C9.375,9.587 10.212,8.75 11.25,8.75ZM11.25,17.188C8.325,17.188 2.5,18.65 2.5,21.563V23.75H20V21.563C20,18.65 14.175,17.188 11.25,17.188ZM5.425,21.25C6.475,20.525 9.012,19.688 11.25,19.688C13.488,19.688 16.025,20.525 17.075,21.25H5.425ZM20.05,17.263C21.5,18.313 22.5,19.712 22.5,21.563V23.75H27.5V21.563C27.5,19.038 23.125,17.6 20.05,17.263ZM18.75,15C21.163,15 23.125,13.038 23.125,10.625C23.125,8.212 21.163,6.25 18.75,6.25C18.075,6.25 17.45,6.412 16.875,6.688C17.663,7.8 18.125,9.163 18.125,10.625C18.125,12.087 17.663,13.45 16.875,14.563C17.45,14.837 18.075,15 18.75,15Z"
+      android:fillColor="#165BB0"/>
+</vector>
+
+
+========== archivo: ./app/src/main/res/drawable/icon_privacy.xml ==========
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="30dp"
+    android:height="30dp"
+    android:viewportWidth="30"
+    android:viewportHeight="30">
+  <path
+      android:pathData="M13.75,21.25H16.25V13.75H13.75V21.25ZM15,11.25C15.354,11.25 15.651,11.13 15.891,10.89C16.131,10.65 16.251,10.353 16.25,10C16.25,9.646 16.13,9.349 15.89,9.109C15.65,8.869 15.353,8.749 15,8.75C14.646,8.75 14.349,8.87 14.109,9.11C13.869,9.35 13.749,9.647 13.75,10C13.75,10.354 13.87,10.651 14.11,10.891C14.35,11.131 14.647,11.251 15,11.25ZM15,27.5C12.104,26.771 9.713,25.109 7.827,22.515C5.942,19.921 4.999,17.041 5,13.875V6.25L15,2.5L25,6.25V13.875C25,17.042 24.057,19.922 22.171,22.516C20.285,25.11 17.895,26.772 15,27.5ZM15,24.875C17.167,24.188 18.958,22.813 20.375,20.75C21.792,18.688 22.5,16.396 22.5,13.875V7.969L15,5.156L7.5,7.969V13.875C7.5,16.396 8.208,18.688 9.625,20.75C11.042,22.813 12.833,24.188 15,24.875Z"
+      android:fillColor="#165BB0"/>
+</vector>
+
+
+========== archivo: ./app/src/main/res/drawable/icon_profile.xml ==========
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="30dp"
+    android:height="30dp"
+    android:viewportWidth="30"
+    android:viewportHeight="30">
+  <path
+      android:pathData="M5,22.5C5,21.174 5.527,19.902 6.464,18.965C7.402,18.027 8.674,17.5 10,17.5H20C21.326,17.5 22.598,18.027 23.535,18.965C24.473,19.902 25,21.174 25,22.5C25,23.163 24.737,23.799 24.268,24.268C23.799,24.737 23.163,25 22.5,25H7.5C6.837,25 6.201,24.737 5.732,24.268C5.263,23.799 5,23.163 5,22.5Z"
+      android:strokeLineJoin="round"
+      android:strokeWidth="2"
+      android:fillColor="#00000000"
+      android:strokeColor="#165BB0"/>
+  <path
+      android:pathData="M15,12.5C17.071,12.5 18.75,10.821 18.75,8.75C18.75,6.679 17.071,5 15,5C12.929,5 11.25,6.679 11.25,8.75C11.25,10.821 12.929,12.5 15,12.5Z"
+      android:strokeWidth="2"
+      android:fillColor="#00000000"
+      android:strokeColor="#165BB0"/>
+</vector>
+
+
+========== archivo: ./app/src/main/res/drawable/icon_report.xml ==========
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="30dp"
+    android:height="30dp"
+    android:viewportWidth="30"
+    android:viewportHeight="30">
+  <path
+      android:pathData="M17.5,7.5L16.25,5H6.25V26.25H8.75V17.5H15L16.25,20H25V7.5H17.5ZM22.5,17.5H17.5L16.25,15H8.75V7.5H15L16.25,10H22.5V17.5Z"
+      android:fillColor="#165BB0"/>
+</vector>
+
+
+========== archivo: ./app/src/main/res/drawable/icon_term.xml ==========
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="30dp"
+    android:height="30dp"
+    android:viewportWidth="30"
+    android:viewportHeight="30">
+  <path
+      android:pathData="M15,10V20M3.75,15C3.75,16.477 4.041,17.94 4.606,19.305C5.172,20.67 6,21.91 7.045,22.955C8.09,24 9.33,24.828 10.695,25.394C12.06,25.959 13.523,26.25 15,26.25C16.477,26.25 17.94,25.959 19.305,25.394C20.67,24.828 21.91,24 22.955,22.955C24,21.91 24.828,20.67 25.394,19.305C25.959,17.94 26.25,16.477 26.25,15C26.25,13.523 25.959,12.06 25.394,10.695C24.828,9.33 24,8.09 22.955,7.045C21.91,6 20.67,5.172 19.305,4.606C17.94,4.041 16.477,3.75 15,3.75C13.523,3.75 12.06,4.041 10.695,4.606C9.33,5.172 8.09,6 7.045,7.045C6,8.09 5.172,9.33 4.606,10.695C4.041,12.06 3.75,13.523 3.75,15Z"
+      android:strokeLineJoin="round"
+      android:strokeWidth="2.66667"
+      android:fillColor="#00000000"
+      android:strokeColor="#165BB0"
+      android:strokeLineCap="round"/>
+</vector>
+
+
+========== archivo: ./app/src/main/res/drawable/vector.xml ==========
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="19dp"
+    android:height="23dp"
+    android:viewportWidth="19"
+    android:viewportHeight="23">
+  <path
+      android:pathData="M9.529,11.55C10.148,11.55 10.678,11.329 11.119,10.888C11.56,10.447 11.78,9.918 11.779,9.3C11.779,8.681 11.559,8.151 11.118,7.71C10.677,7.269 10.147,7.049 9.529,7.05C8.911,7.05 8.381,7.27 7.94,7.711C7.499,8.152 7.279,8.682 7.279,9.3C7.279,9.918 7.5,10.448 7.941,10.889C8.382,11.33 8.911,11.55 9.529,11.55ZM9.529,22.8C6.511,20.231 4.256,17.845 2.766,15.642C1.276,13.44 0.53,11.4 0.529,9.525C0.529,6.712 1.434,4.471 3.244,2.803C5.054,1.134 7.149,0.3 9.529,0.3C11.91,0.3 14.006,1.134 15.816,2.803C17.625,4.471 18.53,6.712 18.529,9.525C18.529,11.4 17.784,13.439 16.293,15.642C14.802,17.846 12.547,20.232 9.529,22.8Z"
+      android:fillColor="#F5F5F5"/>
+</vector>
+
+
+========== archivo: ./app/src/main/res/mipmap-anydpi-v26/ic_pizza_logo.xml ==========
+<?xml version="1.0" encoding="utf-8"?>
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@color/ic_pizza_logo_background"/>
+    <foreground android:drawable="@mipmap/ic_pizza_logo_foreground"/>
+</adaptive-icon>
+
+========== archivo: ./app/src/main/res/mipmap-anydpi-v26/ic_pizza_logo_round.xml ==========
+<?xml version="1.0" encoding="utf-8"?>
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@color/ic_pizza_logo_background"/>
+    <foreground android:drawable="@mipmap/ic_pizza_logo_foreground"/>
+</adaptive-icon>
+
+========== archivo: ./app/src/main/res/values/colors.xml ==========
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+</resources>
+
+========== archivo: ./app/src/main/res/values/ic_pizza_logo_background.xml ==========
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="ic_pizza_logo_background">#165BB0</color>
+</resources>
+
+========== archivo: ./app/src/main/res/values/strings.xml ==========
+<resources>
+    <string name="app_name">CrewUp</string>
+    <string name="default_web_client_id">885733307091-8oeqasptg7s7ll17gi2h3mlf0v2fu9k5.apps.googleusercontent.com</string>
+    <string name="facebook_app_id">1376981000429957</string>
+    <string name="fb_login_protocol_scheme">fb1376981000429957</string>
+    <string name="facebook_client_token">3ae4a66de3860669cb0cb15c149e60bd</string>
+</resources>
+
+========== archivo: ./app/src/main/res/values/themes.xml ==========
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Theme.CrewUp.NoActionBar" parent="Theme.MaterialComponents.Light.NoActionBar">
+
+    </style>
+
+</resources>
+
+========== archivo: ./app/src/main/res/xml/backup_rules.xml ==========
+<?xml version="1.0" encoding="utf-8"?><!--
+   Sample backup rules file; uncomment and customize as necessary.
+   See https://developer.android.com/guide/topics/data/autobackup
+   for details.
+   Note: This file is ignored for devices older than API 31
+   See https://developer.android.com/about/versions/12/backup-restore
+-->
+<full-backup-content>
+    <!--
+   <include domain="sharedpref" path="."/>
+   <exclude domain="sharedpref" path="device.xml"/>
+-->
+</full-backup-content>
+
+========== archivo: ./app/src/main/res/xml/data_extraction_rules.xml ==========
+<?xml version="1.0" encoding="utf-8"?><!--
+   Sample data extraction rules file; uncomment and customize as necessary.
+   See https://developer.android.com/about/versions/12/backup-restore#xml-changes
+   for details.
+-->
+<data-extraction-rules>
+    <cloud-backup>
+        <!-- TODO: Use <include> and <exclude> to control what is backed up.
+        <include .../>
+        <exclude .../>
+        -->
+    </cloud-backup>
+    <!--
+    <device-transfer>
+        <include .../>
+        <exclude .../>
+    </device-transfer>
+    -->
+</data-extraction-rules>
+
+========== archivo: ./app/src/test/java/com/crewup/myapplication/ExampleUnitTest.kt ==========
+package com.crewup.myapplication
+
+import org.junit.Test
+
+import org.junit.Assert.*
+
+/**
+ * Example local unit test, which will execute on the development machine (host).
+ *
+ * See [testing documentation](http://d.android.com/tools/testing).
+ */
+class ExampleUnitTest {
+    @Test
+    fun addition_isCorrect() {
+        assertEquals(4, 2 + 2)
+    }
+}
+
+========== archivo: ./build.gradle.kts ==========
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+plugins {
+    alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.kotlin.android) apply false
+    alias(libs.plugins.kotlin.compose) apply false
+    id("com.google.gms.google-services") version "4.4.3" apply false
+}
+
+========== archivo: ./gradle/libs.versions.toml ==========
+[versions]
+agp = "8.13.0"
+kotlin = "2.0.21"
+coreKtx = "1.10.1"
+junit = "4.13.2"
+junitVersion = "1.1.5"
+espressoCore = "3.5.1"
+lifecycleRuntimeKtx = "2.6.1"
+activityCompose = "1.8.0"
+composeBom = "2024.09.00"
+animationCoreLint = "1.9.3"
+
+[libraries]
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
+androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
+androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
+androidx-compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
+androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+androidx-compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
+androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
+androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
+androidx-compose-animation-core-lint = { group = "androidx.compose.animation", name = "animation-core-lint", version.ref = "animationCoreLint" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+
+
+
+========== archivo: ./gradle/wrapper/gradle-wrapper.properties ==========
+#Sun Oct 05 22:12:26 COT 2025
+distributionBase=GRADLE_USER_HOME
+distributionPath=wrapper/dists
+distributionUrl=https\://services.gradle.org/distributions/gradle-8.13-bin.zip
+zipStoreBase=GRADLE_USER_HOME
+zipStorePath=wrapper/dists
+
+
+========== archivo: ./gradle.properties ==========
+# Project-wide Gradle settings.
+# IDE (e.g. Android Studio) users:
+# Gradle settings configured through the IDE *will override*
+# any settings specified in this file.
+# For more details on how to configure your build environment visit
+# http://www.gradle.org/docs/current/userguide/build_environment.html
+# Specifies the JVM arguments used for the daemon process.
+# The setting is particularly useful for tweaking memory settings.
+org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
+# When configured, Gradle will run in incubating parallel mode.
+# This option should only be used with decoupled projects. For more details, visit
+# https://developer.android.com/r/tools/gradle-multi-project-decoupled-projects
+# org.gradle.parallel=true
+# AndroidX package structure to make it clearer which packages are bundled with the
+# Android operating system, and which are packaged with your app's APK
+# https://developer.android.com/topic/libraries/support-library/androidx-rn
+android.useAndroidX=true
+# Kotlin code style for this project: "official" or "obsolete":
+kotlin.code.style=official
+# Enables namespacing of each library's R class so that its R class includes only the
+# resources declared in the library itself and none from the library's dependencies,
+# thereby reducing the size of the R class for that library
+android.nonTransitiveRClass=true
+
+========== archivo: ./repositorio_aplanado.txt ==========
+
+
+========== archivo: ./settings.gradle.kts ==========
+pluginManagement {
+    repositories {
+        google {
+            content {
+                includeGroupByRegex("com\\.android.*")
+                includeGroupByRegex("com\\.google.*")
+                includeGroupByRegex("androidx.*")
+            }
+        }
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+rootProject.name = "CrewUp"
+include(":app")
+ 
+

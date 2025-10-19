@@ -79,4 +79,5 @@ dependencies {
 
     // Facebook SDK
     implementation("com.facebook.android:facebook-android-sdk:17.0.2")
+    implementation("io.coil-kt:coil-compose:2.6.0")
 }

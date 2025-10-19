@@ -8,9 +8,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.composable
 import com.crewup.myapplication.auth.GoogleAuth
+import com.crewup.myapplication.ui.screens.EditProfileScreen
 import com.crewup.myapplication.ui.screens.HomeScreen
 import com.crewup.myapplication.ui.screens.LoginScreen
+import com.crewup.myapplication.ui.screens.NotificationsScreen
 import com.crewup.myapplication.ui.screens.ProfileScreen
+import com.crewup.myapplication.ui.screens.RegisterScreen
+import com.crewup.myapplication.ui.screens.SecurityScreen
 import com.crewup.myapplication.viewmodel.AuthViewModel
 import com.crewup.myapplication.viewmodel.AuthState
 import kotlinx.coroutines.launch
@@ -27,18 +31,19 @@ fun AppNavigation(
 
     LaunchedEffect(authState.isAuthenticated) {
         if (authState.isAuthenticated) {
-            navController.navigate("home") {
-                popUpTo("login") { inclusive = true }
+            navController.navigate(Routes.Home.route) {
+                popUpTo(Routes.Login.route) { inclusive = true }
             }
         } else {
-            navController.navigate("login") {
-                popUpTo("home") { inclusive = true }
+            navController.navigate(Routes.Login.route) {
+                popUpTo(Routes.Home.route) { inclusive = true }
             }
         }
     }
 
-    NavHost(navController = navController, startDestination = "login") {
-        composable("login") {
+    NavHost(navController = navController, startDestination = Routes.Login.route) {
+        // Pantallas de autenticación
+        composable(Routes.Login.route) {
             LoginScreen(
                 authState = authState,
                 onEmailLogin = { email, password ->
@@ -57,22 +62,62 @@ fun AppNavigation(
                 },
                 onClearError = {
                     authViewModel.clearError()
+                },
+                onNavigateToRegister = {
+                    navController.navigate(Routes.Register.route)
                 }
             )
         }
 
-        composable("home") {
+        composable(Routes.Register.route) {
+            RegisterScreen(
+                authState = authState,
+                onEmailRegister = { email, password ->
+                    authViewModel.registerWithEmailPassword(email, password)
+                },
+                onGoogleLogin = {
+                    coroutineScope.launch {
+                        val result = googleAuth.signInWithGoogle()
+                        result.onFailure {
+                            println("❌ Google Sign-In error: ${it.message}")
+                        }
+                    }
+                },
+                onClearError = {
+                    authViewModel.clearError()
+                },
+                onNavigateToLogin = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        // Pantallas principales
+        composable(Routes.Home.route) {
             HomeScreen(
                 user = authState.user,
                 navController = navController
             )
         }
 
-        composable("profile") {
+        composable(Routes.Profile.route) {
             ProfileScreen(
                 navController = navController,
                 onSignOut = { authViewModel.signOut() }
             )
+        }
+
+        // Pantallas de configuración
+        composable(Routes.EditProfile.route) {
+            EditProfileScreen(navController = navController)
+        }
+
+        composable(Routes.Security.route) {
+            SecurityScreen(navController = navController)
+        }
+
+        composable(Routes.Notifications.route) {
+            NotificationsScreen(navController = navController)
         }
 
     }

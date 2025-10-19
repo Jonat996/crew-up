@@ -1,11 +1,10 @@
-package com.crewup.myapplication.ui.components
+package com.crewup.myapplication.ui.components.sections
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
@@ -36,12 +35,6 @@ data class Country(
     val cities: List<String>
 )
 
-
-
-
-// ----------------------
-// LISTA DE PAÍSES
-// ----------------------
 val countries = listOf(
     Country(
         name = "Colombia",
@@ -290,15 +283,7 @@ fun FormRegister(
                         lineHeight = 22.sp // 🔹 más espacio interno vertical
                     )
                 )
-
-
-
             }
-
-
-
-
-
 
 
             // Campo de ciudad
