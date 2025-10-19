@@ -1,4 +1,4 @@
-package com.crewup.myapplication.ui.components
+package com.crewup.myapplication.ui.components.sections
 
 
 import androidx.compose.foundation.clickable
