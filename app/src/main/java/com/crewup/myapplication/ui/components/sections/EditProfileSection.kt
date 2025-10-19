@@ -1,4 +1,4 @@
-package com.crewup.myapplication.ui.components
+package com.crewup.myapplication.ui.components.sections
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -31,8 +31,9 @@ import com.crewup.myapplication.ui.components.forminputs.NameAndLastNameInput
 import com.crewup.myapplication.ui.components.forminputs.OccupationInput
 import com.crewup.myapplication.viewmodel.UserViewModel
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import com.crewup.myapplication.R
-
+import com.crewup.myapplication.ui.components.countriesList
 
 
 @Composable
@@ -157,4 +158,10 @@ fun EditProfileSection(){
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun EditProfileSectionPreview(){
+    EditProfileSection()
 }
