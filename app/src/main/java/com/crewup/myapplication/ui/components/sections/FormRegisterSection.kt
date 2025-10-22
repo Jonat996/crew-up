@@ -69,7 +69,7 @@ val countries = listOf(
 fun FormRegister(
     authState: AuthState,
     isRegistering: Boolean,
-    onEmailRegister: (String, String) -> Unit,
+    onEmailRegister: (name: String, lastName: String, email: String, password: String, country: String, city: String, phone: String) -> Unit,
     onGoogleLogin: () -> Unit,
     onClearError: () -> Unit,
     modifier: Modifier = Modifier
@@ -368,7 +368,15 @@ fun FormRegister(
 
             // Botón Registro
             Button(
-                onClick = { onEmailRegister(email, password) },
+                onClick = { onEmailRegister(
+                    name,
+                    lastName,
+                    email,
+                    password,
+                    selectedCountry.name,
+                    selectedCity,
+                    selectedCountry.code + phoneNumber
+                ) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp)
@@ -392,9 +400,10 @@ fun PreviewFormRegister() {
         FormRegister(
             authState = AuthState(),
             isRegistering = false,
-            onEmailRegister = { _, _ -> },
+            onEmailRegister = { _, _, _, _, _, _, _ -> },
             onGoogleLogin = {},
             onClearError = {}
         )
     }
 }
+

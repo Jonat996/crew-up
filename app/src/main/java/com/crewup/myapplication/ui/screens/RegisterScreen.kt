@@ -18,11 +18,20 @@ import com.crewup.myapplication.viewmodel.AuthState
 @Composable
 fun RegisterScreen(
     authState: AuthState,
-    onEmailRegister: (String, String) -> Unit,
+    onEmailRegister: (
+        name: String,
+        lastName: String,
+        email: String,
+        password: String,
+        country: String,
+        city: String,
+        phone: String
+    ) -> Unit,
     onGoogleLogin: () -> Unit,
     onClearError: () -> Unit,
-    onNavigateToLogin: () -> Unit // volver al login si se quiere
-) {
+    onNavigateToLogin: () -> Unit
+)
+{
     val scrollState = rememberScrollState()
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -44,8 +53,8 @@ fun RegisterScreen(
             ) {
                 FormRegister(
                     authState = authState,
-                    isRegistering = true, // ✅ Siempre en modo registro
-                    onEmailRegister = onEmailRegister,
+                    isRegistering = true,
+                    onEmailRegister = onEmailRegister as (String, String, String, String, String, String, String) -> Unit,
                     onGoogleLogin = onGoogleLogin,
                     onClearError = onClearError
                 )
@@ -79,7 +88,7 @@ fun RegisterScreen(
 fun PreviewRegisterScreen() {
     RegisterScreen(
         authState = AuthState(),
-        onEmailRegister = { _, _ -> },
+        onEmailRegister = { _, _, _, _, _, _, _ -> },
         onGoogleLogin = {},
         onClearError = {},
         onNavigateToLogin = {}
