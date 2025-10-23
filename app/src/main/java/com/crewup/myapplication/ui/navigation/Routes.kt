@@ -25,4 +25,7 @@ sealed class Routes(val route: String) {
     data object TermsAndPolicies : Routes("terms_policies")
     object PlanLocation: Routes("plans")
     object PlanDate : Routes("plan_date")
+
+    // Ruta de creación de plan
+    data object CreatePlan : Routes("create_plan")
 }

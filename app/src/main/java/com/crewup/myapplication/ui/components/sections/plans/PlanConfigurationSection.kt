@@ -33,13 +33,29 @@ import com.crewup.myapplication.ui.components.InputWrapper
  * Sección para configurar categorías y participantes del plan.
  *
  * @param modifier Modificador para la sección.
+ * @param selectedTags Tags actualmente seleccionados.
+ * @param minAge Edad mínima actual.
+ * @param maxAge Edad máxima actual.
+ * @param selectedGender Género seleccionado actual.
+ * @param onTagsChange Callback cuando cambian los tags.
+ * @param onAgeRangeChanged Callback cuando cambia el rango de edad.
+ * @param onGenderChanged Callback cuando cambia el género.
  */
 @Composable
-fun PlanConfigurationSection(modifier: Modifier = Modifier) {
-    var selectedCategories by remember { mutableStateOf(listOf<String>()) }
-    var minAge by remember { mutableStateOf(18) }
-    var maxAge by remember { mutableStateOf(65) }
-    var selectedGender by remember { mutableStateOf("Todos") }
+fun PlanConfigurationSection(
+    modifier: Modifier = Modifier,
+    selectedTags: List<String> = emptyList(),
+    minAge: Int = 18,
+    maxAge: Int = 65,
+    selectedGender: String = "Todos",
+    onTagsChange: (List<String>) -> Unit = {},
+    onAgeRangeChanged: (Int, Int) -> Unit = { _, _ -> },
+    onGenderChanged: (String) -> Unit = {}
+) {
+    var selectedCategories by remember(selectedTags) { mutableStateOf(selectedTags) }
+    var currentMinAge by remember(minAge) { mutableStateOf(minAge) }
+    var currentMaxAge by remember(maxAge) { mutableStateOf(maxAge) }
+    var currentGender by remember(selectedGender) { mutableStateOf(selectedGender) }
 
     Column(modifier = modifier) {
 
@@ -50,13 +66,13 @@ fun PlanConfigurationSection(modifier: Modifier = Modifier) {
             detail = "Asegúrate que las etiquetas sean acorde al plan.",
             modifier = Modifier.fillMaxWidth()
         ) {
-            CategorySelector( { category ->
-                selectedCategories = if (selectedCategories.contains(category)) {
-                    selectedCategories - category
-                } else {
-                    selectedCategories + category
+            CategorySelector(
+                selectedTags = selectedCategories,
+                onTagsChanged = { newTags ->
+                    selectedCategories = newTags
+                    onTagsChange(newTags)
                 }
-            })
+            )
         }
 
         // InputWrapper para configurar quiénes pueden unirse
@@ -80,15 +96,16 @@ fun PlanConfigurationSection(modifier: Modifier = Modifier) {
                         modifier = Modifier.padding(end = 8.dp)
                     )
                     Slider(
-                        value = maxAge.toFloat(),
+                        value = currentMaxAge.toFloat(),
                         onValueChange = { newMaxAge ->
-                            maxAge = newMaxAge.toInt().coerceIn(minAge + 1, 65)
+                            currentMaxAge = newMaxAge.toInt().coerceIn(currentMinAge + 1, 65)
+                            onAgeRangeChanged(currentMinAge, currentMaxAge)
                         },
                         valueRange = 18f..65f,
                         steps = 4,
                         modifier = Modifier.weight(1f)
                     )
-                    Text(text = "$minAge - $maxAge", fontSize = 14.sp)
+                    Text(text = "$currentMinAge - $currentMaxAge", fontSize = 14.sp)
                 }
 
                 // Gender Selector
@@ -98,21 +115,30 @@ fun PlanConfigurationSection(modifier: Modifier = Modifier) {
                         .padding(horizontal = 16.dp, vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    IconButton(onClick = { selectedGender = "M" }) {
+                    IconButton(onClick = {
+                        currentGender = "M"
+                        onGenderChanged("M")
+                    }) {
                         Icon(
                             painter = painterResource(id = android.R.drawable.ic_lock_power_off), // Placeholder for male icon
                             contentDescription = "Male Icon"
                         )
                         Text(text = "M", fontSize = 14.sp)
                     }
-                    IconButton(onClick = { selectedGender = "F" }) {
+                    IconButton(onClick = {
+                        currentGender = "F"
+                        onGenderChanged("F")
+                    }) {
                         Icon(
                             painter = painterResource(id = android.R.drawable.ic_lock_power_off), // Placeholder for female icon
                             contentDescription = "Female Icon"
                         )
                         Text(text = "F", fontSize = 14.sp)
                     }
-                    IconButton(onClick = { selectedGender = "Todos" }) {
+                    IconButton(onClick = {
+                        currentGender = "Todos"
+                        onGenderChanged("Todos")
+                    }) {
                         Icon(
                             painter = painterResource(id = android.R.drawable.ic_menu_info_details), // Placeholder for all icon
                             contentDescription = "All Icon"

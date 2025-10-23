@@ -8,6 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.composable
 import com.crewup.myapplication.auth.GoogleAuth
+import com.crewup.myapplication.ui.screens.CreatePlanFlowScreen
 import com.crewup.myapplication.ui.screens.EditProfileScreen
 import com.crewup.myapplication.ui.screens.HomeScreen
 import com.crewup.myapplication.ui.screens.LoginScreen
@@ -138,6 +139,9 @@ fun AppNavigation(
             PlanDateScreen(navController = navController)
         }
 
-
+        // Ruta de creación de plan
+        composable(Routes.CreatePlan.route) {
+            CreatePlanFlowScreen(navController = navController)
+        }
     }
 }
