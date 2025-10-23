@@ -12,6 +12,7 @@ import com.crewup.myapplication.ui.screens.EditProfileScreen
 import com.crewup.myapplication.ui.screens.HomeScreen
 import com.crewup.myapplication.ui.screens.LoginScreen
 import com.crewup.myapplication.ui.screens.NotificationsScreen
+import com.crewup.myapplication.ui.screens.PlanLocationScreen
 import com.crewup.myapplication.ui.screens.ProfileScreen
 import com.crewup.myapplication.ui.screens.RegisterScreen
 import com.crewup.myapplication.ui.screens.SecurityScreen
@@ -118,6 +119,10 @@ fun AppNavigation(
 
         composable(Routes.Notifications.route) {
             NotificationsScreen(navController = navController)
+        }
+
+        composable(Routes.MyPlans.route) {
+            PlanLocationScreen(navController = navController)
         }
 
     }
