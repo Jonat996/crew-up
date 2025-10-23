@@ -1,16 +1,13 @@
 package com.crewup.myapplication
 
 import android.app.Application
-import com.facebook.FacebookSdk
-import com.facebook.appevents.AppEventsLogger
+import com.google.android.libraries.places.api.Places
 
 class CrewUpApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-
-        // Inicializar Facebook SDK
-        FacebookSdk.sdkInitialize(applicationContext)
-        AppEventsLogger.activateApp(this)
+        // Inicializar Google Places
+        Places.initialize(applicationContext, getString(R.string.google_maps_key))
     }
 }
