@@ -44,7 +44,9 @@ fun Header(title: String) {
                 fontSize = 34.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White,
-                modifier = Modifier.padding(bottom = 50.dp)
+                modifier = Modifier
+                    .padding(bottom = 50.dp)
+                    .offset(y = (-70).dp),
 
             )
         }
