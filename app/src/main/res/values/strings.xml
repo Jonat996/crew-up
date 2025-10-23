@@ -60,6 +60,8 @@
     <!-- Plans -->
     <string name="where_will_it_be">¿Dónde será tu plan?</string>
     <string name="select_the_day">Selecciona el día</string>
-    <string name="what_time_will_it_be">¿A qué hora será?</string>
+    <string name="what_time">¿A qué hora será?</string>
     <string name="button_plan">Siguiente</string>
+    <string name="create_plan">Crear!</string>
+    <string name="modifier_plan">Quiero modificar algo</string>
 </resources>

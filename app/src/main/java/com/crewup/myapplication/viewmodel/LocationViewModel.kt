@@ -1,11 +1,8 @@
 package com.crewup.myapplication.viewmodel
 
-
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.crewup.myapplication.models.PlaceSuggestion
-import com.crewup.myapplication.models.PlanLocation
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.AutocompleteSessionToken
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
@@ -13,6 +10,7 @@ import com.google.android.libraries.places.api.net.PlacesClient
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import com.crewup.myapplication.models.PlaceSuggestion
 import kotlinx.coroutines.tasks.await
 
 class LocationViewModel(application: Application) : AndroidViewModel(application) {
@@ -39,7 +37,6 @@ class LocationViewModel(application: Application) : AndroidViewModel(application
         val request = FindAutocompletePredictionsRequest.builder()
             .setQuery(query)
             .setSessionToken(token)
-
             .build()
 
         viewModelScope.launch {
