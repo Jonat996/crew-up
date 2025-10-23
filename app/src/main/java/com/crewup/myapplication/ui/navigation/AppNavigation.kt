@@ -43,15 +43,22 @@ fun AppNavigation(
     }
 
     NavHost(navController = navController, startDestination = Routes.Login.route) {
-        // Pantallas de autenticación
         composable(Routes.Login.route) {
             LoginScreen(
                 authState = authState,
                 onEmailLogin = { email, password ->
                     authViewModel.signInWithEmailPassword(email, password)
                 },
-                onEmailRegister = { email, password ->
-                    authViewModel.registerWithEmailPassword(email, password)
+                onEmailRegister = { name, lastName, email, password, country, city, phone ->
+                    authViewModel.registerWithEmailPassword(
+                        name,
+                        lastName,
+                        email,
+                        password,
+                        country,
+                        city,
+                        phone
+                    )
                 },
                 onGoogleLogin = {
                     coroutineScope.launch {
@@ -70,11 +77,12 @@ fun AppNavigation(
             )
         }
 
+
         composable(Routes.Register.route) {
             RegisterScreen(
                 authState = authState,
-                onEmailRegister = { email, password ->
-                    authViewModel.registerWithEmailPassword(email, password)
+                onEmailRegister = { name, lastName, email, password, country, city, phone ->
+                    authViewModel.registerWithEmailPassword(name, lastName, email, password, country, city, phone)
                 },
                 onGoogleLogin = {
                     coroutineScope.launch {

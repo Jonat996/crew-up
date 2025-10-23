@@ -114,15 +114,31 @@ class AuthViewModel : ViewModel() {
         }
     }
 
-    fun registerWithEmailPassword(email: String, password: String) {
+    fun registerWithEmailPassword(
+        name: String,
+        lastName: String,
+        email: String,
+        password: String,
+        country: String,
+        city: String,
+        phone: String
+    ) {
         _authState.value = _authState.value.copy(isLoading = true, error = null)
 
         emailPasswordAuth.register(email, password) { success, message ->
             if (success) {
-                 viewModelScope.launch {
+                viewModelScope.launch {
                     val uid = auth.currentUser?.uid ?: return@launch
-                    val initialUser = User(uid = uid, email = email)
-                    repository.createUser(initialUser)
+                    val newUser = User(
+                        uid = uid,
+                        email = email,
+                        name = name,
+                        lastName = lastName,
+                        country = country,
+                        city = city,
+                        phoneNumber = phone
+                    )
+                    repository.createUser(newUser)
                 }
                 _authState.value = _authState.value.copy(
                     isLoading = false,
