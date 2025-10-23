@@ -4,6 +4,7 @@
     <string name="facebook_app_id">1376981000429957</string>
     <string name="fb_login_protocol_scheme">fb1376981000429957</string>
     <string name="facebook_client_token">3ae4a66de3860669cb0cb15c149e60bd</string>
+    <string name="google_maps_key">AIzaSyAvJ-IDo_szSKTKS8ylWi0gX7U3fTccMBA</string>
 
     <!-- LoginScreen -->
     <string name="login_title">Iniciar Sesión</string>
@@ -54,4 +55,11 @@
     <string name="forgot_password">¿Olvidaste tu contraseña?</string>
     <string name="login_button">Iniciar Sesión</string>
     <string name="google_icon_description">Icono de Google</string>
+    <string name="title_activity_maps">MapsActivity</string>
+
+    <!-- Plans -->
+    <string name="where_will_it_be">¿Dónde será tu plan?</string>
+    <string name="select_the_day">Selecciona el día</string>
+    <string name="what_time_will_it_be">¿A qué hora será?</string>
+    <string name="button_plan">Siguiente</string>
 </resources>
