@@ -15,6 +15,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.crewup.myapplication.viewmodel.LocationViewModel
 
 @Composable
@@ -38,8 +39,8 @@ fun LocationPlanSection() {
             },
             suggestions = suggestions,
             onSuggestionClick = { suggestion ->
-                // Aquí maneja la selección (e.g., guarda en un plan o navega)
-                query = suggestion.description // Opcional: Actualiza el campo con la selección
+
+                query = suggestion.description
                 viewModel.clearSuggestions()
             },
             isLoading = isLoading,

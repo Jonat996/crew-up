@@ -23,4 +23,6 @@ sealed class Routes(val route: String) {
     data object ReportProblem : Routes("report_problem")
     data object MyPlans : Routes("my_plans")
     data object TermsAndPolicies : Routes("terms_policies")
+    object PlanLocation: Routes("plans")
+    object PlanDate : Routes("plan_date")
 }
