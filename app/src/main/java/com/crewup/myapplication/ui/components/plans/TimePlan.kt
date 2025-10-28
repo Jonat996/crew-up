@@ -1,8 +1,10 @@
 package com.crewup.myapplication.ui.components.plans
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Text
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
@@ -28,7 +30,7 @@ fun TimePlan(
     // 1. Estados iniciales
     var hour by remember { mutableIntStateOf(selectedTime.hour) }
     var minute by remember { mutableIntStateOf(selectedTime.minute) }
-    // Omitimos segundos como pediste, pero el patrón sería el mismo
+
     var amPm by remember { mutableStateOf(if (selectedTime.hour >= 12) AmPm.PM else AmPm.AM) }
 
     // 2. Efecto para actualizar el LocalTime cuando los estados internos cambian
@@ -61,25 +63,28 @@ fun TimePlan(
         TimeSegment(
             value = displayHour,
             onValueChange = { newH -> hour = newH },
-            label = "Horas",
+            label = "",
             range = if (is24Hour) 0..23 else 1..12,
             twoDigit = true
         )
 
         // Separador de dos puntos
-        Text(":", fontSize = 36.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 4.dp), color = MaterialTheme.colorScheme.primary)
+        Text(
+            text = ":",
+            fontSize = 36.sp, fontWeight = FontWeight.Bold,
+            modifier = Modifier
+                .padding(horizontal = 4.dp),
+            color =Color(0xFF0056B3)
+        )
 
         // --- COLUMNA MINUTO ---
         TimeSegment(
             value = minute,
             onValueChange = { minute = it },
-            label = "Minutos",
+            label = "",
             range = 0..59,
             twoDigit = true
         )
-
-        // Separador de dos puntos (Omitido ya que quitamos los segundos)
-        // Si quisieras los segundos, iría aquí, seguido de la Columna Segundos.
 
         // --- COLUMNA AM/PM ---
         if (!is24Hour) {
@@ -93,6 +98,7 @@ fun TimePlan(
     }
 }
 
+
 // Componente para un segmento de hora/minuto (Simulando el spinner)
 @Composable
 fun TimeSegment(
@@ -102,67 +108,125 @@ fun TimeSegment(
     range: IntRange,
     twoDigit: Boolean
 ) {
-    // ⚠️ NOTA: Esto es una simulación visual. Un spinner real usaría LazyColumn o una librería de terceros.
-    // Aquí solo mostramos el valor central y los valores anteriores/siguientes para imitar el diseño.
+    val listState = rememberLazyListState()
+    val displayValues = range.toList()
+    var hasInitialized by remember { mutableStateOf(false) }
 
-    val displayValue = if (twoDigit) String.format("%02d", value) else value.toString()
-    val prevValue = if (value - 1 < range.first) range.last else value - 1
-    val nextValue = if (value + 1 > range.last) range.first else value + 1
+    // Centrar solo al inicio
+    LaunchedEffect(Unit) {
+        val targetIndex = displayValues.indexOf(value.coerceIn(range))
+        listState.scrollToItem(targetIndex)
+        hasInitialized = true
+    }
+
+    // Actualizar el valor solo cuando el usuario hace scroll
+    LaunchedEffect(
+        listState.firstVisibleItemIndex,
+        listState.layoutInfo.visibleItemsInfo,
+        hasInitialized
+    ) {
+        if (hasInitialized) {
+            val visibleItems = listState.layoutInfo.visibleItemsInfo
+            if (visibleItems.isNotEmpty()) {
+                val centerIndex = listState.firstVisibleItemIndex + visibleItems.size / 2
+                val adjustedIndex = centerIndex.coerceIn(displayValues.indices)
+                val newValue = displayValues[adjustedIndex]
+                if (newValue != value) {
+                    onValueChange(newValue)
+                }
+            }
+        }
+    }
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        // Valor superior (desplazado)
         Text(
-            text = if (twoDigit) String.format("%02d", prevValue) else prevValue.toString(),
-            fontSize = 30.sp,
+            text = label,
+            fontSize = 16.sp,
             color = Color.Gray,
-            modifier = Modifier.padding(vertical = 4.dp)
+            modifier = Modifier.padding(bottom = 8.dp)
         )
 
-        // Valor central (seleccionado)
-        Text(
-            text = displayValue,
-            fontSize = 36.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color(0xFF0056B3),
+        LazyColumn(
+            state = listState,
             modifier = Modifier
-                .padding(vertical = 4.dp)
-                .background(Color.Transparent) // Fondo transparente para enfatizar el texto
-                .clickable { /* Abre un diálogo o dispara la acción de cambio */ }
-        )
-
-        // Valor inferior (desplazado)
-        Text(
-            text = if (twoDigit) String.format("%02d", nextValue) else nextValue.toString(),
-            fontSize = 30.sp,
-            color = Color.Black,
-            modifier = Modifier.padding(vertical = 4.dp)
-        )
+                .background(Color.LightGray.copy(alpha = 0.1f))
+                .padding(vertical = 16.dp)
+                .height(120.dp)
+        ) {
+            items(displayValues) { item ->
+                val isSelected =
+                    displayValues.indexOf(item) == (listState.firstVisibleItemIndex + listState.layoutInfo.visibleItemsInfo.size / 2).coerceIn(
+                        displayValues.indices
+                    )
+                Text(
+                    text = if (twoDigit) String.format("%02d", item) else item.toString(),
+                    fontSize = if (isSelected) 36.sp else 30.sp,
+                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                    color = if (isSelected) Color(0xFF0056B3) else Color.Gray,
+                    modifier = Modifier.padding(vertical = 4.dp)
+                )
+            }
+        }
     }
 }
-
 // Componente para el selector AM/PM
 @Composable
-fun AmPmSegment(amPm: AmPm, onAmPmChange: (AmPm) -> Unit, modifier: Modifier) {
-    Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(
-            text = AmPm.AM.name,
-            fontSize = 30.sp,
-            color = if (amPm == AmPm.AM) MaterialTheme.colorScheme.primary else Color.Gray,
+fun AmPmSegment(
+    amPm: AmPm,
+    onAmPmChange: (AmPm) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val listState = rememberLazyListState()
+    val displayValues = listOf(AmPm.AM, AmPm.PM)
+    var hasInitialized by remember { mutableStateOf(false) }
+
+    // Centrar solo al inicio
+    LaunchedEffect(Unit) {
+        val targetIndex = displayValues.indexOf(amPm)
+        listState.scrollToItem(targetIndex)
+        hasInitialized = true
+    }
+
+    // Actualizar el valor solo cuando el usuario hace scroll
+    LaunchedEffect(listState.firstVisibleItemIndex, listState.layoutInfo.visibleItemsInfo, hasInitialized) {
+        if (hasInitialized) {
+            val visibleItems = listState.layoutInfo.visibleItemsInfo
+            if (visibleItems.isNotEmpty()) {
+                val centerIndex = listState.firstVisibleItemIndex + visibleItems.size / 2
+                val adjustedIndex = centerIndex.coerceIn(displayValues.indices)
+                val newValue = displayValues[adjustedIndex]
+                if (newValue != amPm) {
+                    onAmPmChange(newValue)
+                }
+            }
+        }
+    }
+
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        LazyColumn(
+            state = listState,
             modifier = Modifier
-                .padding(vertical = 4.dp)
-                .clickable { onAmPmChange(AmPm.AM) }
-        )
-        Spacer(Modifier.height(10.dp)) // Espaciador central
-        Text(
-            text = AmPm.PM.name,
-            fontSize = 30.sp,
-            color = if (amPm == AmPm.PM) Color(0xFF0056B3) else Color.Gray,
-            modifier = Modifier
-                .padding(vertical = 4.dp)
-                .clickable { onAmPmChange(AmPm.PM) }
-        )
+                .background(Color.LightGray.copy(alpha = 0.1f))
+                .padding(vertical = 26.dp)
+                .height(100.dp)
+        ) {
+            items(displayValues) { item ->
+                val isSelected = displayValues.indexOf(item) == (listState.firstVisibleItemIndex + listState.layoutInfo.visibleItemsInfo.size / 2).coerceIn(displayValues.indices)
+                Text(
+                    text = item.name,
+                    fontSize = if (isSelected) 30.sp else 24.sp,
+                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                    color = if (isSelected) Color(0xFF0056B3) else Color.Gray,
+                    modifier = Modifier.padding(vertical = 4.dp)
+                )
+            }
+        }
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable
