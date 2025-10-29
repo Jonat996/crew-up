@@ -28,7 +28,8 @@ fun LoginScreen(
     onEmailRegister: (String, String, String, String, String, String, String) -> Unit,
     onGoogleLogin: () -> Unit,
     onClearError: () -> Unit,
-    onNavigateToRegister: () -> Unit
+    onNavigateToRegister: () -> Unit,
+    onNavigateToRecoverPassword: () -> Unit = {}
 )
 {
     var isRegistering by remember { mutableStateOf(false) }
@@ -58,7 +59,8 @@ fun LoginScreen(
                     onEmailLogin = onEmailLogin,
                     onEmailRegister = onEmailRegister,
                     onGoogleLogin = onGoogleLogin,
-                    onClearError = onClearError
+                    onClearError = onClearError,
+                    onForgotPassword = onNavigateToRecoverPassword
                 )
             }
         }
@@ -88,10 +90,11 @@ fun PreviewLoginScreen() {
     LoginScreen(
         authState = AuthState(),
         onEmailLogin = { _, _ -> },
-        onEmailRegister = { _, _, _, _, _, _, _ -> }, // 👈 agregado
+        onEmailRegister = { _, _, _, _, _, _, _ -> },
         onGoogleLogin = {},
         onClearError = {},
-        onNavigateToRegister = {}
+        onNavigateToRegister = {},
+        onNavigateToRecoverPassword = {}
     )
 }
 
