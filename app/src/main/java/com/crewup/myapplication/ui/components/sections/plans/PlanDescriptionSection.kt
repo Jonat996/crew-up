@@ -95,7 +95,7 @@ fun PlanDescriptionSection(
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "Toca para agregar una imagen",
+                            text = "Añade una foto del plan",
                             color = Color.Gray,
                             fontSize = 14.sp
                         )

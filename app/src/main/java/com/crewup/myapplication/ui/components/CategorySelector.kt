@@ -138,7 +138,7 @@ fun TagChip(
                 onClick = onRemove,
                 modifier = Modifier
                     .size(20.dp)
-                    .background(Color.White.copy(alpha = 0.3f), CircleShape)
+                    .offset(y = (-2).dp)
             ) {
                 Icon(
                     imageVector = Icons.Default.Close,
