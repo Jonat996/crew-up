@@ -30,7 +30,6 @@ fun TimePlan(
     // 1. Estados iniciales
     var hour by remember { mutableIntStateOf(selectedTime.hour) }
     var minute by remember { mutableIntStateOf(selectedTime.minute) }
-
     var amPm by remember { mutableStateOf(if (selectedTime.hour >= 12) AmPm.PM else AmPm.AM) }
 
     // 2. Efecto para actualizar el LocalTime cuando los estados internos cambian
@@ -128,10 +127,13 @@ fun TimeSegment(
         if (hasInitialized) {
             val visibleItems = listState.layoutInfo.visibleItemsInfo
             if (visibleItems.isNotEmpty()) {
-                val centerIndex = listState.firstVisibleItemIndex + visibleItems.size / 2
-                val adjustedIndex = centerIndex.coerceIn(displayValues.indices)
-                val newValue = displayValues[adjustedIndex]
-                if (newValue != value) {
+                val centerY = listState.layoutInfo.viewportEndOffset / 2
+                val centeredItem = visibleItems.minByOrNull { item ->
+                    kotlin.math.abs(item.offset + item.size / 2 - centerY)
+                }
+                val adjustedIndex = centeredItem?.index ?: listState.firstVisibleItemIndex
+                val newValue = displayValues.getOrNull(adjustedIndex)
+                if (newValue != null && newValue != value) {
                     onValueChange(newValue)
                 }
             }
@@ -153,11 +155,15 @@ fun TimeSegment(
                 .padding(vertical = 16.dp)
                 .height(120.dp)
         ) {
+            item {
+                Spacer(modifier = Modifier.height(60.dp)) // mitad de 120.dp
+            }
+
             items(displayValues) { item ->
-                val isSelected =
-                    displayValues.indexOf(item) == (listState.firstVisibleItemIndex + listState.layoutInfo.visibleItemsInfo.size / 2).coerceIn(
-                        displayValues.indices
-                    )
+                val isSelected = displayValues.indexOf(item) == (
+                        listState.firstVisibleItemIndex + listState.layoutInfo.visibleItemsInfo.size / 2
+                        ).coerceIn(displayValues.indices)
+
                 Text(
                     text = if (twoDigit) String.format("%02d", item) else item.toString(),
                     fontSize = if (isSelected) 36.sp else 30.sp,
@@ -166,7 +172,12 @@ fun TimeSegment(
                     modifier = Modifier.padding(vertical = 4.dp)
                 )
             }
+
+            item {
+                Spacer(modifier = Modifier.height(60.dp)) // mitad de 120.dp
+            }
         }
+
     }
 }
 // Componente para el selector AM/PM
@@ -180,22 +191,25 @@ fun AmPmSegment(
     val displayValues = listOf(AmPm.AM, AmPm.PM)
     var hasInitialized by remember { mutableStateOf(false) }
 
-    // Centrar solo al inicio
+
     LaunchedEffect(Unit) {
         val targetIndex = displayValues.indexOf(amPm)
         listState.scrollToItem(targetIndex)
         hasInitialized = true
     }
 
-    // Actualizar el valor solo cuando el usuario hace scroll
+
     LaunchedEffect(listState.firstVisibleItemIndex, listState.layoutInfo.visibleItemsInfo, hasInitialized) {
         if (hasInitialized) {
             val visibleItems = listState.layoutInfo.visibleItemsInfo
             if (visibleItems.isNotEmpty()) {
-                val centerIndex = listState.firstVisibleItemIndex + visibleItems.size / 2
-                val adjustedIndex = centerIndex.coerceIn(displayValues.indices)
-                val newValue = displayValues[adjustedIndex]
-                if (newValue != amPm) {
+                val centerY = listState.layoutInfo.viewportEndOffset / 2
+                val centeredItem = visibleItems.minByOrNull { item ->
+                    kotlin.math.abs(item.offset + item.size / 2 - centerY)
+                }
+                val adjustedIndex = centeredItem?.index ?: listState.firstVisibleItemIndex
+                val newValue = displayValues.getOrNull(adjustedIndex)
+                if (newValue != null && newValue != amPm) {
                     onAmPmChange(newValue)
                 }
             }
@@ -210,11 +224,19 @@ fun AmPmSegment(
             state = listState,
             modifier = Modifier
                 .background(Color.LightGray.copy(alpha = 0.1f))
-                .padding(vertical = 26.dp)
-                .height(100.dp)
+                .padding(vertical = 16.dp)
+                .height(120.dp)
         ) {
-            items(displayValues) { item ->
-                val isSelected = displayValues.indexOf(item) == (listState.firstVisibleItemIndex + listState.layoutInfo.visibleItemsInfo.size / 2).coerceIn(displayValues.indices)
+            item {
+                Spacer(modifier = Modifier.height(60.dp)) // espacio superior
+            }
+
+            items(displayValues.size) { index ->
+                val item = displayValues[index]
+                val isSelected = index == (
+                        listState.firstVisibleItemIndex + listState.layoutInfo.visibleItemsInfo.size / 2
+                        ).coerceIn(displayValues.indices)
+
                 Text(
                     text = item.name,
                     fontSize = if (isSelected) 30.sp else 24.sp,
@@ -223,7 +245,12 @@ fun AmPmSegment(
                     modifier = Modifier.padding(vertical = 4.dp)
                 )
             }
+
+            item {
+                Spacer(modifier = Modifier.height(60.dp)) // espacio inferior
+            }
         }
+
     }
 }
 

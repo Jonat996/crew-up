@@ -1,5 +1,6 @@
 package com.crewup.myapplication.ui.components.sections.plans
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -49,10 +50,12 @@ fun DatePlanSection(
     var localTime by remember(selectedTime) { mutableStateOf(selectedTime ?: java.time.LocalTime.of(12, 0)) }
 
     Column(modifier = Modifier
-        .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally)
+        .padding(16.dp)
+        .background(color = Color.White),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        )
     {
-        Spacer(modifier = Modifier.height(18.dp).padding(20.dp))
+        Spacer(modifier = Modifier.height(15.dp).padding(1.dp))
         Text(
             text = stringResource(R.string.select_the_day),
             fontWeight = FontWeight.SemiBold,
@@ -75,7 +78,7 @@ fun DatePlanSection(
             fontSize = 18.sp
 
         )
-        Spacer(modifier = Modifier.height(18.dp))
+        Spacer(modifier = Modifier.height(18.dp).padding(10.dp))
         TimePlan(
             selectedTime = localTime,
             onTimeSelected = { newTime ->
