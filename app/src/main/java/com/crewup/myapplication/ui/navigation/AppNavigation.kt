@@ -15,6 +15,8 @@ import com.crewup.myapplication.ui.screens.NotificationsScreen
 import com.crewup.myapplication.ui.screens.ProfileScreen
 import com.crewup.myapplication.ui.screens.RegisterScreen
 import com.crewup.myapplication.ui.screens.SecurityScreen
+import com.crewup.myapplication.ui.screens.password.RecoverEmailScreen
+import com.crewup.myapplication.ui.screens.error.NotFoundScreen
 import com.crewup.myapplication.viewmodel.AuthViewModel
 import com.crewup.myapplication.viewmodel.AuthState
 import kotlinx.coroutines.launch
@@ -72,6 +74,9 @@ fun AppNavigation(
                 },
                 onNavigateToRegister = {
                     navController.navigate(Routes.Register.route)
+                },
+                onNavigateToRecoverPassword = {
+                    navController.navigate(Routes.RecoverEmail.route)
                 }
             )
         }
@@ -126,6 +131,19 @@ fun AppNavigation(
 
         composable(Routes.Notifications.route) {
             NotificationsScreen(navController = navController)
+        }
+
+        // Pantalla de recuperación de contraseña
+        composable(Routes.RecoverEmail.route) {
+            RecoverEmailScreen(
+                navController = navController,
+                authViewModel = authViewModel,
+                authState = authState
+            )
+        }
+
+        composable(Routes.NotFound.route) {
+            NotFoundScreen(navController = navController)
         }
 
     }

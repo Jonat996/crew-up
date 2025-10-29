@@ -165,4 +165,13 @@ class AuthViewModel : ViewModel() {
         _authState.value = _authState.value.copy(error = null)
     }
 
+    fun sendPasswordResetEmail(email: String, onResult: (Boolean, String?) -> Unit) {
+        _authState.value = _authState.value.copy(isLoading = true, error = null)
+
+        emailPasswordAuth.sendPasswordResetEmail(email) { success, message ->
+            _authState.value = _authState.value.copy(isLoading = false)
+            onResult(success, message)
+        }
+    }
+
 }

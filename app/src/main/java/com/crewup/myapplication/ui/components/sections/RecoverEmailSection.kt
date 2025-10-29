@@ -11,13 +11,23 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.crewup.myapplication.ui.navigation.Routes
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.foundation.text.KeyboardOptions
+import com.crewup.myapplication.viewmodel.AuthViewModel
+import com.crewup.myapplication.viewmodel.AuthState
 
 
 private val CrewUpBlue = Color(0xFF007BFF)
 
 @Composable
-fun RecoverEmailSection(navController: NavController? = null) {
+fun RecoverEmailSection(
+    navController: NavController? = null,
+    authViewModel: AuthViewModel? = null,
+    authState: AuthState? = null
+) {
     var email by remember { mutableStateOf("") }
+    var successMessage by remember { mutableStateOf<String?>(null) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
 
     Box(
         modifier = Modifier
@@ -56,20 +66,78 @@ fun RecoverEmailSection(navController: NavController? = null) {
                     onValueChange = { email = it },
                     label = { Text("Correo electrónico") },
                     singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
                 )
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Mostrar mensaje de éxito
+                successMessage?.let { message ->
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFFE8F5E9)),
+                    ) {
+                        Text(
+                            text = message,
+                            modifier = Modifier.padding(12.dp),
+                            color = Color(0xFF2E7D32),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(12.dp))
+                }
+
+                // Mostrar mensaje de error
+                errorMessage?.let { message ->
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer),
+                    ) {
+                        Text(
+                            text = message,
+                            modifier = Modifier.padding(12.dp),
+                            color = MaterialTheme.colorScheme.onErrorContainer,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(12.dp))
+                }
 
                 Button(
                     onClick = {
-                        // Aquí validas el correo y envías el SMS usando el número del usuario
-                        navController?.navigate(Routes.CodeSent.route)
+                        if (email.isNotBlank() && android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                            errorMessage = null
+                            successMessage = null
+                            authViewModel?.sendPasswordResetEmail(email) { success, message ->
+                                if (success) {
+                                    successMessage = message
+                                } else {
+                                    errorMessage = message
+                                }
+                            }
+                        } else {
+                            errorMessage = "Por favor ingresa un correo electrónico válido"
+                        }
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(containerColor = CrewUpBlue)
+                    colors = ButtonDefaults.buttonColors(containerColor = CrewUpBlue),
+                    enabled = email.isNotBlank() && authState?.isLoading != true
                 ) {
-                    Text("Enviar", color = Color.White)
+                    if (authState?.isLoading == true) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(20.dp),
+                            color = Color.White
+                        )
+                    } else {
+                        Text("Enviar correo de recuperación", color = Color.White)
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                TextButton(onClick = { navController?.popBackStack() }) {
+                    Text("Volver al inicio de sesión", color = CrewUpBlue)
                 }
             }
         }
