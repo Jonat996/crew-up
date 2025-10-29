@@ -64,4 +64,10 @@
     <string name="button_plan">Siguiente</string>
     <string name="create_plan">Crear!</string>
     <string name="modifier_plan">Quiero modificar algo</string>
+
+
+    <string name="plan_image_desc">Imagen del plan</string>
+    <string name="selected_image_desc">Imagen seleccionada</string>
+    <string name="add_plan_photo">Añade una foto del plan</string>
+    <string name="upload_button">Subir imagen</string>
 </resources>

@@ -81,30 +81,35 @@ fun PlaceSearch(
                 Text("Error: $it", color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(top = 12.dp))
             }
 
-            LazyColumn(modifier = Modifier.fillMaxWidth()) {
-                items(suggestions) { suggestion ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { onSuggestionClick(suggestion) }
-                            .padding(vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.vector),
-                            contentDescription = "Location Icon",
-                            tint = Color(0xFF0056B3),
-                            modifier = Modifier.size(24.dp)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Column {
-                            Text(text = suggestion.description, style = MaterialTheme.typography.bodyLarge)
-                            suggestion.secondaryText?.let {
-                                Text(text = it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+            // Usar Column simple en lugar de LazyColumn para evitar problemas de scroll anidado
+            if (suggestions.isNotEmpty()) {
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    suggestions.forEach { suggestion ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { onSuggestionClick(suggestion) }
+                                .padding(vertical = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.vector),
+                                contentDescription = "Location Icon",
+                                tint = Color(0xFF0056B3),
+                                modifier = Modifier.size(24.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Column {
+                                Text(text = suggestion.description, style = MaterialTheme.typography.bodyLarge)
+                                suggestion.secondaryText?.let {
+                                    Text(text = it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+                                }
                             }
                         }
+                        if (suggestion != suggestions.last()) {
+                            Divider()
+                        }
                     }
-                    Divider()
                 }
             }
         }

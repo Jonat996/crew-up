@@ -26,6 +26,8 @@ sealed class Routes(val route: String) {
     object PlanLocation: Routes("plans")
     object PlanDate : Routes("plan_date")
 
+    // Ruta de creación de plan
+    data object CreatePlan : Routes("create_plan")
     // Rutas de recuperación de contraseña
     data object RecoverEmail : Routes("recover_email")
     data object CodeSent : Routes("code_sent")

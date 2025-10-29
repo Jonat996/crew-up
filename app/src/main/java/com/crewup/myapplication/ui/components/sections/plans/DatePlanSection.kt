@@ -15,6 +15,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,10 +34,18 @@ import com.crewup.myapplication.viewmodel.PlanDateViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DatePlanSection() {
-    val viewModel: PlanDateViewModel = viewModel()
-    val selectedDate by viewModel.selectedDate.collectAsState()
-    val selectedTime by viewModel.selectedTime.collectAsState()
+fun DatePlanSection(
+    selectedDate: java.time.LocalDate? = null,
+    selectedTime: java.time.LocalTime? = null,
+    onDateSelected: (java.time.LocalDate) -> Unit = {},
+    onTimeSelected: (java.time.LocalTime) -> Unit = {},
+    viewModel: PlanDateViewModel? = null
+) {
+    val vm: PlanDateViewModel = viewModel ?: viewModel()
+
+    // Estado local para manejar las selecciones
+    var localDate by remember(selectedDate) { mutableStateOf(selectedDate ?: java.time.LocalDate.now()) }
+    var localTime by remember(selectedTime) { mutableStateOf(selectedTime ?: java.time.LocalTime.of(12, 0)) }
 
     Column(modifier = Modifier
         .padding(16.dp),
@@ -49,9 +60,10 @@ fun DatePlanSection() {
         )
        Spacer(modifier = Modifier.height(8.dp))
         DatePlan(
-            selectedDate = selectedDate,
+            selectedDate = localDate,
             onDateSelected = { newDate ->
-                viewModel.updateSelectedDate(newDate)
+                localDate = newDate
+                onDateSelected(newDate)
             }
         )
 
@@ -64,38 +76,14 @@ fun DatePlanSection() {
         )
         Spacer(modifier = Modifier.height(18.dp))
         TimePlan(
-            selectedTime = selectedTime,
+            selectedTime = localTime,
             onTimeSelected = { newTime ->
-                viewModel.updateSelectedTime(newTime)
+                localTime = newTime
+                onTimeSelected(newTime)
             },
             is24Hour = false
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 12.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Button(
-                onClick = {  },
-                modifier = Modifier
-                    .widthIn(min = 140.dp, max = 200.dp)
-                    .height(50.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF0056B3),
-                    contentColor = Color.White,
-                ),
-                shape = RoundedCornerShape(10.dp),
-                contentPadding = PaddingValues(vertical = 12.dp)
-            ) {
-                Text(
-                    text = stringResource(R.string.button_plan),
-                    fontWeight = FontWeight.SemiBold
-                )
-            }
-        }
     }
 }
 @Preview(showSystemUi = true, showBackground = true)

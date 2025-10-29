@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "885733307091-a77lapvk2fn5k4g13kl13dgi2adk5pl5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.crewup.myapplication",
+            "certificate_hash": "dbad6a4e105fb852111a059a1c7f047530aea99c"
+          }
+        },
+        {
           "client_id": "885733307091-8oeqasptg7s7ll17gi2h3mlf0v2fu9k5.apps.googleusercontent.com",
           "client_type": 3
         }
