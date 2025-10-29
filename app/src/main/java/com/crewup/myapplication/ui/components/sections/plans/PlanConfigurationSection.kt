@@ -1,11 +1,15 @@
 package com.crewup.myapplication.ui.components.sections.plans
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Divider
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
@@ -25,7 +29,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.ui.tooling.preview.Preview
+import com.crewup.myapplication.R
 import com.crewup.myapplication.ui.components.CategorySelector
 import com.crewup.myapplication.ui.components.InputWrapper
 
@@ -82,7 +88,14 @@ fun PlanConfigurationSection(
             detail = null,
             modifier = Modifier.fillMaxWidth()
         ) {
+            Divider(color = Color.LightGray.copy(alpha = 0.5f), thickness = 1.dp)
             Column(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = "Rango de edad",
+                    fontSize = 13.sp,
+                    color = Color(0xFF0056B3),
+                    modifier = Modifier.padding(top = 10.dp)
+                )
                 // Age Range Selector
                 Row (
                     modifier = Modifier
@@ -91,7 +104,7 @@ fun PlanConfigurationSection(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        painter = painterResource(id = android.R.drawable.ic_menu_gallery), // Placeholder, replace with age icon
+                        painter = painterResource(id = R.drawable.ic_person), // Placeholder, replace with age icon
                         contentDescription = "Age Icon",
                         modifier = Modifier.padding(end = 8.dp)
                     )
@@ -102,6 +115,13 @@ fun PlanConfigurationSection(
                             onAgeRangeChanged(currentMinAge, currentMaxAge)
                         },
                         valueRange = 18f..65f,
+                        colors = SliderDefaults.colors(
+                            thumbColor = Color(0xFF0056B3),         // Color del círculo
+                            activeTrackColor = Color(0xFF0056B3),   // Línea activa
+                            inactiveTrackColor = Color(0xFFB3D4F7), // Línea inactiva
+                            activeTickColor = Color.White,          // Puntos activos
+                            inactiveTickColor = Color.LightGray     // Puntos inactivos
+                        ),
                         steps = 4,
                         modifier = Modifier.weight(1f)
                     )
@@ -109,41 +129,70 @@ fun PlanConfigurationSection(
                 }
 
                 // Gender Selector
+                Text(
+                    text = "Género",
+                    fontSize = 13.sp,
+                    color = Color(0xFF0056B3),
+                    modifier = Modifier.padding(top = 10.dp)
+                )
+
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp, vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+
                     IconButton(onClick = {
                         currentGender = "M"
                         onGenderChanged("M")
                     }) {
-                        Icon(
-                            painter = painterResource(id = android.R.drawable.ic_lock_power_off), // Placeholder for male icon
-                            contentDescription = "Male Icon"
-                        )
-                        Text(text = "M", fontSize = 14.sp)
-                    }
+                        Column(
+                            modifier = Modifier.padding(start = 8.dp),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_male),
+                                contentDescription = "Male Icon"
+                            )
+                            Text(text = "M", fontSize = 14.sp, color = Color(0xFF0056B3))
+                        }
+}
                     IconButton(onClick = {
                         currentGender = "F"
                         onGenderChanged("F")
                     }) {
-                        Icon(
-                            painter = painterResource(id = android.R.drawable.ic_lock_power_off), // Placeholder for female icon
-                            contentDescription = "Female Icon"
-                        )
-                        Text(text = "F", fontSize = 14.sp)
+                        Column(
+                            modifier = Modifier.padding(start = 8.dp),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_famale), // Placeholder for female icon
+                                contentDescription = "Female Icon"
+                            )
+                            Text(text = "F", fontSize = 14.sp, color = Color(0xFF0056B3))
+                        }
                     }
-                    IconButton(onClick = {
-                        currentGender = "Todos"
-                        onGenderChanged("Todos")
-                    }) {
-                        Icon(
-                            painter = painterResource(id = android.R.drawable.ic_menu_info_details), // Placeholder for all icon
-                            contentDescription = "All Icon"
-                        )
-                        Text(text = "Todos", fontSize = 14.sp)
+
+                        IconButton(onClick = {
+                            currentGender = "Todos"
+                            onGenderChanged("Todos")
+                        }) {
+                        Column(
+                                modifier = Modifier.padding(start = 1.dp),
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_g_all),
+                                modifier = Modifier.size(20.dp),
+                                contentDescription = "All Icon",
+                                tint = Color(0xFF0056B3)
+                            )
+                            Text(text = "Todos", fontSize = 14.sp, color = Color(0xFF0056B3))
+                        }
                     }
                 }
             }
