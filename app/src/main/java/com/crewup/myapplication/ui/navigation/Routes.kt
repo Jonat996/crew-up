@@ -28,4 +28,10 @@ sealed class Routes(val route: String) {
 
     // Ruta de creación de plan
     data object CreatePlan : Routes("create_plan")
+    // Rutas de recuperación de contraseña
+    data object RecoverEmail : Routes("recover_email")
+    data object CodeSent : Routes("code_sent")
+    data object OtpVerification : Routes("otp_verification")
+    data object ChangePassword : Routes("change_password")
+    data object NotFound : Routes("not_found")
 }

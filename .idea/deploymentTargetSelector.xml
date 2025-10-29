@@ -15,6 +15,7 @@
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
       <SelectionState runConfigName="PreviewPlanConfigurationSection">
+      <SelectionState runConfigName="PreviewRecoverEmailScreen">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

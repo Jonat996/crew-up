@@ -17,4 +17,15 @@ class EmailPasswordAuth(private val auth: FirebaseAuth = FirebaseAuth.getInstanc
                 onResult(task.isSuccessful, task.exception?.message)
             }
     }
+
+    fun sendPasswordResetEmail(email: String, onResult: (Boolean, String?) -> Unit) {
+        auth.sendPasswordResetEmail(email)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    onResult(true, "Correo de recuperación enviado exitosamente")
+                } else {
+                    onResult(false, task.exception?.message ?: "Error al enviar el correo")
+                }
+            }
+    }
 }
