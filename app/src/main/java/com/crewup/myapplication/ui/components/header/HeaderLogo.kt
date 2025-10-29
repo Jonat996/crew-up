@@ -19,28 +19,30 @@ import com.crewup.myapplication.R
 @Composable
 fun HeaderLogo(title: String) {
     HeaderBase {
-
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(vertical = 5.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceBetween
+            contentAlignment = Alignment.Center
         ) {
+            // Logo en el centro pero más arriba
             Image(
                 painter = painterResource(id = R.drawable.ic_pizza_logo),
                 contentDescription = "Logo CrewUp",
                 modifier = Modifier
-                    .size(210.dp)
+                    .size(160.dp)
+                    .offset(y = (-20).dp)
             )
 
-
+            // Texto superpuesto en la parte inferior
             Text(
                 text = title,
-                fontSize = 34.sp,
+                fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White,
-                modifier = Modifier.padding(bottom = 40.dp)
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 16.dp)
             )
         }
     }

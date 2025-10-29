@@ -8,10 +8,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.composable
 import com.crewup.myapplication.auth.GoogleAuth
+import com.crewup.myapplication.ui.screens.CreatePlanFlowScreen
 import com.crewup.myapplication.ui.screens.EditProfileScreen
 import com.crewup.myapplication.ui.screens.HomeScreen
 import com.crewup.myapplication.ui.screens.LoginScreen
 import com.crewup.myapplication.ui.screens.NotificationsScreen
+import com.crewup.myapplication.ui.screens.PlanDateScreen
+import com.crewup.myapplication.ui.screens.PlanLocationScreen
 import com.crewup.myapplication.ui.screens.ProfileScreen
 import com.crewup.myapplication.ui.screens.RegisterScreen
 import com.crewup.myapplication.ui.screens.SecurityScreen
@@ -131,6 +134,19 @@ fun AppNavigation(
 
         composable(Routes.Notifications.route) {
             NotificationsScreen(navController = navController)
+        }
+
+        composable(Routes.PlanLocation.route) {
+            PlanLocationScreen(navController = navController)
+        }
+
+        composable(Routes.PlanDate.route) {
+            PlanDateScreen(navController = navController)
+        }
+
+        // Ruta de creación de plan
+        composable(Routes.CreatePlan.route) {
+            CreatePlanFlowScreen(navController = navController)
         }
 
         // Pantalla de recuperación de contraseña

@@ -42,7 +42,7 @@ fun Form(
     var showPassword by remember { mutableStateOf(false) }
     var rememberData by remember { mutableStateOf(false) }
 
-    // 🔹 Campos adicionales del registro
+    //  Campos adicionales del registro
     var name by remember { mutableStateOf("") }
     var lastName by remember { mutableStateOf("") }
     var country by remember { mutableStateOf("") }
