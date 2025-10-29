@@ -34,7 +34,8 @@ fun Form(
     onEmailRegister: (String, String, String, String, String, String, String) -> Unit,
     onGoogleLogin: () -> Unit,
     onClearError: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onForgotPassword: () -> Unit = {}
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -209,7 +210,7 @@ fun Form(
                         )
                         Text(stringResource(R.string.remember_data), fontSize = 14.sp)
                     }
-                    TextButton(onClick = { /* TODO */ }) {
+                    TextButton(onClick = onForgotPassword) {
                         Text(
                             text = stringResource(R.string.forgot_password),
                             color = Color(0xFF0056B3),
