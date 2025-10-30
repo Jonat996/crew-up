@@ -72,7 +72,8 @@ class AuthViewModel : ViewModel() {
                             uid = firebaseUser.uid,
                             email = firebaseUser.email ?: "",
                             name = name,
-                            lastName = lastName
+                            lastName = lastName,
+                            photoUrl = firebaseUser.photoUrl?.toString() ?: ""
                         )
                         repository.createUser(newUser)
                     }

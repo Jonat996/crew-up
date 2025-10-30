@@ -44,8 +44,12 @@ fun HeaderUserPhoto(
     val firebaseUser = authState.user
     val firestoreUser = userState.user
 
-    // Obtener foto de perfil desde Firestore
-    val photoUrl = firestoreUser?.photoUrl?.takeIf { it.isNotBlank() } ?: "undefined"
+    // Obtener foto de perfil: primero intenta desde Firestore, luego desde Firebase Auth
+    val photoUrl = when {
+        !firestoreUser?.photoUrl.isNullOrBlank() -> firestoreUser?.photoUrl
+        firebaseUser?.photoUrl != null -> firebaseUser.photoUrl.toString()
+        else -> "undefined"
+    }
 
     // Obtener nombre: si se pasa title, usar ese; sino obtener desde Firestore/Firebase Auth
     val displayName = title ?: when {
