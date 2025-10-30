@@ -1,5 +1,7 @@
 package com.crewup.myapplication.ui.components.sections.plans
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -8,7 +10,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
@@ -140,62 +145,104 @@ fun PlanConfigurationSection(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp, vertical = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    // Masculino
+                    GenderOptionCard(
+                        gender = "M",
+                        label = "M",
+                        iconRes = R.drawable.ic_male,
+                        isSelected = currentGender == "M",
+                        onClick = {
+                            currentGender = "M"
+                            onGenderChanged("M")
+                        },
+                        modifier = Modifier.weight(1f)
+                    )
 
-                    IconButton(onClick = {
-                        currentGender = "M"
-                        onGenderChanged("M")
-                    }) {
-                        Column(
-                            modifier = Modifier.padding(start = 8.dp),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_male),
-                                contentDescription = "Male Icon"
-                            )
-                            Text(text = "M", fontSize = 14.sp, color = Color(0xFF0056B3))
-                        }
-}
-                    IconButton(onClick = {
-                        currentGender = "F"
-                        onGenderChanged("F")
-                    }) {
-                        Column(
-                            modifier = Modifier.padding(start = 8.dp),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_famale), // Placeholder for female icon
-                                contentDescription = "Female Icon"
-                            )
-                            Text(text = "F", fontSize = 14.sp, color = Color(0xFF0056B3))
-                        }
-                    }
+                    // Femenino
+                    GenderOptionCard(
+                        gender = "F",
+                        label = "F",
+                        iconRes = R.drawable.ic_famale,
+                        isSelected = currentGender == "F",
+                        onClick = {
+                            currentGender = "F"
+                            onGenderChanged("F")
+                        },
+                        modifier = Modifier.weight(1f)
+                    )
 
-                        IconButton(onClick = {
+                    // Todos
+                    GenderOptionCard(
+                        gender = "Todos",
+                        label = "Todos",
+                        iconRes = R.drawable.ic_g_all,
+                        isSelected = currentGender == "Todos",
+                        onClick = {
                             currentGender = "Todos"
                             onGenderChanged("Todos")
-                        }) {
-                        Column(
-                                modifier = Modifier.padding(start = 1.dp),
-                                verticalArrangement = Arrangement.Center,
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_g_all),
-                                modifier = Modifier.size(20.dp),
-                                contentDescription = "All Icon",
-                                tint = Color(0xFF0056B3)
-                            )
-                            Text(text = "Todos", fontSize = 14.sp, color = Color(0xFF0056B3))
-                        }
-                    }
+                        },
+                        modifier = Modifier.weight(1f)
+                    )
                 }
             }
+        }
+    }
+}
+
+/**
+ * Card para mostrar una opción de género con estado visual de selección.
+ */
+@Composable
+private fun GenderOptionCard(
+    gender: String,
+    label: String,
+    iconRes: Int,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val backgroundColor = if (isSelected) Color(0xFF0056B3) else Color(0xFFF5F5F5)
+    val contentColor = if (isSelected) Color.White else Color(0xFF0056B3)
+    val borderColor = if (isSelected) Color(0xFF0056B3) else Color(0xFFE0E0E0)
+
+    Card(
+        modifier = modifier
+            .height(80.dp)
+            .clickable(onClick = onClick),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = backgroundColor
+        ),
+        border = BorderStroke(
+            width = if (isSelected) 2.dp else 1.dp,
+            color = borderColor
+        ),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = if (isSelected) 4.dp else 1.dp
+        )
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Icon(
+                painter = painterResource(id = iconRes),
+                contentDescription = "$label Icon",
+                tint = contentColor,
+                modifier = Modifier.size(32.dp)
+            )
+            Text(
+                text = label,
+                fontSize = 14.sp,
+                color = contentColor,
+                modifier = Modifier.padding(top = 4.dp)
+            )
         }
     }
 }

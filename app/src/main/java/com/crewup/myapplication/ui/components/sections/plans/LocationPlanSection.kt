@@ -7,6 +7,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,6 +29,8 @@ import com.crewup.myapplication.viewmodel.LocationViewModel
 @Composable
 fun LocationPlanSection(
     initialQuery: String = "",
+    userCountry: String? = null,
+    userCity: String? = null,
     onLocationSelected: (PlanLocation) -> Unit = {},
     viewModel: LocationViewModel? = null
 ) {
@@ -36,6 +39,11 @@ fun LocationPlanSection(
     val isLoading by vm.isLoading.collectAsState()
     val error by vm.error.collectAsState()
     var query by remember(initialQuery) { mutableStateOf(initialQuery) }
+
+    // Configurar la ubicación del usuario en el ViewModel para filtrar búsquedas
+    LaunchedEffect(userCountry, userCity) {
+        vm.setUserLocation(userCountry, userCity)
+    }
 
     Column(modifier = Modifier.padding(16.dp)) {
         Text("Busca un lugar para tu plan", style = MaterialTheme.typography.headlineSmall)
@@ -51,12 +59,23 @@ fun LocationPlanSection(
             onSuggestionClick = { suggestion ->
                 query = suggestion.description
                 vm.clearSuggestions()
+
+                // Extraer el nombre del lugar y la dirección completa
+                // Ejemplo: "Parque El Virrey, Calle 88 #9-99, Bogotá"
+                // name = "Parque El Virrey"
+                // fullAddress = "Parque El Virrey, Calle 88 #9-99, Bogotá"
+                val parts = suggestion.description.split(",").map { it.trim() }
+                val locationName = when {
+                    parts.size >= 2 -> parts[0] // Primera parte es el nombre del lugar
+                    else -> suggestion.description
+                }
+
                 // Convertir sugerencia a PlanLocation
                 val location = PlanLocation(
                     id = suggestion.placeId,
-                    name = suggestion.description.split(",").firstOrNull() ?: suggestion.description,
+                    name = locationName,
                     fullAddress = suggestion.description,
-                    lat = 0.0, // Estos valores se actualizarían con Place Details API
+                    lat = 0.0, // TODO: Obtener coordenadas con Place Details API
                     lng = 0.0
                 )
                 onLocationSelected(location)

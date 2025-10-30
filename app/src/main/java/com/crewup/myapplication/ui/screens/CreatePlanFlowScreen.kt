@@ -46,6 +46,8 @@ fun CreatePlanFlowScreen(
     val error by viewModel.error.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val creationComplete by viewModel.creationComplete.collectAsState()
+    val userCountry by viewModel.userCountry.collectAsState()
+    val userCity by viewModel.userCity.collectAsState()
 
     // Launcher para seleccionar imagen
     val imagePickerLauncher = rememberLauncherForActivityResult(
@@ -170,7 +172,9 @@ fun CreatePlanFlowScreen(
                         )
 
                         3 -> LocationPlanSection(
-                            initialQuery = planState.location.name,
+                            initialQuery = planState.location.fullAddress,
+                            userCountry = userCountry,
+                            userCity = userCity,
                             onLocationSelected = { location ->
                                 viewModel.updateLocation(location)
                             }
