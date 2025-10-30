@@ -19,7 +19,7 @@ fun RecoverEmailScreen(
 ) {
     MainLayout(
         header = {
-            HeaderLogo(title = "Recuperar Contraseña")
+            HeaderLogo(title = "Recuperar Contraseña", navController = navController)
         },
         content = {
             RecoverEmailSection(

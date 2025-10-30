@@ -39,8 +39,30 @@ class CreatePlanViewModel(
     private val _creationComplete = MutableStateFlow(false)
     val creationComplete: StateFlow<Boolean> = _creationComplete.asStateFlow()
 
+    private val _userCountry = MutableStateFlow<String?>(null)
+    val userCountry: StateFlow<String?> = _userCountry.asStateFlow()
+
+    private val _userCity = MutableStateFlow<String?>(null)
+    val userCity: StateFlow<String?> = _userCity.asStateFlow()
+
     init {
         startNewPlan()
+        loadUserLocation()
+    }
+
+    /**
+     * Carga la ubicación del usuario (país y ciudad) para usar en filtros.
+     */
+    private fun loadUserLocation() {
+        viewModelScope.launch {
+            userRepository.getCurrentUser().onSuccess { user ->
+                if (user != null) {
+                    _userCountry.value = user.country
+                    _userCity.value = user.city
+                    android.util.Log.d("CreatePlanViewModel", "Usuario ubicado en: ${user.city}, ${user.country}")
+                }
+            }
+        }
     }
 
     /**
@@ -51,7 +73,21 @@ class CreatePlanViewModel(
             _isLoading.value = true
             userRepository.getCurrentUser().onSuccess { user ->
                 if (user != null) {
-                    val initialPlan = Plan(creatorUid = user.uid)
+                    // Crear objeto PlanUser con la información del creador
+                    val creatorInfo = com.crewup.myapplication.models.PlanUser(
+                        uid = user.uid,
+                        name = user.name,
+                        lastName = user.lastName,
+                        photoUrl = user.photoUrl,
+                        gender = user.gender,
+                        occupation = user.occupation,
+                        city = user.city
+                    )
+
+                    val initialPlan = Plan(
+                        creatorUid = user.uid,  // Mantener por compatibilidad
+                        createdBy = creatorInfo
+                    )
                     val result = planRepository.createPlan(initialPlan)
                     result.onSuccess { planId ->
                         _planState.value = initialPlan.copy(id = planId)

@@ -9,5 +9,6 @@ data class User(
     val gender: String = "",      // Género (e.g., "Masculino", "Femenino", "Otro")
     val city: String = "",        // Ciudad
     val country: String = "",     // País (opcional)
-    val phoneNumber: String = ""  // Otros campos
+    val phoneNumber: String = "", // Otros campos
+    val photoUrl: String = ""     // URL de la foto de perfil
 )

@@ -1,5 +1,6 @@
 package com.crewup.myapplication.viewmodel
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.crewup.myapplication.data.repository.UserRepository
@@ -134,6 +135,27 @@ class UserViewModel(private val repository: UserRepository = UserRepository()) :
     }
 
     // Otros campos: updateName, updateLastName, etc., similarmente
+
+    /**
+     * Sube una foto de perfil del usuario y actualiza la URL.
+     */
+    fun uploadPhoto(imageUri: Uri) {
+        viewModelScope.launch {
+            _userState.value = _userState.value.copy(isLoading = true, error = null)
+
+            repository.uploadUserPhotoAndSaveUrl(imageUri).onSuccess { url ->
+                android.util.Log.d("UserViewModel", "Foto de perfil subida: $url")
+                // Recargar el usuario para reflejar la nueva foto
+                loadUser()
+            }.onFailure { e ->
+                android.util.Log.e("UserViewModel", "Error al subir foto de perfil", e)
+                _userState.value = _userState.value.copy(
+                    isLoading = false,
+                    error = "Error al subir foto de perfil: ${e.message}"
+                )
+            }
+        }
+    }
 
     fun clearError() {
         _userState.value = _userState.value.copy(error = null)
