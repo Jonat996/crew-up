@@ -1,4 +1,4 @@
-package com.example.qta_jw_3.ui.components
+package com.crewup.myapplication.ui.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.material3.Icon
