@@ -12,9 +12,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.crewup.myapplication.models.Plan
+import com.crewup.myapplication.ui.components.ConfirmationType
 import com.crewup.myapplication.ui.components.PlanCard
+import com.crewup.myapplication.ui.components.PlanConfirmationCard
 import com.crewup.myapplication.viewmodel.PlansListViewModel
 import com.crewup.myapplication.viewmodel.PlanViewModel
 import com.crewup.myapplication.viewmodel.UserViewModel
@@ -52,6 +55,13 @@ fun PlansListSection(
 
     val joinState by planViewModel.joinState.collectAsState()
     val leaveState by planViewModel.leaveState.collectAsState()
+    val deleteState by planViewModel.deleteState.collectAsState()
+
+    // Estados para controlar los diálogos de confirmación
+    var planToLeave by remember { mutableStateOf<Plan?>(null) }
+    var showLeaveDialog by remember { mutableStateOf(false) }
+    var planToDelete by remember { mutableStateOf<Plan?>(null) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
 
     // Cargar planes cuando se monta el componente o cambian los tags
     LaunchedEffect(selectedTags) {
@@ -72,8 +82,20 @@ fun PlansListSection(
 
     LaunchedEffect(leaveState) {
         if (leaveState is com.crewup.myapplication.viewmodel.ActionState.Success) {
+            showLeaveDialog = false
+            planToLeave = null
             plansListViewModel.loadPlans(tags = selectedTags)
             planViewModel.resetLeaveState()
+        }
+    }
+
+    // Recargar planes cuando se elimina un plan
+    LaunchedEffect(deleteState) {
+        if (deleteState is com.crewup.myapplication.viewmodel.ActionState.Success) {
+            showDeleteDialog = false
+            planToDelete = null
+            plansListViewModel.loadPlans(tags = selectedTags)
+            planViewModel.resetDeleteState()
         }
     }
 
@@ -200,9 +222,9 @@ fun PlansListSection(
                                 planViewModel.joinPlan(planId)
                             },
                             onLeaveClick = { planId ->
-                                currentUserId?.let { userId ->
-                                    planViewModel.leavePlan(planId, userId)
-                                }
+                                // Mostrar diálogo de confirmación para salir
+                                planToLeave = plan
+                                showLeaveDialog = true
                             },
                             onChatClick = { planId ->
                                 onChatClick(planId)
@@ -211,8 +233,9 @@ fun PlansListSection(
                                 onEditClick(planId)
                             },
                             onDeleteClick = { planId ->
-                                // La eliminación solo está disponible en CreatedPlansScreen
-                                // Aquí no hacemos nada, el botón no debería aparecer
+                                // Mostrar diálogo de confirmación para eliminar
+                                planToDelete = plan
+                                showDeleteDialog = true
                             }
                         )
                     }
@@ -274,11 +297,109 @@ fun PlansListSection(
     if (leaveState is com.crewup.myapplication.viewmodel.ActionState.Error) {
         val errorMessage = (leaveState as com.crewup.myapplication.viewmodel.ActionState.Error).message
         AlertDialog(
-            onDismissRequest = { planViewModel.resetLeaveState() },
+            onDismissRequest = {
+                planViewModel.resetLeaveState()
+                showLeaveDialog = false
+                planToLeave = null
+            },
             title = { Text("Error") },
             text = { Text(errorMessage) },
             confirmButton = {
-                Button(onClick = { planViewModel.resetLeaveState() }) {
+                Button(onClick = {
+                    planViewModel.resetLeaveState()
+                    showLeaveDialog = false
+                    planToLeave = null
+                }) {
+                    Text("Aceptar")
+                }
+            }
+        )
+    }
+
+    // Diálogo de confirmación para salir del plan usando PlanConfirmationCard
+    if (showLeaveDialog && planToLeave != null) {
+        Dialog(
+            onDismissRequest = {
+                showLeaveDialog = false
+                planToLeave = null
+            }
+        ) {
+            PlanConfirmationCard(
+                plan = planToLeave!!,
+                type = ConfirmationType.LEAVE,
+                onConfirm = {
+                    // Ejecutar la salida del plan
+                    currentUserId?.let { userId ->
+                        planViewModel.leavePlan(planToLeave!!.id, userId)
+                    }
+                },
+                onDismiss = {
+                    // Cerrar el diálogo sin salir
+                    showLeaveDialog = false
+                    planToLeave = null
+                }
+            )
+        }
+    }
+
+    // Diálogo de confirmación para eliminar plan usando PlanConfirmationCard
+    if (showDeleteDialog && planToDelete != null) {
+        Dialog(
+            onDismissRequest = {
+                showDeleteDialog = false
+                planToDelete = null
+            }
+        ) {
+            PlanConfirmationCard(
+                plan = planToDelete!!,
+                type = ConfirmationType.DELETE,
+                onConfirm = {
+                    // Ejecutar la eliminación
+                    planViewModel.deletePlan(planToDelete!!.id)
+                },
+                onDismiss = {
+                    // Cerrar el diálogo sin eliminar
+                    showDeleteDialog = false
+                    planToDelete = null
+                }
+            )
+        }
+    }
+
+    // Diálogo de carga durante la eliminación
+    if (deleteState is com.crewup.myapplication.viewmodel.ActionState.Loading) {
+        AlertDialog(
+            onDismissRequest = { },
+            title = { Text("Eliminando plan...") },
+            text = {
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            },
+            confirmButton = { }
+        )
+    }
+
+    // Diálogo de error al eliminar
+    if (deleteState is com.crewup.myapplication.viewmodel.ActionState.Error) {
+        val errorMessage = (deleteState as com.crewup.myapplication.viewmodel.ActionState.Error).message
+        AlertDialog(
+            onDismissRequest = {
+                planViewModel.resetDeleteState()
+                showDeleteDialog = false
+                planToDelete = null
+            },
+            title = { Text("Error") },
+            text = { Text(errorMessage) },
+            confirmButton = {
+                Button(onClick = {
+                    planViewModel.resetDeleteState()
+                    showDeleteDialog = false
+                    planToDelete = null
+                }) {
                     Text("Aceptar")
                 }
             }

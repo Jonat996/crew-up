@@ -12,9 +12,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.crewup.myapplication.models.Plan
+import com.crewup.myapplication.ui.components.ConfirmationType
 import com.crewup.myapplication.ui.components.PlanCard
+import com.crewup.myapplication.ui.components.PlanConfirmationCard
 import com.crewup.myapplication.ui.components.header.HeaderUserInfo
 import com.crewup.myapplication.ui.navigation.Routes
 import com.crewup.myapplication.viewmodel.AuthViewModel
@@ -45,6 +49,10 @@ fun CreatedPlansScreen(
     val currentUserId by plansListViewModel.currentUserId.collectAsState()
     val deleteState by planViewModel.deleteState.collectAsState()
 
+    // Estado para controlar el diálogo de confirmación de eliminación
+    var planToDelete by remember { mutableStateOf<Plan?>(null) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
+
     // Cargar planes del usuario cuando se monta la pantalla
     LaunchedEffect(Unit) {
         plansListViewModel.loadUserPlans()
@@ -53,6 +61,9 @@ fun CreatedPlansScreen(
     // Manejar eliminación exitosa
     LaunchedEffect(deleteState) {
         if (deleteState is com.crewup.myapplication.viewmodel.ActionState.Success) {
+            // Cerrar el diálogo y limpiar estados
+            showDeleteDialog = false
+            planToDelete = null
             // Recargar la lista después de eliminar
             plansListViewModel.loadUserPlans()
             planViewModel.resetDeleteState()
@@ -180,7 +191,8 @@ fun CreatedPlansScreen(
                             },
                             onDeleteClick = { planId ->
                                 // Mostrar diálogo de confirmación
-                                planViewModel.deletePlan(planId)
+                                planToDelete = plan
+                                showDeleteDialog = true
                             }
                         )
                     }
@@ -189,7 +201,31 @@ fun CreatedPlansScreen(
         }
     }
 
-    // Diálogo de confirmación para eliminar (opcional, puedes agregar uno más elaborado)
+    // Diálogo de confirmación para eliminar usando PlanConfirmationCard
+    if (showDeleteDialog && planToDelete != null) {
+        Dialog(
+            onDismissRequest = {
+                showDeleteDialog = false
+                planToDelete = null
+            }
+        ) {
+            PlanConfirmationCard(
+                plan = planToDelete!!,
+                type = ConfirmationType.DELETE,
+                onConfirm = {
+                    // Ejecutar la eliminación
+                    planViewModel.deletePlan(planToDelete!!.id)
+                },
+                onDismiss = {
+                    // Cerrar el diálogo sin eliminar
+                    showDeleteDialog = false
+                    planToDelete = null
+                }
+            )
+        }
+    }
+
+    // Diálogo de loading durante la eliminación
     if (deleteState is com.crewup.myapplication.viewmodel.ActionState.Loading) {
         AlertDialog(
             onDismissRequest = { },
@@ -210,11 +246,19 @@ fun CreatedPlansScreen(
     if (deleteState is com.crewup.myapplication.viewmodel.ActionState.Error) {
         val errorMessage = (deleteState as com.crewup.myapplication.viewmodel.ActionState.Error).message
         AlertDialog(
-            onDismissRequest = { planViewModel.resetDeleteState() },
+            onDismissRequest = {
+                planViewModel.resetDeleteState()
+                showDeleteDialog = false
+                planToDelete = null
+            },
             title = { Text("Error") },
             text = { Text(errorMessage) },
             confirmButton = {
-                Button(onClick = { planViewModel.resetDeleteState() }) {
+                Button(onClick = {
+                    planViewModel.resetDeleteState()
+                    showDeleteDialog = false
+                    planToDelete = null
+                }) {
                     Text("Aceptar")
                 }
             }

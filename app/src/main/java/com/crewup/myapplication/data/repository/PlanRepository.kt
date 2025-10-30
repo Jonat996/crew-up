@@ -19,14 +19,19 @@ class PlanRepository(
     private val plansCollection = db.collection("plans")
 
     /**
-     * Crea un nuevo plan en Firestore con un ID generado automáticamente.
+     * Crea un nuevo plan en Firestore.
+     * Si el plan tiene un ID, lo usa; si no, genera uno automáticamente.
      *
      * @param plan El plan a crear
      * @return Result con el ID del plan creado o un error
      */
     suspend fun createPlan(plan: Plan): Result<String> {
         return try {
-            val docRef = plansCollection.document()
+            val docRef = if (plan.id.isNotBlank()) {
+                plansCollection.document(plan.id)
+            } else {
+                plansCollection.document()
+            }
             val newPlan = plan.copy(id = docRef.id, createdAt = Timestamp.now())
             docRef.set(newPlan).await()
             android.util.Log.d("PlanRepository", "Plan creado con ID: ${docRef.id}")
@@ -56,7 +61,36 @@ class PlanRepository(
     }
 
     /**
+     * Sube una imagen a Firebase Storage sin actualizar Firestore.
+     * Útil cuando el plan aún no existe en Firestore.
+     *
+     * @param planId ID del plan al que pertenece la imagen (puede ser temporal)
+     * @param imageUri URI local de la imagen a subir
+     * @return Result con la URL de descarga o un error
+     */
+    suspend fun uploadImage(planId: String, imageUri: Uri): Result<String> {
+        require(planId.isNotBlank()) { "El planId no puede estar vacío" }
+        require(imageUri != Uri.EMPTY) { "La URI de la imagen no puede estar vacía" }
+
+        return try {
+            android.util.Log.d("PlanRepository", "Storage bucket: ${storage.reference.bucket}")
+            val storageRef = storage.reference.child("plans/$planId/${UUID.randomUUID()}.jpg")
+            storageRef.putFile(imageUri).await()
+            val downloadUrl = storageRef.downloadUrl.await().toString()
+            android.util.Log.d("PlanRepository", "Imagen subida: $downloadUrl")
+            Result.success(downloadUrl)
+        } catch (e: StorageException) {
+            android.util.Log.e("PlanRepository", "Error al subir imagen: ${e.message}", e)
+            Result.failure(Exception("Error al subir la imagen: ${e.message}", e))
+        } catch (e: Exception) {
+            android.util.Log.e("PlanRepository", "Error al procesar imagen: ${e.message}", e)
+            Result.failure(Exception("Error al procesar la imagen: ${e.message}", e))
+        }
+    }
+
+    /**
      * Sube una imagen a Firebase Storage y actualiza la URL en Firestore.
+     * Usa este método cuando el plan ya existe en Firestore.
      *
      * @param planId ID del plan al que pertenece la imagen
      * @param imageUri URI local de la imagen a subir
@@ -67,12 +101,17 @@ class PlanRepository(
         require(imageUri != Uri.EMPTY) { "La URI de la imagen no puede estar vacía" }
 
         return try {
-            android.util.Log.d("PlanRepository", "Storage bucket: ${storage.reference.bucket}")
-            val storageRef = storage.reference.child("plans/$planId/${UUID.randomUUID()}.jpg")
-            storageRef.putFile(imageUri).await()
-            val downloadUrl = storageRef.downloadUrl.await().toString()
+            // Primero subir la imagen
+            val uploadResult = uploadImage(planId, imageUri)
+            if (uploadResult.isFailure) {
+                return uploadResult
+            }
+
+            val downloadUrl = uploadResult.getOrThrow()
+
+            // Luego actualizar Firestore
             plansCollection.document(planId).update(mapOf("imageUrl" to downloadUrl)).await()
-            android.util.Log.d("PlanRepository", "Imagen subida: $downloadUrl")
+            android.util.Log.d("PlanRepository", "Imagen subida y URL guardada en Firestore: $downloadUrl")
             Result.success(downloadUrl)
         } catch (e: StorageException) {
             android.util.Log.e("PlanRepository", "Error al subir imagen: ${e.message}", e)

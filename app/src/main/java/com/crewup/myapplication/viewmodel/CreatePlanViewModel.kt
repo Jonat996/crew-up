@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 /**
  * ViewModel para gestionar el flujo de creación de planes.
@@ -109,7 +110,8 @@ class CreatePlanViewModel(
     }
 
     /**
-     * Inicia un nuevo plan y lo guarda en Firestore con valores iniciales.
+     * Inicia un nuevo plan solo en memoria local (no lo guarda en Firestore aún).
+     * El plan se guardará cuando el usuario complete el flujo y presione "Crear!".
      */
     private fun startNewPlan() {
         viewModelScope.launch {
@@ -127,18 +129,16 @@ class CreatePlanViewModel(
                         city = user.city
                     )
 
+                    // Generar un ID temporal para el plan (se usará para la imagen)
+                    val temporaryId = UUID.randomUUID().toString()
+
                     val initialPlan = Plan(
+                        id = temporaryId,
                         creatorUid = user.uid,  // Mantener por compatibilidad
                         createdBy = creatorInfo
                     )
-                    val result = planRepository.createPlan(initialPlan)
-                    result.onSuccess { planId ->
-                        _planState.value = initialPlan.copy(id = planId)
-                        android.util.Log.d("CreatePlanViewModel", "Plan iniciado con ID: $planId")
-                    }.onFailure { e ->
-                        _error.value = "Error al iniciar plan: ${e.message}"
-                        android.util.Log.e("CreatePlanViewModel", "Error al iniciar plan", e)
-                    }
+                    _planState.value = initialPlan
+                    android.util.Log.d("CreatePlanViewModel", "Plan iniciado en memoria con ID temporal: $temporaryId")
                 } else {
                     _error.value = "No se pudo obtener el usuario autenticado"
                 }
@@ -189,27 +189,39 @@ class CreatePlanViewModel(
 
     /**
      * Sube una imagen para el plan y actualiza la URL.
+     * En modo creación, solo sube a Storage.
+     * En modo edición, sube a Storage y actualiza Firestore.
      */
     fun uploadImage(imageUri: Uri) {
         viewModelScope.launch {
             _isLoading.value = true
-            planRepository.uploadImageAndSaveUrl(_planState.value.id, imageUri).onSuccess { url ->
+
+            val result = if (_isEditMode.value) {
+                // En modo edición, subir y actualizar Firestore inmediatamente
+                planRepository.uploadImageAndSaveUrl(_planState.value.id, imageUri)
+            } else {
+                // En modo creación, solo subir a Storage (sin actualizar Firestore aún)
+                planRepository.uploadImage(_planState.value.id, imageUri)
+            }
+
+            result.onSuccess { url ->
                 _planState.value = _planState.value.copy(imageUrl = url)
                 android.util.Log.d("CreatePlanViewModel", "Imagen subida: $url")
             }.onFailure { e ->
                 _error.value = "Error al subir imagen: ${e.message}"
                 android.util.Log.e("CreatePlanViewModel", "Error al subir imagen", e)
             }
+
             _isLoading.value = false
         }
     }
 
     /**
      * Avanza al siguiente paso después de validar el actual.
+     * No guarda en Firestore hasta que el usuario complete el flujo.
      */
     fun nextStep() {
         if (validateCurrentStep()) {
-            saveCurrentStepToFirestore()
             if (_currentStep.value < 4) {
                 _currentStep.value += 1
                 android.util.Log.d("CreatePlanViewModel", "Avanzando al paso: ${_currentStep.value}")
@@ -288,6 +300,7 @@ class CreatePlanViewModel(
 
     /**
      * Guarda el estado actual del plan en Firestore.
+     * Este método solo se usa en modo edición para actualizar planes existentes.
      */
     private fun saveCurrentStepToFirestore() {
         viewModelScope.launch {
@@ -328,15 +341,33 @@ class CreatePlanViewModel(
     }
 
     /**
-     * Finaliza la creación del plan.
+     * Finaliza la creación o edición del plan.
+     * Si es un plan nuevo, lo crea en Firestore.
+     * Si está en modo edición, actualiza el plan existente.
      */
     fun finishPlan() {
         viewModelScope.launch {
             _isLoading.value = true
-            saveCurrentStepToFirestore()
-            _creationComplete.value = true
+
+            if (_isEditMode.value) {
+                // Modo edición: actualizar plan existente
+                saveCurrentStepToFirestore()
+                _creationComplete.value = true
+                android.util.Log.d("CreatePlanViewModel", "Plan actualizado: ${_planState.value.id}")
+            } else {
+                // Modo creación: crear nuevo plan en Firestore
+                val result = planRepository.createPlan(_planState.value)
+                result.onSuccess { planId ->
+                    _planState.value = _planState.value.copy(id = planId)
+                    _creationComplete.value = true
+                    android.util.Log.d("CreatePlanViewModel", "Plan creado exitosamente con ID: $planId")
+                }.onFailure { e ->
+                    _error.value = "Error al crear el plan: ${e.message}"
+                    android.util.Log.e("CreatePlanViewModel", "Error al crear plan", e)
+                }
+            }
+
             _isLoading.value = false
-            android.util.Log.d("CreatePlanViewModel", "Plan finalizado: ${_planState.value.id}")
         }
     }
 
