@@ -20,6 +20,7 @@ import com.crewup.myapplication.ui.components.ConfirmationType
 import com.crewup.myapplication.ui.components.PlanCard
 import com.crewup.myapplication.ui.components.PlanConfirmationCard
 import com.crewup.myapplication.ui.components.header.HeaderUserInfo
+import com.crewup.myapplication.ui.components.sections.plans.PlanDetailCard
 import com.crewup.myapplication.ui.navigation.Routes
 import com.crewup.myapplication.viewmodel.AuthViewModel
 import com.crewup.myapplication.viewmodel.PlanViewModel
@@ -53,6 +54,10 @@ fun CreatedPlansScreen(
     var planToDelete by remember { mutableStateOf<Plan?>(null) }
     var showDeleteDialog by remember { mutableStateOf(false) }
 
+    // Estado para controlar el diálogo de detalle del plan
+    var selectedPlan by remember { mutableStateOf<Plan?>(null) }
+    var showPlanDetail by remember { mutableStateOf(false) }
+
     // Cargar planes del usuario cuando se monta la pantalla
     LaunchedEffect(Unit) {
         plansListViewModel.loadUserPlans()
@@ -61,9 +66,11 @@ fun CreatedPlansScreen(
     // Manejar eliminación exitosa
     LaunchedEffect(deleteState) {
         if (deleteState is com.crewup.myapplication.viewmodel.ActionState.Success) {
-            // Cerrar el diálogo y limpiar estados
+            // Cerrar los diálogos y limpiar estados
             showDeleteDialog = false
             planToDelete = null
+            showPlanDetail = false
+            selectedPlan = null
             // Recargar la lista después de eliminar
             plansListViewModel.loadUserPlans()
             planViewModel.resetDeleteState()
@@ -172,8 +179,9 @@ fun CreatedPlansScreen(
                             plan = plan,
                             currentUserUid = currentUserId ?: "",
                             onPlanClick = { planId ->
-                                // Navegar a detalle del plan
-                                navController.navigate("planDetail/$planId")
+                                // Abrir diálogo de detalle del plan
+                                selectedPlan = plan
+                                showPlanDetail = true
                             },
                             onJoinClick = { planId ->
                                 // El creador no puede unirse a su propio plan
@@ -263,5 +271,48 @@ fun CreatedPlansScreen(
                 }
             }
         )
+    }
+
+    // Diálogo de detalle del plan (card expandida)
+    if (showPlanDetail && selectedPlan != null) {
+        Dialog(
+            onDismissRequest = {
+                showPlanDetail = false
+                selectedPlan = null
+            }
+        ) {
+            PlanDetailCard(
+                plan = selectedPlan!!,
+                currentUserUid = currentUserId ?: "",
+                onJoinClick = { planId ->
+                    // El creador no puede unirse a su propio plan
+                },
+                onLeaveClick = { planId ->
+                    // El creador no puede salir de su propio plan
+                },
+                onChatClick = { planId ->
+                    // Cerrar detalle y navegar al chat
+                    showPlanDetail = false
+                    selectedPlan = null
+                    navController.navigate("planChat/$planId")
+                },
+                onEditClick = { planId ->
+                    // Cerrar detalle y navegar a editar
+                    showPlanDetail = false
+                    selectedPlan = null
+                    navController.navigate(Routes.EditPlan.createRoute(planId))
+                },
+                onDeleteClick = { planId ->
+                    // Cerrar detalle y mostrar confirmación para eliminar
+                    showPlanDetail = false
+                    planToDelete = selectedPlan
+                    showDeleteDialog = true
+                },
+                onDismiss = {
+                    showPlanDetail = false
+                    selectedPlan = null
+                }
+            )
+        }
     }
 }

@@ -63,6 +63,10 @@ fun PlansListSection(
     var planToDelete by remember { mutableStateOf<Plan?>(null) }
     var showDeleteDialog by remember { mutableStateOf(false) }
 
+    // Estado para controlar el diálogo de detalle del plan
+    var selectedPlan by remember { mutableStateOf<Plan?>(null) }
+    var showPlanDetail by remember { mutableStateOf(false) }
+
     // Cargar planes cuando se monta el componente o cambian los tags
     LaunchedEffect(selectedTags) {
         if (selectedTags.isEmpty()) {
@@ -75,6 +79,9 @@ fun PlansListSection(
     // Recargar planes cuando se une o sale de un plan
     LaunchedEffect(joinState) {
         if (joinState is com.crewup.myapplication.viewmodel.ActionState.Success) {
+            // Cerrar el diálogo de detalle si está abierto
+            showPlanDetail = false
+            selectedPlan = null
             plansListViewModel.loadPlans(tags = selectedTags)
             planViewModel.resetJoinState()
         }
@@ -84,6 +91,9 @@ fun PlansListSection(
         if (leaveState is com.crewup.myapplication.viewmodel.ActionState.Success) {
             showLeaveDialog = false
             planToLeave = null
+            // Cerrar el diálogo de detalle si está abierto
+            showPlanDetail = false
+            selectedPlan = null
             plansListViewModel.loadPlans(tags = selectedTags)
             planViewModel.resetLeaveState()
         }
@@ -94,6 +104,9 @@ fun PlansListSection(
         if (deleteState is com.crewup.myapplication.viewmodel.ActionState.Success) {
             showDeleteDialog = false
             planToDelete = null
+            // Cerrar el diálogo de detalle si está abierto
+            showPlanDetail = false
+            selectedPlan = null
             plansListViewModel.loadPlans(tags = selectedTags)
             planViewModel.resetDeleteState()
         }
@@ -216,7 +229,9 @@ fun PlansListSection(
                             plan = plan,
                             currentUserUid = currentUserId ?: "",
                             onPlanClick = { planId ->
-                                onPlanClick(planId)
+                                // Abrir diálogo de detalle del plan
+                                selectedPlan = plan
+                                showPlanDetail = true
                             },
                             onJoinClick = { planId ->
                                 planViewModel.joinPlan(planId)
@@ -404,5 +419,51 @@ fun PlansListSection(
                 }
             }
         )
+    }
+
+    // Diálogo de detalle del plan (card expandida)
+    if (showPlanDetail && selectedPlan != null) {
+        Dialog(
+            onDismissRequest = {
+                showPlanDetail = false
+                selectedPlan = null
+            }
+        ) {
+            PlanDetailCard(
+                plan = selectedPlan!!,
+                currentUserUid = currentUserId ?: "",
+                onJoinClick = { planId ->
+                    planViewModel.joinPlan(planId)
+                },
+                onLeaveClick = { planId ->
+                    // Cerrar detalle y mostrar confirmación para salir
+                    showPlanDetail = false
+                    planToLeave = selectedPlan
+                    showLeaveDialog = true
+                },
+                onChatClick = { planId ->
+                    // Cerrar detalle y navegar al chat
+                    showPlanDetail = false
+                    selectedPlan = null
+                    onChatClick(planId)
+                },
+                onEditClick = { planId ->
+                    // Cerrar detalle y navegar a editar
+                    showPlanDetail = false
+                    selectedPlan = null
+                    onEditClick(planId)
+                },
+                onDeleteClick = { planId ->
+                    // Cerrar detalle y mostrar confirmación para eliminar
+                    showPlanDetail = false
+                    planToDelete = selectedPlan
+                    showDeleteDialog = true
+                },
+                onDismiss = {
+                    showPlanDetail = false
+                    selectedPlan = null
+                }
+            )
+        }
     }
 }
