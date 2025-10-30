@@ -45,8 +45,10 @@ class CreatePlanViewModel(
     private val _userCity = MutableStateFlow<String?>(null)
     val userCity: StateFlow<String?> = _userCity.asStateFlow()
 
+    private val _isEditMode = MutableStateFlow(false)
+    val isEditMode: StateFlow<Boolean> = _isEditMode.asStateFlow()
+
     init {
-        startNewPlan()
         loadUserLocation()
     }
 
@@ -62,6 +64,47 @@ class CreatePlanViewModel(
                     android.util.Log.d("CreatePlanViewModel", "Usuario ubicado en: ${user.city}, ${user.country}")
                 }
             }
+        }
+    }
+
+    /**
+     * Inicializa el ViewModel para crear un nuevo plan.
+     * Crea un plan vacío en Firestore y obtiene su ID.
+     */
+    fun initializeNewPlan() {
+        _isEditMode.value = false
+        _currentStep.value = 0
+        _creationComplete.value = false
+        startNewPlan()
+    }
+
+    /**
+     * Inicializa el ViewModel para editar un plan existente.
+     * Carga el plan desde Firestore.
+     *
+     * @param planId ID del plan a editar
+     */
+    fun initializeEditPlan(planId: String) {
+        _isEditMode.value = true
+        _currentStep.value = 0
+        _creationComplete.value = false
+        loadExistingPlan(planId)
+    }
+
+    /**
+     * Carga un plan existente desde Firestore para editarlo.
+     */
+    private fun loadExistingPlan(planId: String) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            planRepository.getPlanById(planId).onSuccess { plan ->
+                _planState.value = plan
+                android.util.Log.d("CreatePlanViewModel", "Plan cargado para edición: $planId")
+            }.onFailure { e ->
+                _error.value = "Error al cargar el plan: ${e.message}"
+                android.util.Log.e("CreatePlanViewModel", "Error al cargar plan", e)
+            }
+            _isLoading.value = false
         }
     }
 
@@ -298,9 +341,109 @@ class CreatePlanViewModel(
     }
 
     /**
+     * Elimina un plan de Firestore.
+     *
+     * @param planId ID del plan a eliminar
+     * @param onSuccess Callback que se ejecuta cuando la eliminación es exitosa
+     */
+    fun deletePlan(planId: String, onSuccess: () -> Unit = {}) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            planRepository.deletePlan(planId).onSuccess {
+                android.util.Log.d("CreatePlanViewModel", "Plan eliminado exitosamente: $planId")
+                onSuccess()
+            }.onFailure { e ->
+                _error.value = "Error al eliminar el plan: ${e.message}"
+                android.util.Log.e("CreatePlanViewModel", "Error al eliminar plan", e)
+            }
+            _isLoading.value = false
+        }
+    }
+
+    /**
+     * Permite que un usuario se una a un plan.
+     *
+     * @param planId ID del plan al que unirse
+     * @param onSuccess Callback que se ejecuta cuando se une exitosamente
+     */
+    fun joinPlan(planId: String, onSuccess: () -> Unit = {}) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            userRepository.getCurrentUser().onSuccess { user ->
+                if (user != null) {
+                    val planUser = com.crewup.myapplication.models.PlanUser(
+                        uid = user.uid,
+                        name = user.name,
+                        lastName = user.lastName,
+                        photoUrl = user.photoUrl,
+                        gender = user.gender,
+                        occupation = user.occupation,
+                        city = user.city
+                    )
+
+                    planRepository.joinPlan(planId, planUser).onSuccess {
+                        android.util.Log.d("CreatePlanViewModel", "Usuario unido al plan: $planId")
+                        onSuccess()
+                    }.onFailure { e ->
+                        _error.value = e.message ?: "Error al unirse al plan"
+                        android.util.Log.e("CreatePlanViewModel", "Error al unirse al plan", e)
+                    }
+                } else {
+                    _error.value = "No se pudo obtener la información del usuario"
+                }
+            }.onFailure { e ->
+                _error.value = "Error al obtener usuario: ${e.message}"
+                android.util.Log.e("CreatePlanViewModel", "Error al obtener usuario", e)
+            }
+            _isLoading.value = false
+        }
+    }
+
+    /**
+     * Permite que un usuario abandone un plan.
+     *
+     * @param planId ID del plan a abandonar
+     * @param onSuccess Callback que se ejecuta cuando se abandona exitosamente
+     */
+    fun leavePlan(planId: String, onSuccess: () -> Unit = {}) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            userRepository.getCurrentUser().onSuccess { user ->
+                if (user != null) {
+                    planRepository.leavePlan(planId, user.uid).onSuccess {
+                        android.util.Log.d("CreatePlanViewModel", "Usuario abandonó el plan: $planId")
+                        onSuccess()
+                    }.onFailure { e ->
+                        _error.value = e.message ?: "Error al abandonar el plan"
+                        android.util.Log.e("CreatePlanViewModel", "Error al abandonar el plan", e)
+                    }
+                } else {
+                    _error.value = "No se pudo obtener la información del usuario"
+                }
+            }.onFailure { e ->
+                _error.value = "Error al obtener usuario: ${e.message}"
+                android.util.Log.e("CreatePlanViewModel", "Error al obtener usuario", e)
+            }
+            _isLoading.value = false
+        }
+    }
+
+    /**
      * Limpia el mensaje de error.
      */
     fun clearError() {
         _error.value = null
+    }
+
+    /**
+     * Resetea el estado del ViewModel para permitir crear/editar otro plan.
+     */
+    fun resetState() {
+        _planState.value = Plan()
+        _currentStep.value = 0
+        _error.value = null
+        _isLoading.value = false
+        _creationComplete.value = false
+        _isEditMode.value = false
     }
 }
