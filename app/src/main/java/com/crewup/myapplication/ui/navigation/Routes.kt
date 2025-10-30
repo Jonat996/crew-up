@@ -28,6 +28,10 @@ sealed class Routes(val route: String) {
 
     // Ruta de creación de plan
     data object CreatePlan : Routes("create_plan")
+    // Ruta de edición de plan (con parámetro planId)
+    data object EditPlan : Routes("edit_plan/{planId}") {
+        fun createRoute(planId: String) = "edit_plan/$planId"
+    }
     // Rutas de recuperación de contraseña
     data object RecoverEmail : Routes("recover_email")
     data object CodeSent : Routes("code_sent")

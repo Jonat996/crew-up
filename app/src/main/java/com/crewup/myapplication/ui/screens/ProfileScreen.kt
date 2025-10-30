@@ -51,7 +51,7 @@ fun ProfileScreen(
     fun getActionsOptions(): List<ProfileOption> {
         return listOf(
             ProfileOption(R.drawable.icon_report, reportProblem, onClick = {}),
-            ProfileOption(R.drawable.icon_plans, yourCreatedPlans, onClick = { navController.navigate(Routes.PlanLocation.route)}),
+            ProfileOption(R.drawable.icon_plans, yourCreatedPlans, onClick = { navController.navigate(Routes.MyPlans.route)}),
             ProfileOption(R.drawable.icon_logout, logout, onClick = onSignOut),
         )
     }

@@ -60,14 +60,28 @@ fun LocationPlanSection(
                 query = suggestion.description
                 vm.clearSuggestions()
 
-                // Extraer el nombre del lugar y la dirección completa
-                // Ejemplo: "Parque El Virrey, Calle 88 #9-99, Bogotá"
+                // Extraer el nombre del lugar, ciudad, país y la dirección completa
+                // Ejemplo: "Parque El Virrey, Calle 88 #9-99, Bogotá, Colombia"
                 // name = "Parque El Virrey"
-                // fullAddress = "Parque El Virrey, Calle 88 #9-99, Bogotá"
+                // city = "Bogotá"
+                // country = "Colombia"
+                // fullAddress = "Parque El Virrey, Calle 88 #9-99, Bogotá, Colombia"
                 val parts = suggestion.description.split(",").map { it.trim() }
+
                 val locationName = when {
                     parts.size >= 2 -> parts[0] // Primera parte es el nombre del lugar
                     else -> suggestion.description
+                }
+
+                // Extraer ciudad y país desde las últimas partes de la dirección
+                val city = when {
+                    parts.size >= 3 -> parts[parts.size - 2] // Penúltima parte suele ser la ciudad
+                    else -> null
+                }
+
+                val country = when {
+                    parts.size >= 2 -> parts.last() // Última parte suele ser el país
+                    else -> null
                 }
 
                 // Convertir sugerencia a PlanLocation
@@ -76,7 +90,9 @@ fun LocationPlanSection(
                     name = locationName,
                     fullAddress = suggestion.description,
                     lat = 0.0, // TODO: Obtener coordenadas con Place Details API
-                    lng = 0.0
+                    lng = 0.0,
+                    city = city,
+                    country = country
                 )
                 onLocationSelected(location)
             },

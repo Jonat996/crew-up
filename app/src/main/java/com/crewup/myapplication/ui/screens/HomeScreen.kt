@@ -15,13 +15,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.crewup.myapplication.ui.navigation.Routes
 import com.google.firebase.auth.FirebaseUser
-import com.crewup.myapplication.models.Plan
 import com.crewup.myapplication.R
 import com.crewup.myapplication.ui.components.home.ActivityOption
 import com.crewup.myapplication.ui.components.home.ActivitySelector
 import com.crewup.myapplication.ui.components.home.SearchHeaderBar
-import com.crewup.myapplication.ui.components.sections.plans.VerificationSection
-import com.google.firebase.firestore.FirebaseFirestore
+import com.crewup.myapplication.ui.components.sections.plans.PlansListSection
 
 @Composable
 fun HomeScreen(
@@ -31,10 +29,6 @@ fun HomeScreen(
     var query by remember { mutableStateOf("") }
     var selectedActivity by remember { mutableStateOf<String?>(null) }
     val scrollState = rememberScrollState()
-    var plans by remember { mutableStateOf<List<Plan>>(emptyList()) }
-    var error by remember { mutableStateOf<String?>(null) }
-
-
 
     val activityOptions = listOf(
         ActivityOption("Conversar", R.drawable.ic_home_coffe, onClick = {}),
@@ -73,25 +67,25 @@ fun HomeScreen(
             selectedActivity = selectedActivity,
             onActivitySelected = { selectedActivity = it }
         )
-        LaunchedEffect(selectedActivity) {
-            selectedActivity?.let { categoria ->
-                FirebaseFirestore.getInstance()
-                    .collection("plans")
-                    .whereEqualTo("categoria", categoria)
-                    .get()
-                    .addOnSuccessListener { result ->
-                        plans = result.documents.mapNotNull { it.toObject(Plan::class.java) }
-                    }
-                    .addOnFailureListener { exception ->
-                        error = exception.message
-                    }
-            }
-        }
-        Spacer( modifier = Modifier.height(19.dp))
 
+        Spacer(modifier = Modifier.height(24.dp))
 
-
-
+        // COMPONENTE 3: PlansListSection
+        PlansListSection(
+            onPlanClick = { planId ->
+                // Navegar a detalle del plan
+                navController.navigate("planDetail/$planId")
+            },
+            onChatClick = { planId ->
+                // Navegar al chat del plan
+                navController.navigate("planChat/$planId")
+            },
+            onEditClick = { planId ->
+                // Navegar a editar plan
+                navController.navigate(Routes.EditPlan.createRoute(planId))
+            },
+            selectedTags = emptyList() // Por ahora sin filtros, se puede integrar con ActivitySelector después
+        )
     }
 }
 

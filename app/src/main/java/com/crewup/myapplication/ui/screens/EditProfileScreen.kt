@@ -45,6 +45,7 @@ fun EditProfileScreen(
             HeaderEditableUserPhoto(
                 title = userName ?: noName,
                 navController = navController,
+                authViewModel = authViewModel,
                 userViewModel = userViewModel
             )
         },

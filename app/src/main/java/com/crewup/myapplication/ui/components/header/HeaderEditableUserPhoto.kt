@@ -29,6 +29,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.crewup.myapplication.R
+import com.crewup.myapplication.viewmodel.AuthViewModel
 import com.crewup.myapplication.viewmodel.UserViewModel
 
 /**
@@ -39,11 +40,20 @@ import com.crewup.myapplication.viewmodel.UserViewModel
 fun HeaderEditableUserPhoto(
     title: String,
     navController: NavController? = null,
+    authViewModel: AuthViewModel = viewModel(),
     userViewModel: UserViewModel = viewModel()
 ) {
+    val authState by authViewModel.authState.collectAsState()
     val userState by userViewModel.userState.collectAsState()
-    val user = userState.user
-    val photoUrl = user?.photoUrl?.takeIf { it.isNotBlank() }
+    val firebaseUser = authState.user
+    val firestoreUser = userState.user
+
+    // Obtener foto de perfil: primero intenta desde Firestore, luego desde Firebase Auth
+    val photoUrl = when {
+        !firestoreUser?.photoUrl.isNullOrBlank() -> firestoreUser?.photoUrl
+        firebaseUser?.photoUrl != null -> firebaseUser.photoUrl.toString()
+        else -> null
+    }
     val isLoading = userState.isLoading
 
     // Launcher para seleccionar imagen

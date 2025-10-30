@@ -6,5 +6,7 @@ data class PlanLocation(
     val name: String = "",
     val fullAddress: String = "",
     val lat: Double = 0.0,
-    val lng: Double = 0.0
+    val lng: Double = 0.0,
+    val city: String? = null, // Ciudad de la ubicación (nullable para compatibilidad)
+    val country: String? = null // País de la ubicación (nullable para compatibilidad)
 )

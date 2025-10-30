@@ -7,8 +7,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.composable
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 import com.crewup.myapplication.auth.GoogleAuth
 import com.crewup.myapplication.ui.screens.CreatePlanFlowScreen
+import com.crewup.myapplication.ui.screens.CreatedPlansScreen
+import com.crewup.myapplication.ui.screens.EditPlanFlowScreen
 import com.crewup.myapplication.ui.screens.EditProfileScreen
 import com.crewup.myapplication.ui.screens.HomeScreen
 import com.crewup.myapplication.ui.screens.LoginScreen
@@ -136,6 +140,13 @@ fun AppNavigation(
             NotificationsScreen(navController = navController)
         }
 
+        composable(Routes.MyPlans.route) {
+            CreatedPlansScreen(
+                navController = navController,
+                authViewModel = authViewModel
+            )
+        }
+
         composable(Routes.PlanLocation.route) {
             PlanLocationScreen(navController = navController)
         }
@@ -147,6 +158,18 @@ fun AppNavigation(
         // Ruta de creación de plan
         composable(Routes.CreatePlan.route) {
             CreatePlanFlowScreen(navController = navController)
+        }
+
+        // Ruta de edición de plan
+        composable(
+            route = Routes.EditPlan.route,
+            arguments = listOf(navArgument("planId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val planId = backStackEntry.arguments?.getString("planId") ?: ""
+            EditPlanFlowScreen(
+                navController = navController,
+                planId = planId
+            )
         }
 
         // Pantalla de recuperación de contraseña

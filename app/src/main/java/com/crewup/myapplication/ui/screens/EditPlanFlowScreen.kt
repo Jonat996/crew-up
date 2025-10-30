@@ -16,29 +16,28 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.crewup.myapplication.ui.components.header.HeaderLogo
 import com.crewup.myapplication.ui.components.sections.plans.*
 import com.crewup.myapplication.ui.layout.MainLayout
 import com.crewup.myapplication.viewmodel.CreatePlanViewModel
-import com.google.firebase.Timestamp
 import java.time.LocalTime
 import java.time.ZoneId
+import com.google.firebase.Timestamp
 import java.util.Date
 
 /**
- * Pantalla del flujo de creación de planes.
- * Maneja la navegación entre los diferentes pasos.
+ * Pantalla del flujo de edición de planes.
+ * Reutiliza el CreatePlanViewModel en modo edición.
  */
 @Composable
-fun CreatePlanFlowScreen(
+fun EditPlanFlowScreen(
     navController: NavController,
+    planId: String,
     viewModel: CreatePlanViewModel = viewModel()
 ) {
     val planState by viewModel.planState.collectAsState()
@@ -48,10 +47,11 @@ fun CreatePlanFlowScreen(
     val creationComplete by viewModel.creationComplete.collectAsState()
     val userCountry by viewModel.userCountry.collectAsState()
     val userCity by viewModel.userCity.collectAsState()
+    val isEditMode by viewModel.isEditMode.collectAsState()
 
-    // Inicializar el plan nuevo cuando se monta la pantalla
-    LaunchedEffect(Unit) {
-        viewModel.initializeNewPlan()
+    // Inicializar el plan para edición
+    LaunchedEffect(planId) {
+        viewModel.initializeEditPlan(planId)
     }
 
     // Launcher para seleccionar imagen
@@ -61,7 +61,7 @@ fun CreatePlanFlowScreen(
         uri?.let { viewModel.uploadImage(it) }
     }
 
-    // Navegar de regreso cuando se complete la creación
+    // Navegar de regreso cuando se complete la edición
     LaunchedEffect(creationComplete) {
         if (creationComplete) {
             navController.popBackStack()
@@ -78,7 +78,10 @@ fun CreatePlanFlowScreen(
 
     MainLayout(
         header = {
-            HeaderLogo(stepTitles.getOrNull(currentStep) ?: "Crear Plan", navController = navController)
+            HeaderLogo(
+                title = stepTitles.getOrNull(currentStep) ?: "Editar Plan",
+                navController = navController
+            )
         },
         content = {
             Spacer(Modifier.height(4.dp))
@@ -152,7 +155,6 @@ fun CreatePlanFlowScreen(
                             },
                             selectedTime = planState.time.takeIf { it.isNotBlank() }?.let { timeString ->
                                 try {
-                                    // Intentar parsear el string de tiempo a LocalTime
                                     val parts = timeString.split(":")
                                     if (parts.size >= 2) {
                                         LocalTime.of(parts[0].toInt(), parts[1].toInt())
@@ -164,13 +166,11 @@ fun CreatePlanFlowScreen(
                                 }
                             },
                             onDateSelected = { localDate ->
-                                // Convertir LocalDate a Timestamp
                                 val instant = localDate.atStartOfDay(ZoneId.systemDefault()).toInstant()
                                 val timestamp = Timestamp(Date.from(instant))
                                 viewModel.updateDateTime(timestamp, planState.time)
                             },
                             onTimeSelected = { localTime ->
-                                // Convertir LocalTime a String
                                 val timeString = String.format("%02d:%02d", localTime.hour, localTime.minute)
                                 viewModel.updateDateTime(planState.date, timeString)
                             }
@@ -195,8 +195,9 @@ fun CreatePlanFlowScreen(
                 }
 
                 // Botones de navegación en la parte inferior
-                NavigationButtons(
+                EditNavigationButtons(
                     currentStep = currentStep,
+                    isEditMode = isEditMode,
                     onPrevious = { viewModel.previousStep() },
                     onNext = { viewModel.nextStep() },
                     onFinish = { viewModel.finishPlan() },
@@ -210,8 +211,9 @@ fun CreatePlanFlowScreen(
 }
 
 @Composable
-private fun NavigationButtons(
+private fun EditNavigationButtons(
     currentStep: Int,
+    isEditMode: Boolean,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
     onFinish: () -> Unit,
@@ -248,7 +250,7 @@ private fun NavigationButtons(
                 Spacer(modifier = Modifier.weight(1f))
             }
 
-            // Botón Siguiente/Crear
+            // Botón Siguiente/Actualizar
             Button(
                 onClick = if (currentStep == 4) onFinish else onNext,
                 modifier = Modifier
@@ -262,126 +264,14 @@ private fun NavigationButtons(
                 shape = RoundedCornerShape(10.dp)
             ) {
                 Text(
-                    text = if (currentStep == 4) "Crear!" else "Siguiente",
+                    text = if (currentStep == 4) {
+                        if (isEditMode) "Actualizar!" else "Crear!"
+                    } else {
+                        "Siguiente"
+                    },
                     fontWeight = FontWeight.SemiBold
                 )
             }
         }
     }
-}
-
-/**
- * Sección para subir imagen.
- */
-@Composable
-private fun ImageUploadSection(
-    imageUrl: String,
-    onImagePickerClick: () -> Unit,
-    isLoading: Boolean
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = "Agrega una foto para tu plan",
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-
-        Text(
-            text = "Una buena imagen ayuda a atraer más personas",
-            style = MaterialTheme.typography.bodyMedium,
-            color = Color.Gray,
-            modifier = Modifier.padding(bottom = 24.dp)
-        )
-
-        // Card para la imagen
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(250.dp)
-                .clickable(onClick = onImagePickerClick),
-            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-            shape = RoundedCornerShape(12.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = if (imageUrl.isNotBlank()) Color.Transparent else Color(0xFFF5F5F5)
-            )
-        ) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                if (imageUrl.isNotBlank()) {
-                    // Mostrar la imagen cargada
-                    Image(
-                        painter = rememberAsyncImagePainter(imageUrl),
-                        contentDescription = "Imagen del plan",
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop
-                    )
-                } else {
-                    // Placeholder cuando no hay imagen
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Icon(
-                            painter = painterResource(android.R.drawable.ic_menu_camera),
-                            contentDescription = "Subir imagen",
-                            modifier = Modifier.size(64.dp),
-                            tint = Color.Gray
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Text(
-                            text = "Toca para seleccionar una imagen",
-                            color = Color.Gray,
-                            fontSize = 16.sp
-                        )
-                    }
-                }
-
-                // Indicador de carga sobre la imagen
-                if (isLoading) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(Color.Black.copy(alpha = 0.5f)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator(color = Color.White)
-                    }
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Botón para cambiar imagen
-        if (imageUrl.isNotBlank()) {
-            OutlinedButton(
-                onClick = onImagePickerClick,
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.outlinedButtonColors(
-                    contentColor = Color(0xFF0056B3)
-                )
-            ) {
-                Text("Cambiar imagen")
-            }
-        }
-    }
-}
-
-/**
- * Sección de verificación final.
- */
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewCreatePlanFlowScreen() {
-    val navController = rememberNavController()
-    CreatePlanFlowScreen(navController = navController)
 }
