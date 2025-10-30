@@ -1,14 +1,19 @@
 package com.crewup.myapplication.data.repository
 
+import android.net.Uri
 import com.crewup.myapplication.models.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageException
 import kotlinx.coroutines.tasks.await
+import java.util.UUID
 
 class UserRepository(
     private val db: FirebaseFirestore = FirebaseFirestore.getInstance(),
-    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance(),
+    private val storage: FirebaseStorage = FirebaseStorage.getInstance()
 ) {
     private val usersCollection = db.collection("users")
 
@@ -85,6 +90,33 @@ class UserRepository(
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
+        }
+    }
+
+    /**
+     * Sube una foto de perfil a Firebase Storage y actualiza la URL en Firestore.
+     *
+     * @param imageUri URI local de la imagen a subir
+     * @return Result con la URL de descarga o un error
+     */
+    suspend fun uploadUserPhotoAndSaveUrl(imageUri: Uri): Result<String> {
+        val uid = auth.currentUser?.uid ?: return Result.failure(Exception("No autenticado"))
+        require(imageUri != Uri.EMPTY) { "La URI de la imagen no puede estar vacía" }
+
+        return try {
+            android.util.Log.d("UserRepository", "Storage bucket: ${storage.reference.bucket}")
+            val storageRef = storage.reference.child("users/$uid/profile/${UUID.randomUUID()}.jpg")
+            storageRef.putFile(imageUri).await()
+            val downloadUrl = storageRef.downloadUrl.await().toString()
+            usersCollection.document(uid).update(mapOf("photoUrl" to downloadUrl)).await()
+            android.util.Log.d("UserRepository", "Foto de perfil subida: $downloadUrl")
+            Result.success(downloadUrl)
+        } catch (e: StorageException) {
+            android.util.Log.e("UserRepository", "Error al subir foto de perfil: ${e.message}", e)
+            Result.failure(Exception("Error al subir la foto de perfil: ${e.message}", e))
+        } catch (e: Exception) {
+            android.util.Log.e("UserRepository", "Error al procesar foto de perfil: ${e.message}", e)
+            Result.failure(Exception("Error al procesar la foto de perfil: ${e.message}", e))
         }
     }
 }

@@ -96,12 +96,6 @@ fun EditProfileSection(){
                 lastName = lastName,
                 onLastNameChange = { lastName = it }
             )
-            EmailInput(
-                email = email,
-                onEmailChange = { email = it },
-                onClearError = {},
-                enabled = false // Email deshabilitado, no se puede cambiar
-            )
             if (selectedCountry != null) {
                 CityInput(
                     selectedCity = selectedCity,

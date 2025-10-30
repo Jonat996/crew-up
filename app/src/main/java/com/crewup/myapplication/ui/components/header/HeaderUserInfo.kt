@@ -44,7 +44,8 @@ fun HeaderUserInfo(
     HeaderBase(navController = navController) {
         if (firebaseUser != null) {
             HeaderUserPhoto(
-                title = firebaseUser.displayName ?: noName,
+                authViewModel = authViewModel,
+                userViewModel = userViewModel
             )
 
             Spacer(modifier = Modifier.height(8.dp))
