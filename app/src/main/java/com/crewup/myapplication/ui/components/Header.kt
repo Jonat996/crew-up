@@ -46,7 +46,7 @@ fun Header(title: String) {
                 color = Color.White,
                 modifier = Modifier
                     .padding(bottom = 50.dp)
-                    .offset(y = (-70).dp),
+                    .offset(y = (-20).dp),
 
             )
         }

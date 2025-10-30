@@ -71,7 +71,7 @@ fun CreatePlanFlowScreen(
 
     MainLayout(
         header = {
-            HeaderLogo(stepTitles.getOrNull(currentStep) ?: "Crear Plan")
+            HeaderLogo(stepTitles.getOrNull(currentStep) ?: "Crear Plan", navController = navController)
         },
         content = {
             Spacer(Modifier.height(4.dp))

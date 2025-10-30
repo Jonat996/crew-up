@@ -31,16 +31,33 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.crewup.myapplication.R
 import com.crewup.myapplication.viewmodel.AuthViewModel
+import com.crewup.myapplication.viewmodel.UserViewModel
 
 @Composable
 fun HeaderUserPhoto(
-    title: String,
-    authViewModel: AuthViewModel = viewModel()
+    title: String? = null,
+    authViewModel: AuthViewModel = viewModel(),
+    userViewModel: UserViewModel = viewModel()
 ) {
-
     val authState by authViewModel.authState.collectAsState()
-    val user = authState.user
-    val photoUrl =user?.photoUrl ?: "undefined"
+    val userState by userViewModel.userState.collectAsState()
+    val firebaseUser = authState.user
+    val firestoreUser = userState.user
+
+    // Obtener foto de perfil desde Firestore
+    val photoUrl = firestoreUser?.photoUrl?.takeIf { it.isNotBlank() } ?: "undefined"
+
+    // Obtener nombre: si se pasa title, usar ese; sino obtener desde Firestore/Firebase Auth
+    val displayName = title ?: when {
+        !firestoreUser?.name.isNullOrEmpty() && !firestoreUser?.lastName.isNullOrEmpty() ->
+            "${firestoreUser?.name} ${firestoreUser?.lastName}"
+        !firestoreUser?.name.isNullOrEmpty() ->
+            firestoreUser?.name
+        firebaseUser?.displayName != null ->
+            firebaseUser.displayName
+        else ->
+            "Sin nombre"
+    }
 
     if (photoUrl == "undefined") {
         Image(
@@ -57,7 +74,7 @@ fun HeaderUserPhoto(
     }
     Spacer(modifier = Modifier.height(8.dp))
     Text(
-        text = title,
+        text = displayName ?: "Sin nombre",
         fontSize = 22.sp,
         fontWeight = FontWeight.Bold,
         color = Color.White
