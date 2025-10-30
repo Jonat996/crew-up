@@ -6,17 +6,20 @@ import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
 import androidx.credentials.GetCredentialResponse
+import com.crewup.myapplication.R
+import com.crewup.myapplication.data.repository.UserRepository
+import com.crewup.myapplication.models.User
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
-import com.crewup.myapplication.R
 import kotlinx.coroutines.tasks.await
 
 class GoogleAuth(private val context: Context) {
 
     private val auth = FirebaseAuth.getInstance()
     private val credentialManager = CredentialManager.create(context)
+    private val userRepository = UserRepository()
 
     /**
      * Inicia sesión con Google usando Credential Manager y Firebase Auth.
@@ -30,7 +33,6 @@ class GoogleAuth(private val context: Context) {
             Log.d("GoogleAuth", "Package Name: ${context.packageName}")
 
             // 2. Configurar la opción de Google ID según la documentación oficial
-            // Primero intentamos sin filtrar cuentas autorizadas
             val googleIdOption = GetGoogleIdOption.Builder()
                 .setFilterByAuthorizedAccounts(false) // Mostrar todas las cuentas
                 .setServerClientId(webClientId)
@@ -75,21 +77,34 @@ class GoogleAuth(private val context: Context) {
         return try {
             val credential = result.credential
 
-            // Verificar que sea una credencial de Google
             if (credential is CustomCredential &&
                 credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
 
-                // Extraer el token de Google
                 val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
                 val idToken = googleIdTokenCredential.idToken
 
                 Log.d("GoogleAuth", "Google ID Token obtenido exitosamente")
                 Log.d("GoogleAuth", "Usuario: ${googleIdTokenCredential.displayName}")
 
-                // Autenticar con Firebase usando el token de Google
                 val firebaseCredential = GoogleAuthProvider.getCredential(idToken, null)
                 val authResult = auth.signInWithCredential(firebaseCredential).await()
+                val firebaseUser = authResult.user
+                val isNewUser = authResult.additionalUserInfo?.isNewUser ?: false
 
+                if (firebaseUser != null && isNewUser) {
+                    val displayName = firebaseUser.displayName ?: ""
+                    val name = displayName.substringBefore(" ").trim()
+                    val lastName = displayName.substringAfter(" ", "").trim()
+                    val newUser = User(
+                        uid = firebaseUser.uid,
+                        email = firebaseUser.email ?: "",
+                        name = name,
+                        lastName = lastName,
+                        photoUrl = firebaseUser.photoUrl?.toString() ?: ""
+                    )
+                    userRepository.createUser(newUser)
+                }
+                
                 Log.d("GoogleAuth", "Firebase Auth exitoso: ${authResult.user?.displayName}")
                 Result.success(authResult.user)
             } else {
