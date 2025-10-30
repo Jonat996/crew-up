@@ -10,6 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChatBubbleOutline
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -31,7 +32,6 @@ import com.crewup.myapplication.R
 import com.crewup.myapplication.models.Plan
 import com.crewup.myapplication.models.PlanLocation
 import com.crewup.myapplication.models.PlanUser
-
 import com.google.firebase.Timestamp
 import java.text.SimpleDateFormat
 import java.util.*
@@ -42,11 +42,14 @@ fun PlanCard(
     currentUserUid: String,
     onPlanClick: (String) -> Unit,
     onJoinClick: (String) -> Unit,
+    onLeaveClick: (String) -> Unit,
+    onChatClick: (String) -> Unit,
     onEditClick: (String) -> Unit,
     onDeleteClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val isCreator = plan.createdBy?.uid == currentUserUid
+    val isJoined = plan.participants.any { it.uid == currentUserUid }
 
     Card(
         modifier = modifier
@@ -58,7 +61,7 @@ fun PlanCard(
         colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
         Column {
-            // === IMAGEN DEL PLAN ===
+            // IMAGEN
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(plan.imageUrl)
@@ -75,7 +78,7 @@ fun PlanCard(
             )
 
             Column(modifier = Modifier.padding(16.dp)) {
-                // === TÍTULO ===
+                // TÍTULO
                 Text(
                     text = plan.title,
                     fontSize = 20.sp,
@@ -86,7 +89,7 @@ fun PlanCard(
 
                 Spacer(Modifier.height(4.dp))
 
-                // === UBICACIÓN ===
+                // UBICACIÓN
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         Icons.Default.LocationOn,
@@ -101,18 +104,18 @@ fun PlanCard(
                         color = Color.Gray,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f) // CORRECTO
                     )
                 }
 
                 Spacer(Modifier.height(8.dp))
 
-                // === TAGS ===
+                // TAGS
                 TagsRow(tags = plan.tags)
 
                 Spacer(Modifier.height(12.dp))
 
-                // === FECHA Y HORA ===
+                // FECHA Y HORA
                 Text(
                     text = plan.getFormattedDateTime(),
                     fontSize = 16.sp,
@@ -122,33 +125,126 @@ fun PlanCard(
 
                 Spacer(Modifier.height(12.dp))
 
-                // === FILTROS: EDAD + GÉNERO ===
-                FiltersRow(
-                    minAge = plan.minAge,
-                    maxAge = plan.maxAge,
-                    gender = plan.gender
-                )
+                // FILTROS
+                FiltersRow(minAge = plan.minAge, maxAge = plan.maxAge, gender = plan.gender)
 
                 Spacer(Modifier.height(16.dp))
 
-                // === ACCIONES: CREADOR O PARTICIPANTE ===
-                if (isCreator) {
-                    CreatorActionsRow(
-                        onEditClick = { onEditClick(plan.id) },
-                        onDeleteClick = { onDeleteClick(plan.id) }
-                    )
-                } else {
-                    ParticipantActionsRow(
-                        participants = plan.participants,
-                        onJoinClick = { onJoinClick(plan.id) }
-                    )
+                // PARTICIPANTES + ACCIONES
+                ParticipantsAndActionsRow(
+                    participants = plan.participants,
+                    isCreator = isCreator,
+                    isJoined = isJoined,
+                    onJoinClick = { onJoinClick(plan.id) },
+                    onLeaveClick = { onLeaveClick(plan.id) },
+                    onChatClick = { onChatClick(plan.id) },
+                    onEditClick = { onEditClick(plan.id) },
+                    onDeleteClick = { onDeleteClick(plan.id) }
+                )
+            }
+        }
+    }
+}
+
+// === PARTICIPANTES + ACCIONES ===
+@Composable
+private fun ParticipantsAndActionsRow(
+    participants: List<PlanUser>,
+    isCreator: Boolean,
+    isJoined: Boolean,
+    onJoinClick: () -> Unit,
+    onLeaveClick: () -> Unit,
+    onChatClick: () -> Unit,
+    onEditClick: () -> Unit,
+    onDeleteClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        ParticipantsAvatarRow(participants = participants)
+
+        Row {
+            when {
+                isCreator -> {
+                    Button(
+                        onClick = onEditClick,
+                        modifier = Modifier.height(40.dp),
+                        colors = ButtonDefaults.buttonColors(Color(0xFF0056B3)),
+                        shape = RoundedCornerShape(20.dp)
+                    ) {
+                        Text("Editar", fontSize = 14.sp, fontWeight = FontWeight.Medium)
+                    }
+                    Spacer(Modifier.width(1.dp))
+                    IconButton(onClick = onDeleteClick) {
+                        Icon(Icons.Default.Delete, "Eliminar", tint = Color.Red)
+                    }
+                }
+                isJoined -> {
+                    IconButton(onClick = onChatClick) {
+                        Icon(Icons.Default.ChatBubbleOutline, "Chat", tint = Color(0xFF0056B3))
+                    }
+                    OutlinedButton(
+                        onClick = onLeaveClick,
+                        modifier = Modifier.height(40.dp),
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Red),
+                        border = ButtonDefaults.outlinedButtonBorder.copy(width = 1.dp)
+                    ) {
+                        Icon(Icons.Default.ExitToApp, "Salir", tint = Color.Red, modifier = Modifier.size(18.dp))
+                        Spacer(Modifier.width(4.dp))
+                        Text("Salir", fontSize = 14.sp, color = Color.Red)
+                    }
+                }
+                else -> {
+                    Button(
+                        onClick = onJoinClick,
+                        modifier = Modifier.height(40.dp),
+                        colors = ButtonDefaults.buttonColors(Color(0xFF0056B3)),
+                        shape = RoundedCornerShape(20.dp)
+                    ) {
+                        Text("Unirme", fontSize = 14.sp, fontWeight = FontWeight.Medium)
+                    }
                 }
             }
         }
     }
 }
 
-// === EXTENSIÓN: FORMATEAR FECHA ===
+// === AVATARES + CONTADOR ===
+@Composable
+private fun ParticipantsAvatarRow(participants: List<PlanUser>) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .padding(end = 12.dp)
+    ) {
+        participants.take(2).forEachIndexed { index, user ->
+            AsyncImage(
+                model = user.photoUrl.ifBlank { null },
+                contentDescription = null,
+                placeholder = painterResource(R.drawable.icon_profile),
+                error = painterResource(R.drawable.icon_profile),
+                modifier = Modifier
+                    .size(32.dp)
+                    .offset(x = -(index * 12).dp)
+                    .clip(CircleShape)
+                    .background(Color.LightGray),
+                contentScale = ContentScale.Crop
+            )
+        }
+        Spacer(Modifier.width(3.dp))
+        Text(
+            text = "${participants.size} Participantes",
+            fontSize = 14.sp,
+            color = Color.Gray,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
+}
+
+// === FORMATEO DE FECHA ===
 fun Plan.getFormattedDateTime(): String {
     val date = this.date?.toDate() ?: return "Fecha no disponible"
     val dateFormat = SimpleDateFormat("EEEE, d MMM yyyy", Locale("es", "CO"))
@@ -162,11 +258,7 @@ fun Plan.getFormattedDateTime(): String {
 @Composable
 private fun TagsRow(tags: List<String>) {
     if (tags.isEmpty()) return
-
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(6.dp),
-        modifier = Modifier.fillMaxWidth()
-    ) {
+    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
         tags.take(3).forEach { tag ->
             AssistChip(
                 onClick = { },
@@ -178,12 +270,7 @@ private fun TagsRow(tags: List<String>) {
             )
         }
         if (tags.size > 3) {
-            Text(
-                text = "+${tags.size - 3}",
-                fontSize = 12.sp,
-                color = Color.Gray,
-                modifier = Modifier.align(Alignment.CenterVertically)
-            )
+            Text("+${tags.size - 3}", fontSize = 12.sp, color = Color.Gray)
         }
     }
 }
@@ -191,10 +278,7 @@ private fun TagsRow(tags: List<String>) {
 // === FILTROS ===
 @Composable
 private fun FiltersRow(minAge: Int, maxAge: Int, gender: String) {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
+    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         if (minAge > 0 && maxAge > 0) {
             FilterChip(
                 selected = false,
@@ -206,7 +290,6 @@ private fun FiltersRow(minAge: Int, maxAge: Int, gender: String) {
                 )
             )
         }
-
         FilterChip(
             selected = false,
             onClick = { },
@@ -219,113 +302,11 @@ private fun FiltersRow(minAge: Int, maxAge: Int, gender: String) {
     }
 }
 
-// === ACCIONES DEL CREADOR ===
-@Composable
-private fun CreatorActionsRow(
-    onEditClick: () -> Unit,
-    onDeleteClick: () -> Unit
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Button(
-            onClick = onEditClick,
-            modifier = Modifier.height(40.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF0056B3),
-                contentColor = Color.White
-            ),
-            shape = RoundedCornerShape(20.dp)
-        ) {
-            Text("Editar", fontSize = 14.sp, fontWeight = FontWeight.Medium)
-        }
+// ================================================
+// 3 PREVIEWS (TODOS CON PARTICIPANTES)
+// ================================================
 
-        IconButton(onClick = onDeleteClick) {
-            Icon(
-                Icons.Default.Delete,
-                contentDescription = "Eliminar plan",
-                tint = Color.Red
-            )
-        }
-    }
-}
-
-// === ACCIONES DEL PARTICIPANTE ===
-
-@Composable
-private fun ParticipantActionsRow(
-    participants: List<PlanUser>,
-    onJoinClick: () -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 8.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .weight(0.5f)
-        ) {
-            participants.take(3).forEachIndexed { index, user ->
-                AsyncImage(
-                    model = user.photoUrl.ifBlank { null },
-                    contentDescription = null,
-                    placeholder = painterResource(R.drawable.icon_profile),
-                    error = painterResource(R.drawable.icon_profile),
-                    modifier = Modifier
-                        .size(32.dp)
-                        .offset(x = -(index * 12).dp)
-                        .clip(CircleShape)
-                        .background(Color.LightGray),
-                    contentScale = ContentScale.Crop
-                )
-            }
-            Spacer(Modifier.width(8.dp))
-            Text(
-                text = "${participants.size} Participantes",
-                fontSize = 14.sp,
-                color = Color.Gray,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-        }
-
-        // --- DERECHA: Botones (Chat + Unirme) ---
-        Row(
-            horizontalArrangement = Arrangement.End,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(onClick = { /* Abrir chat */ }) {
-                Icon(
-                    Icons.Default.ChatBubbleOutline,
-                    contentDescription = "Chat",
-                    tint = Color(0xFF0056B3)
-                )
-            }
-
-            Button(
-                onClick = onJoinClick,
-                modifier = Modifier.height(40.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF0056B3),
-                    contentColor = Color.White
-                ),
-                shape = RoundedCornerShape(20.dp)
-            ) {
-                Text("Unirme", fontSize = 14.sp, fontWeight = FontWeight.Medium)
-            }
-        }
-    }
-}
-
-
-@Preview(name = "Creador del Plan", showBackground = true)
+@Preview(name = "1. Creador", showBackground = true)
 @Composable
 fun PlanCardCreatorPreview() {
     MaterialTheme {
@@ -334,59 +315,80 @@ fun PlanCardCreatorPreview() {
             currentUserUid = "user123",
             onPlanClick = {},
             onJoinClick = {},
+            onLeaveClick = {},
+            onChatClick = {},
             onEditClick = {},
             onDeleteClick = {}
         )
     }
 }
 
-@Preview(name = "Participante Externo", showBackground = true)
+@Preview(name = "2. No unido", showBackground = true)
 @Composable
-fun PlanCardParticipantPreview() {
+fun PlanCardNotJoinedPreview() {
     MaterialTheme {
         PlanCard(
-            plan = mockPlanParticipant,
+            plan = mockPlanNotJoined,
             currentUserUid = "otherUser456",
             onPlanClick = {},
             onJoinClick = {},
+            onLeaveClick = {},
+            onChatClick = {},
             onEditClick = {},
             onDeleteClick = {}
         )
     }
 }
 
-// === MOCK DATA PARA PREVIEW ===
+@Preview(name = "3. Ya unido", showBackground = true)
+@Composable
+fun PlanCardJoinedPreview() {
+    MaterialTheme {
+        PlanCard(
+            plan = mockPlanJoined,
+            currentUserUid = "participant789",
+            onPlanClick = {},
+            onJoinClick = {},
+            onLeaveClick = {},
+            onChatClick = {},
+            onEditClick = {},
+            onDeleteClick = {}
+        )
+    }
+}
+
+// === MOCK DATA ===
 private val mockPlanCreator = Plan(
-    id = "plan123",
-    title = "Intercambio de idiomas y juegos de mesa",
-    description = "Practica inglés sin presión, con charlas y juegos.",
+    id = "plan1",
+    title = "Intercambio idiomas y juegos",
     imageUrl = "https://example.com/plan.jpg",
     location = PlanLocation(name = "Vintrash Bar Bogotá"),
     date = Timestamp.now(),
     time = "7:00 PM",
-    tags = listOf("Idiomas", "Cantar", "Juegos"),
+    tags = listOf("Idiomas", "Juegos"),
     minAge = 18,
-    maxAge = 27,
     gender = "Todos",
-    createdBy = PlanUser(
-        uid = "user123",
-        name = "Sneider",
-        lastName = "Smith",
-        photoUrl = "",
-        city = "Bogotá"
-    ),
+    createdBy = PlanUser(uid = "user123", name = "Sneider"),
     participants = listOf(
-        PlanUser(uid = "user123", name = "Sneider", photoUrl = ""),
-        PlanUser(uid = "p1", name = "Ana", photoUrl = ""),
-        PlanUser(uid = "p2", name = "Luis", photoUrl = "")
+        PlanUser(uid = "user123", name = "Sneider"),
+        PlanUser(uid = "p1", name = "Ana"),
+        PlanUser(uid = "p2", name = "Luis")
     )
 )
 
-private val mockPlanParticipant = mockPlanCreator.copy(
-    createdBy = PlanUser(uid = "creator789", name = "Pedro", lastName = "Gómez"),
+private val mockPlanNotJoined = mockPlanCreator.copy(
+    createdBy = PlanUser(uid = "creator999", name = "Pedro"),
     participants = listOf(
-        PlanUser(uid = "creator789", name = "Pedro"),
-        PlanUser(uid = "p1", name = "Ana"),
+        PlanUser(uid = "creator999", name = "Pedro"),
+        PlanUser(uid = "p1", name = "Ana")
+    )
+)
+
+private val mockPlanJoined = mockPlanCreator.copy(
+    createdBy = PlanUser(uid = "creator999", name = "Pedro"),
+    participants = listOf(
+        PlanUser(uid = "creator999", name = "Pedro"),
+        PlanUser(uid = "participant789", name = "Ana"),
         PlanUser(uid = "p2", name = "Luis"),
         PlanUser(uid = "p3", name = "María")
     )
