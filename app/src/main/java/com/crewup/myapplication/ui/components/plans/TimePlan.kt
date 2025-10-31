@@ -152,17 +152,20 @@ fun TimeSegment(
             state = listState,
             modifier = Modifier
                 .background(Color.LightGray.copy(alpha = 0.1f))
-                .padding(vertical = 16.dp)
-                .height(120.dp)
+                .height(120.dp),
+            contentPadding = PaddingValues(vertical = 30.dp)
         ) {
-            item {
-                Spacer(modifier = Modifier.height(60.dp)) // mitad de 120.dp
-            }
 
             items(displayValues) { item ->
-                val isSelected = displayValues.indexOf(item) == (
-                        listState.firstVisibleItemIndex + listState.layoutInfo.visibleItemsInfo.size / 2
-                        ).coerceIn(displayValues.indices)
+                val itemIndex = displayValues.indexOf(item)
+                val visibleItems = listState.layoutInfo.visibleItemsInfo
+                val centerY = listState.layoutInfo.viewportEndOffset / 2
+
+                // Encontrar el item más cercano al centro
+                val centeredItem = visibleItems.minByOrNull { visItem ->
+                    kotlin.math.abs(visItem.offset + visItem.size / 2 - centerY)
+                }
+                val isSelected = centeredItem?.index == itemIndex
 
                 Text(
                     text = if (twoDigit) String.format("%02d", item) else item.toString(),
@@ -171,10 +174,6 @@ fun TimeSegment(
                     color = if (isSelected) Color(0xFF0056B3) else Color.Gray,
                     modifier = Modifier.padding(vertical = 4.dp)
                 )
-            }
-
-            item {
-                Spacer(modifier = Modifier.height(60.dp)) // mitad de 120.dp
             }
         }
 
@@ -224,18 +223,20 @@ fun AmPmSegment(
             state = listState,
             modifier = Modifier
                 .background(Color.LightGray.copy(alpha = 0.1f))
-                .padding(vertical = 16.dp)
-                .height(120.dp)
+                .height(120.dp),
+            contentPadding = PaddingValues(vertical = 30.dp)
         ) {
-            item {
-                Spacer(modifier = Modifier.height(60.dp)) // espacio superior
-            }
 
             items(displayValues.size) { index ->
                 val item = displayValues[index]
-                val isSelected = index == (
-                        listState.firstVisibleItemIndex + listState.layoutInfo.visibleItemsInfo.size / 2
-                        ).coerceIn(displayValues.indices)
+                val visibleItems = listState.layoutInfo.visibleItemsInfo
+                val centerY = listState.layoutInfo.viewportEndOffset / 2
+
+                // Encontrar el item más cercano al centro
+                val centeredItem = visibleItems.minByOrNull { visItem ->
+                    kotlin.math.abs(visItem.offset + visItem.size / 2 - centerY)
+                }
+                val isSelected = centeredItem?.index == index
 
                 Text(
                     text = item.name,
@@ -244,10 +245,6 @@ fun AmPmSegment(
                     color = if (isSelected) Color(0xFF0056B3) else Color.Gray,
                     modifier = Modifier.padding(vertical = 4.dp)
                 )
-            }
-
-            item {
-                Spacer(modifier = Modifier.height(60.dp)) // espacio inferior
             }
         }
 

@@ -26,15 +26,15 @@ fun DatePlan(
 
     // Estado del DatePicker
     val datePickerState = rememberDatePickerState(
-        // Inicializa con la fecha seleccionada si existe, sino con null para que no haya selección inicial
-        initialSelectedDateMillis = selectedDate?.atStartOfDay(ZoneId.systemDefault())?.toInstant()?.toEpochMilli()
+        // Inicializa con la fecha seleccionada en UTC para evitar problemas de zona horaria
+        initialSelectedDateMillis = selectedDate?.atStartOfDay(ZoneId.of("UTC"))?.toInstant()?.toEpochMilli()
     )
 
     // El Card para el contenedor y la sombra
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp), // Ajuste de padding para los lados
+            .wrapContentHeight(),
         shape = RoundedCornerShape(12.dp), // Bordes redondeados más pronunciados
         colors = CardDefaults.cardColors(containerColor = Color.White), // Fondo blanco
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp) // Sombra suave como en la imagen
@@ -44,7 +44,7 @@ fun DatePlan(
             state = datePickerState,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp), // Padding interno para el calendario
+                .wrapContentHeight(), // Sin padding interno para maximizar espacio
 
             // DatePlan.kt (Bloque de colores corregido)
 
@@ -75,9 +75,9 @@ fun DatePlan(
     // Actualiza la fecha seleccionada cuando cambia
     LaunchedEffect(datePickerState.selectedDateMillis) {
         datePickerState.selectedDateMillis?.let { millis ->
-            // Convertir milisegundos a LocalDate de forma segura
+            // Convertir milisegundos a LocalDate usando UTC para evitar problemas de zona horaria
             val date = Instant.ofEpochMilli(millis)
-                .atZone(ZoneId.systemDefault())
+                .atZone(ZoneId.of("UTC"))
                 .toLocalDate()
             onDateSelected(date)
         }

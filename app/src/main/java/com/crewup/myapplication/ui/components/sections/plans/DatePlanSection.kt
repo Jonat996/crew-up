@@ -50,7 +50,7 @@ fun DatePlanSection(
     var localTime by remember(selectedTime) { mutableStateOf(selectedTime ?: java.time.LocalTime.of(12, 0)) }
 
     Column(modifier = Modifier
-        .padding(16.dp)
+        .padding(horizontal = 8.dp, vertical = 16.dp)
         .background(color = Color.White),
         horizontalAlignment = Alignment.CenterHorizontally,
         )
