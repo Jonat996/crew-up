@@ -1,9 +1,7 @@
 package com.crewup.myapplication.ui.components.plans
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Text
 import androidx.compose.material3.MaterialTheme
@@ -16,6 +14,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import java.time.LocalTime
+import androidx.compose.foundation.gestures.snapping.SnapLayoutInfoProvider
+import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 
 // Clase para manejar el estado AM/PM
 enum class AmPm { AM, PM }
@@ -98,41 +98,36 @@ fun TimePlan(
 }
 
 
-// Componente para un segmento de hora/minuto (Simulando el spinner)
+// Componente para un segmento de hora/minuto
 @Composable
 fun TimeSegment(
     value: Int,
     onValueChange: (Int) -> Unit,
-    label: String,
+    label: String = "",
     range: IntRange,
-    twoDigit: Boolean
+    twoDigit: Boolean = true
 ) {
     val listState = rememberLazyListState()
     val displayValues = range.toList()
-    var hasInitialized by remember { mutableStateOf(false) }
+    val snapLayoutInfoProvider = remember(listState) { SnapLayoutInfoProvider(listState) }
+    val flingBehavior = rememberSnapFlingBehavior(snapLayoutInfoProvider)
 
-    // Centrar solo al inicio
+    // Centrar en el valor inicial
     LaunchedEffect(Unit) {
-        val targetIndex = displayValues.indexOf(value.coerceIn(range))
-        listState.scrollToItem(targetIndex)
-        hasInitialized = true
+        val index = displayValues.indexOf(value.coerceIn(range))
+        if (index >= 0) listState.scrollToItem(index)
     }
 
-    // Actualizar el valor solo cuando el usuario hace scroll
-    LaunchedEffect(
-        listState.firstVisibleItemIndex,
-        listState.layoutInfo.visibleItemsInfo,
-        hasInitialized
-    ) {
-        if (hasInitialized) {
-            val visibleItems = listState.layoutInfo.visibleItemsInfo
-            if (visibleItems.isNotEmpty()) {
-                val centerY = listState.layoutInfo.viewportEndOffset / 2
-                val centeredItem = visibleItems.minByOrNull { item ->
-                    kotlin.math.abs(item.offset + item.size / 2 - centerY)
-                }
-                val adjustedIndex = centeredItem?.index ?: listState.firstVisibleItemIndex
-                val newValue = displayValues.getOrNull(adjustedIndex)
+    // Detectar el ítem centrado visualmente
+    LaunchedEffect(listState.firstVisibleItemIndex, listState.layoutInfo) {
+        val visibleItems = listState.layoutInfo.visibleItemsInfo
+        if (visibleItems.isNotEmpty()) {
+            val centerY = listState.layoutInfo.viewportEndOffset / 2
+            val centeredItem = visibleItems.minByOrNull { item ->
+                kotlin.math.abs(item.offset + item.size / 2 - centerY)
+            }
+            centeredItem?.index?.let { centeredIndex ->
+                val newValue = displayValues.getOrNull(centeredIndex)
                 if (newValue != null && newValue != value) {
                     onValueChange(newValue)
                 }
@@ -140,45 +135,32 @@ fun TimeSegment(
         }
     }
 
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(
-            text = label,
-            fontSize = 16.sp,
-            color = Color.Gray,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-
+    Box(
+        modifier = Modifier.height(120.dp),
+        contentAlignment = Alignment.Center
+    ) {
         LazyColumn(
             state = listState,
-            modifier = Modifier
-                .background(Color.LightGray.copy(alpha = 0.1f))
-                .height(120.dp),
-            contentPadding = PaddingValues(vertical = 30.dp)
+            flingBehavior = flingBehavior,
+            contentPadding = PaddingValues(vertical = 40.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
-            items(displayValues) { item ->
-                val itemIndex = displayValues.indexOf(item)
-                val visibleItems = listState.layoutInfo.visibleItemsInfo
-                val centerY = listState.layoutInfo.viewportEndOffset / 2
-
-                // Encontrar el item más cercano al centro
-                val centeredItem = visibleItems.minByOrNull { visItem ->
-                    kotlin.math.abs(visItem.offset + visItem.size / 2 - centerY)
-                }
-                val isSelected = centeredItem?.index == itemIndex
+            items(displayValues.size) { index ->
+                val item = displayValues[index]
+                val isSelected = item == value
 
                 Text(
-                    text = if (twoDigit) String.format("%02d", item) else item.toString(),
-                    fontSize = if (isSelected) 36.sp else 30.sp,
+                    text = if (twoDigit) "%02d".format(item) else item.toString(),
+                    fontSize = if (isSelected) 36.sp else 28.sp,
                     fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
                     color = if (isSelected) Color(0xFF0056B3) else Color.Gray,
                     modifier = Modifier.padding(vertical = 4.dp)
                 )
             }
         }
-
     }
 }
+
 // Componente para el selector AM/PM
 @Composable
 fun AmPmSegment(
@@ -188,26 +170,25 @@ fun AmPmSegment(
 ) {
     val listState = rememberLazyListState()
     val displayValues = listOf(AmPm.AM, AmPm.PM)
-    var hasInitialized by remember { mutableStateOf(false) }
+    val snapLayoutInfoProvider = remember(listState) { SnapLayoutInfoProvider(listState) }
+    val flingBehavior = rememberSnapFlingBehavior(snapLayoutInfoProvider)
 
-
+    // Centrar valor inicial
     LaunchedEffect(Unit) {
-        val targetIndex = displayValues.indexOf(amPm)
-        listState.scrollToItem(targetIndex)
-        hasInitialized = true
+        val index = displayValues.indexOf(amPm)
+        if (index >= 0) listState.scrollToItem(index)
     }
 
-
-    LaunchedEffect(listState.firstVisibleItemIndex, listState.layoutInfo.visibleItemsInfo, hasInitialized) {
-        if (hasInitialized) {
-            val visibleItems = listState.layoutInfo.visibleItemsInfo
-            if (visibleItems.isNotEmpty()) {
-                val centerY = listState.layoutInfo.viewportEndOffset / 2
-                val centeredItem = visibleItems.minByOrNull { item ->
-                    kotlin.math.abs(item.offset + item.size / 2 - centerY)
-                }
-                val adjustedIndex = centeredItem?.index ?: listState.firstVisibleItemIndex
-                val newValue = displayValues.getOrNull(adjustedIndex)
+    // Detectar valor centrado
+    LaunchedEffect(listState.firstVisibleItemIndex, listState.layoutInfo) {
+        val visibleItems = listState.layoutInfo.visibleItemsInfo
+        if (visibleItems.isNotEmpty()) {
+            val centerY = listState.layoutInfo.viewportEndOffset / 2
+            val centeredItem = visibleItems.minByOrNull { item ->
+                kotlin.math.abs(item.offset + item.size / 2 - centerY)
+            }
+            centeredItem?.index?.let { centeredIndex ->
+                val newValue = displayValues.getOrNull(centeredIndex)
                 if (newValue != null && newValue != amPm) {
                     onAmPmChange(newValue)
                 }
@@ -215,28 +196,19 @@ fun AmPmSegment(
         }
     }
 
-    Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally
+    Box(
+        modifier = modifier.height(120.dp),
+        contentAlignment = Alignment.Center
     ) {
         LazyColumn(
             state = listState,
-            modifier = Modifier
-                .background(Color.LightGray.copy(alpha = 0.1f))
-                .height(120.dp),
-            contentPadding = PaddingValues(vertical = 30.dp)
+            flingBehavior = flingBehavior,
+            contentPadding = PaddingValues(vertical = 40.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
             items(displayValues.size) { index ->
                 val item = displayValues[index]
-                val visibleItems = listState.layoutInfo.visibleItemsInfo
-                val centerY = listState.layoutInfo.viewportEndOffset / 2
-
-                // Encontrar el item más cercano al centro
-                val centeredItem = visibleItems.minByOrNull { visItem ->
-                    kotlin.math.abs(visItem.offset + visItem.size / 2 - centerY)
-                }
-                val isSelected = centeredItem?.index == index
+                val isSelected = item == amPm
 
                 Text(
                     text = item.name,
@@ -247,7 +219,6 @@ fun AmPmSegment(
                 )
             }
         }
-
     }
 }
 
