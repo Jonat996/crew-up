@@ -70,4 +70,21 @@
     <string name="selected_image_desc">Imagen seleccionada</string>
     <string name="add_plan_photo">Añade una foto del plan</string>
     <string name="upload_button">Subir imagen</string>
+
+    <!-- Chat -->
+    <string name="chat_input_placeholder">Escribe un mensaje…</string>
+    <string name="chat_send_message">Enviar mensaje</string>
+    <string name="chat_back">Volver</string>
+    <string name="chat_participants">%d participantes</string>
+    <string name="chat_no_messages_title">No hay mensajes aún</string>
+    <string name="chat_no_messages_subtitle">¡Sé el primero en enviar un mensaje!</string>
+    <string name="chat_group_title">Chat grupal</string>
+    <string name="chat_error_empty_message">El mensaje no puede estar vacío</string>
+    <string name="chat_error_no_plan">Error: No se pudo identificar el plan</string>
+    <string name="chat_error_no_user">No se pudo obtener la información del usuario</string>
+    <string name="chat_error_send_message">Error al enviar mensaje: %s</string>
+    <string name="chat_error_delete_message">Error al eliminar mensaje: %s</string>
+    <string name="chat_error_delete_permission">Solo puedes eliminar tus propios mensajes</string>
+    <string name="chat_error_get_user">Error al obtener usuario: %s</string>
+    <string name="chat_error_load_plan">Error al cargar el plan: %s</string>
 </resources>
