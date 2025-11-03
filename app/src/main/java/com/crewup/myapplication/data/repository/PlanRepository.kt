@@ -21,6 +21,7 @@ class PlanRepository(
     /**
      * Crea un nuevo plan en Firestore.
      * Si el plan tiene un ID, lo usa; si no, genera uno automáticamente.
+     * El creador del plan siempre se agrega automáticamente como el primer participante.
      *
      * @param plan El plan a crear
      * @return Result con el ID del plan creado o un error
@@ -32,9 +33,26 @@ class PlanRepository(
             } else {
                 plansCollection.document()
             }
-            val newPlan = plan.copy(id = docRef.id, createdAt = Timestamp.now())
+
+            // Asegurar que el creador sea el primer participante
+            val participants = if (plan.createdBy != null) {
+                // Si el creador no está en la lista de participantes, agregarlo al inicio
+                if (plan.participants.none { it.uid == plan.createdBy.uid }) {
+                    listOf(plan.createdBy) + plan.participants
+                } else {
+                    plan.participants
+                }
+            } else {
+                plan.participants
+            }
+
+            val newPlan = plan.copy(
+                id = docRef.id,
+                createdAt = Timestamp.now(),
+                participants = participants
+            )
             docRef.set(newPlan).await()
-            android.util.Log.d("PlanRepository", "Plan creado con ID: ${docRef.id}")
+            android.util.Log.d("PlanRepository", "Plan creado con ID: ${docRef.id}, creador agregado como participante")
             Result.success(docRef.id)
         } catch (e: Exception) {
             android.util.Log.e("PlanRepository", "Error al crear plan: ${e.message}", e)

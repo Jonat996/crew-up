@@ -20,6 +20,7 @@ import com.google.firebase.Timestamp
  * @param maxAge Edad máxima para unirse al plan
  * @param gender Género permitido ("M", "F", "Todos")
  * @param createdAt Timestamp de creación del plan
+ * @param groupMessages Lista de mensajes del chat grupal del plan
  */
 data class Plan(
     val id: String = "",
@@ -37,5 +38,6 @@ data class Plan(
     val minAge: Int = 18,
     val maxAge: Int = 65,
     val gender: String = "Todos",
-    val createdAt: Timestamp = Timestamp.now()
+    val createdAt: Timestamp = Timestamp.now(),
+    val groupMessages: List<GroupMessage> = emptyList()
 )

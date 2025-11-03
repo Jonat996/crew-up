@@ -14,6 +14,7 @@ import com.crewup.myapplication.ui.screens.CreatePlanFlowScreen
 import com.crewup.myapplication.ui.screens.CreatedPlansScreen
 import com.crewup.myapplication.ui.screens.EditPlanFlowScreen
 import com.crewup.myapplication.ui.screens.EditProfileScreen
+import com.crewup.myapplication.ui.screens.GroupChatScreen
 import com.crewup.myapplication.ui.screens.HomeScreen
 import com.crewup.myapplication.ui.screens.LoginScreen
 import com.crewup.myapplication.ui.screens.NotificationsScreen
@@ -169,6 +170,18 @@ fun AppNavigation(
             EditPlanFlowScreen(
                 navController = navController,
                 planId = planId
+            )
+        }
+
+        // Ruta de chat grupal
+        composable(
+            route = Routes.GroupChat.route,
+            arguments = listOf(navArgument("planId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val planId = backStackEntry.arguments?.getString("planId") ?: ""
+            GroupChatScreen(
+                planId = planId,
+                onNavigateBack = { navController.popBackStack() }
             )
         }
 

@@ -190,8 +190,8 @@ fun CreatedPlansScreen(
                                 // El creador no puede salir de su propio plan
                             },
                             onChatClick = { planId ->
-                                // Navegar al chat del plan
-                                navController.navigate("planChat/$planId")
+                                // Navegar al chat grupal del plan
+                                navController.navigate(Routes.GroupChat.createRoute(planId))
                             },
                             onEditClick = { planId ->
                                 // Navegar a editar plan

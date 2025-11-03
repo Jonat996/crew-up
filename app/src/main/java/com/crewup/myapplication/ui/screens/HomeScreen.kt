@@ -77,8 +77,8 @@ fun HomeScreen(
                 navController.navigate("planDetail/$planId")
             },
             onChatClick = { planId ->
-                // Navegar al chat del plan
-                navController.navigate("planChat/$planId")
+                // Navegar al chat grupal del plan
+                navController.navigate(Routes.GroupChat.createRoute(planId))
             },
             onEditClick = { planId ->
                 // Navegar a editar plan

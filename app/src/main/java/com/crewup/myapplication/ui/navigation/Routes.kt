@@ -32,6 +32,10 @@ sealed class Routes(val route: String) {
     data object EditPlan : Routes("edit_plan/{planId}") {
         fun createRoute(planId: String) = "edit_plan/$planId"
     }
+    // Ruta de chat grupal (con parámetro planId)
+    data object GroupChat : Routes("group_chat/{planId}") {
+        fun createRoute(planId: String) = "group_chat/$planId"
+    }
     // Rutas de recuperación de contraseña
     data object RecoverEmail : Routes("recover_email")
     data object CodeSent : Routes("code_sent")
