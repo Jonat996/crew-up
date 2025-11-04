@@ -33,6 +33,11 @@ class PlansListViewModel(
     private val _currentUserId = MutableStateFlow<String?>(null)
     val currentUserId: StateFlow<String?> = _currentUserId.asStateFlow()
 
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
+
+    private val _allPlans = MutableStateFlow<List<Plan>>(emptyList())
+
     init {
         loadCurrentUser()
     }
@@ -72,6 +77,7 @@ class PlansListViewModel(
                 city = city,
                 orderByDate = orderByDate
             ).onSuccess { plansList ->
+                _allPlans.value = plansList
                 _plans.value = plansList
                 android.util.Log.d("PlansListViewModel", "Planes cargados: ${plansList.size}")
             }.onFailure { e ->
@@ -236,4 +242,32 @@ class PlansListViewModel(
     fun isUserParticipating(plan: Plan): Boolean {
         return plan.participants.any { it.uid == _currentUserId.value }
     }
+
+    private val _selectedTags = MutableStateFlow<List<String>>(emptyList())
+    val selectedTags: StateFlow<List<String>> = _selectedTags.asStateFlow()
+
+    fun updateSearchQuery(query: String) {
+        _searchQuery.value = query
+        applyFilters()
+    }
+
+    fun updateSelectedTags(tags: List<String>) {
+        _selectedTags.value = tags
+        applyFilters()
+    }
+
+    private fun applyFilters() {
+        val query = _searchQuery.value.lowercase()
+        val tags = _selectedTags.value
+
+        _plans.value = _allPlans.value.filter { plan ->
+            val coincideConTitulo = plan.title.contains(query, ignoreCase = true)
+            val coincideConTags = tags.isEmpty() || plan.tags.any { it in tags }
+            coincideConTitulo && coincideConTags
+        }
+    }
+
+
+
+
 }

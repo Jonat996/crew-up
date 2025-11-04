@@ -19,6 +19,7 @@ import com.crewup.myapplication.R
 import com.crewup.myapplication.ui.components.home.ActivityOption
 import com.crewup.myapplication.ui.components.home.ActivitySelector
 import com.crewup.myapplication.ui.components.home.SearchHeaderBar
+import com.crewup.myapplication.ui.components.sections.HomeSection
 import com.crewup.myapplication.ui.components.sections.plans.PlansListSection
 
 @Composable
@@ -51,12 +52,7 @@ fun HomeScreen(
     ) {
 
         // COMPONENTE 1: SearchHeaderBar
-        SearchHeaderBar(
-            query = query,
-            onSearchClick = { /* abrir búsqueda */ },
-            onFilterClick = { /* abrir filtro */ },
-            onProfileClick = { navController.navigate(Routes.Profile.route) }
-        )
+        HomeSection(navController = navController)
 
         // Espacio entre los componentes
         Spacer(modifier = Modifier.height(16.dp))
