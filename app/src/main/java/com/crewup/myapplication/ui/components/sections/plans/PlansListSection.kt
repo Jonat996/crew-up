@@ -1,8 +1,7 @@
 package com.crewup.myapplication.ui.components.sections.plans
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import com.google.firebase.Timestamp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -114,16 +113,21 @@ fun PlansListSection(
 
     // Ordenar planes: primero los de la ciudad del usuario
     val sortedPlans = remember(plans, userCity) {
+        val now = Timestamp.now()
+        val filteredByDate = plans.filter { plan ->
+            val fecha = plan.date
+            fecha != null && fecha >= now
+        }
+
+
         if (userCity.isNullOrBlank()) {
-            plans
+            filteredByDate
         } else {
-            plans.sortedByDescending { plan ->
-                // Priorizar si la ciudad del plan coincide con la ciudad del usuario
+            filteredByDate.sortedByDescending { plan ->
                 val cityMatch = plan.location.city?.contains(userCity, ignoreCase = true) == true
                 val nameMatch = plan.location.name.contains(userCity, ignoreCase = true)
                 val addressMatch = plan.location.fullAddress.contains(userCity, ignoreCase = true)
 
-                // Prioridad: 1. city exacta, 2. en el nombre, 3. en dirección completa
                 when {
                     cityMatch -> true
                     nameMatch || addressMatch -> true
