@@ -1,16 +1,22 @@
 package com.crewup.myapplication.ui.components.chat
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.rememberAsyncImagePainter
 import com.crewup.myapplication.models.GroupMessage
 import com.google.firebase.Timestamp
 import java.text.SimpleDateFormat
@@ -33,84 +39,101 @@ fun MessageBubble(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 8.dp, vertical = 4.dp),
+            .padding(horizontal = 12.dp, vertical = 6.dp),
         horizontalArrangement = if (isCurrentUser) Arrangement.End else Arrangement.Start
     ) {
-        Card(
-            modifier = Modifier.widthIn(max = 280.dp),
-            shape = RoundedCornerShape(
-                topStart = 16.dp,
-                topEnd = 16.dp,
-                bottomStart = if (isCurrentUser) 16.dp else 4.dp,
-                bottomEnd = if (isCurrentUser) 4.dp else 16.dp
-            ),
-            colors = CardDefaults.cardColors(
-                containerColor = if (isCurrentUser) {
-                    MaterialTheme.colorScheme.primaryContainer
-                } else {
-                    MaterialTheme.colorScheme.secondaryContainer
-                }
+        // Avatar solo para mensajes de otros usuarios
+        if (!isCurrentUser) {
+            Image(
+                painter = rememberAsyncImagePainter(
+                    model = message.userPhotoUrl ?: "https://ui-avatars.com/api/?name=${message.userName}&background=434343&color=fff&size=36",
+                    placeholder = rememberAsyncImagePainter("https://ui-avatars.com/api/?name=${message.userName}&background=434343&color=fff&size=36")
+                ),
+                contentDescription = "Avatar de ${message.userName}",
+                modifier = Modifier
+                    .size(36.dp)
+                    .clip(CircleShape),
+                contentScale = ContentScale.Crop
             )
+            Spacer(modifier = Modifier.width(8.dp))
+        }
+
+        Column(
+            horizontalAlignment = if (isCurrentUser) Alignment.End else Alignment.Start
         ) {
-            Column(
-                modifier = Modifier.padding(12.dp)
-            ) {
-                // Nombre del usuario (solo para mensajes de otros)
-                if (!isCurrentUser) {
-                    Text(
-                        text = message.userName,
-                        style = MaterialTheme.typography.labelSmall,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                }
-
-                // Contenido del mensaje
+            // Nombre del usuario (solo para otros)
+            if (!isCurrentUser) {
                 Text(
-                    text = message.message,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer
-                )
-
-                Spacer(modifier = Modifier.height(4.dp))
-
-                // Timestamp
-                Text(
-                    text = formatTimestamp(message.timestamp.toDate()),
+                    text = message.userName,
                     style = MaterialTheme.typography.labelSmall,
-                    fontSize = 10.sp,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.6f),
-                    modifier = Modifier.align(Alignment.End)
+                    fontWeight = FontWeight.Medium,
+                    color = Color(0xFFAAAAAA), // Gris claro para nombre
+                    modifier = Modifier.padding(start = 4.dp)
                 )
+                Spacer(modifier = Modifier.height(2.dp))
             }
+
+            // Burbuja del mensaje
+            Surface(
+                modifier = Modifier.widthIn(max = 280.dp),
+                shape = RoundedCornerShape(
+                    topStart = 16.dp,
+                    topEnd = 16.dp,
+                    bottomStart = if (isCurrentUser) 16.dp else 4.dp,
+                    bottomEnd = if (isCurrentUser) 4.dp else 16.dp
+                ),
+                color = if (isCurrentUser) Color(0xFF165BB0) else Color(0xFF434343), // CAFÉ OSCURO
+                onClick = onLongPress
+            ) {
+                Box(modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) {
+                    Text(
+                        text = message.message,
+                        color = if (isCurrentUser) Color.White else Color.White, // Texto blanco en café
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontSize = 15.sp,
+                        lineHeight = 20.sp
+                    )
+                }
+            }
+
+            // Timestamp debajo de la burbuja
+            Text(
+                text = formatTimestamp(message.timestamp.toDate()),
+                style = MaterialTheme.typography.labelSmall,
+                fontSize = 10.sp,
+                color = Color(0xFF888888),
+                modifier = Modifier
+                    .padding(
+                        top = 2.dp,
+                        start = if (!isCurrentUser) 4.dp else 0.dp,
+                        end = if (isCurrentUser) 4.dp else 0.dp
+                    )
+            )
         }
     }
 }
 
-/**
- * Formatea el timestamp para mostrar solo la hora.
- */
+/** Formatea el timestamp para mostrar solo la hora. */
 private fun formatTimestamp(date: Date): String {
-    val formatter = SimpleDateFormat("HH:mm", Locale.getDefault())
-    return formatter.format(date)
+    val formatter = SimpleDateFormat("h:mm a", Locale.getDefault())
+    return formatter.format(date).lowercase().replace(".", "")
 }
 
-// ==================== PREVIEWS ====================
+// ==================== PREVIEWS (100% FUNCIONALES) ====================
 
-@Preview(name = "Mensaje propio", showSystemUi = true, showBackground = true)
+@Preview(name = "Mensaje propio", showBackground = true)
 @Composable
 private fun MessageBubbleCurrentUserPreview() {
     MaterialTheme {
-        Surface {
+        Surface(color = Color(0xFFF5F5F5)) {
             Column(modifier = Modifier.padding(16.dp)) {
                 MessageBubble(
                     message = GroupMessage(
                         id = "1",
                         userId = "currentUser",
-                        userName = "Yo",
-                        userPhotoUrl = "",
-                        message = "Hola! Este es un mensaje que yo envié al grupo",
+                        userName = "Tú",
+                        userPhotoUrl = "https://randomuser.me/api/portraits/women/44.jpg",
+                        message = "Hola, Si Antes De Vernos En El Juego.",
                         timestamp = Timestamp.now()
                     ),
                     isCurrentUser = true
@@ -120,19 +143,19 @@ private fun MessageBubbleCurrentUserPreview() {
     }
 }
 
-@Preview(name = "Mensaje de otro usuario", showSystemUi = true, showBackground = true)
+@Preview(name = "Mensaje de otro usuario", showBackground = true)
 @Composable
 private fun MessageBubbleOtherUserPreview() {
     MaterialTheme {
-        Surface {
+        Surface(color = Color(0xFFF5F5F5)) {
             Column(modifier = Modifier.padding(16.dp)) {
                 MessageBubble(
                     message = GroupMessage(
                         id = "2",
                         userId = "otherUser",
-                        userName = "Juan Pérez",
-                        userPhotoUrl = "",
-                        message = "Hola! Nos vemos en el plan, llego a las 7:00 PM",
+                        userName = "Ana López",
+                        userPhotoUrl = "https://randomuser.me/api/portraits/women/44.jpg",
+                        message = "Hola A Todos, Quisiera Conocerlos Un Poco Más :).",
                         timestamp = Timestamp.now()
                     ),
                     isCurrentUser = false
@@ -142,18 +165,18 @@ private fun MessageBubbleOtherUserPreview() {
     }
 }
 
-@Preview(name = "Mensaje largo", showSystemUi = true, showBackground = true)
+@Preview(name = "Mensaje largo", showBackground = true)
 @Composable
 private fun MessageBubbleLongTextPreview() {
     MaterialTheme {
-        Surface {
+        Surface(color = Color(0xFFF5F5F5)) {
             Column(modifier = Modifier.padding(16.dp)) {
                 MessageBubble(
                     message = GroupMessage(
                         id = "3",
                         userId = "otherUser",
                         userName = "María González",
-                        userPhotoUrl = "",
+                        userPhotoUrl = "https://randomuser.me/api/portraits/women/44.jpg",
                         message = "Este es un mensaje mucho más largo para ver cómo se comporta el componente cuando el texto ocupa múltiples líneas. Debería verse bien formateado y ser fácil de leer.",
                         timestamp = Timestamp.now()
                     ),

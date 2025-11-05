@@ -1,16 +1,24 @@
 package com.crewup.myapplication.ui.components.chat
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.filled.Mood
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.crewup.myapplication.R
 
 /**
@@ -30,48 +38,77 @@ fun MessageInputField(
     enabled: Boolean = true
 ) {
     Surface(
-        modifier = Modifier.fillMaxWidth(),
-        color = MaterialTheme.colorScheme.surface,
-        tonalElevation = 3.dp
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        shape = RoundedCornerShape(28.dp),
+        color = Color.White
+        // SIN sombra externa → no flota visualmente
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp),
-            verticalAlignment = Alignment.Bottom
+                .padding(horizontal = 12.dp, vertical = 8.dp)
+                .shadow(4.dp, RoundedCornerShape(24.dp)) // SOMBRA INTERNA
+                .background(Color.White)
+                .padding(horizontal = 8.dp, vertical = 6.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
+            // Emoji
+            IconButton(
+                onClick = { /* TODO: Emoji picker */ },
+                modifier = Modifier.size(40.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Mood,
+                    contentDescription = "Emoji",
+                    tint = Color(0xFF666666)
+                )
+            }
+
+            Spacer(modifier = Modifier.width(8.dp))
+
             // Campo de texto
-            OutlinedTextField(
+            BasicTextField(
                 value = messageText,
                 onValueChange = onMessageTextChange,
                 modifier = Modifier
                     .weight(1f)
-                    .heightIn(min = 56.dp, max = 120.dp),
-                placeholder = { Text(stringResource(R.string.chat_input_placeholder)) },
+                    .heightIn(min = 40.dp),
                 enabled = enabled,
-                shape = RoundedCornerShape(24.dp),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    unfocusedBorderColor = MaterialTheme.colorScheme.outline
+                textStyle = LocalTextStyle.current.copy(
+                    color = Color.Black,
+                    fontSize = 16.sp
                 ),
-                maxLines = 4
+                decorationBox = { innerTextField ->
+                    if (messageText.isEmpty()) {
+                        Text(
+                            text = stringResource(R.string.chat_input_placeholder),
+                            color = Color(0xFF999999),
+                            fontSize = 16.sp
+                        )
+                    }
+                    innerTextField()
+                }
             )
 
             Spacer(modifier = Modifier.width(8.dp))
 
-            // Botón de enviar
-            FilledIconButton(
+            // Botón enviar (avión)
+            IconButton(
                 onClick = onSendClick,
-                modifier = Modifier.size(56.dp),
                 enabled = enabled && messageText.isNotBlank(),
-                colors = IconButtonDefaults.filledIconButtonColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
-                )
+                modifier = Modifier
+                    .size(44.dp)
+                    .background(
+                        color = if (enabled && messageText.isNotBlank()) Color(0xFF165BB0) else Color(0xFFCCCCCC),
+                        shape = CircleShape
+                    )
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.Send,
-                    contentDescription = stringResource(R.string.chat_send_message)
+                    contentDescription = "Enviar",
+                    tint = Color.White
                 )
             }
         }
