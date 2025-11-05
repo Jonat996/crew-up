@@ -20,6 +20,9 @@ import com.crewup.myapplication.ui.components.PlanConfirmationCard
 import com.crewup.myapplication.viewmodel.PlansListViewModel
 import com.crewup.myapplication.viewmodel.PlanViewModel
 import com.crewup.myapplication.viewmodel.UserViewModel
+import java.time.LocalDate
+import java.time.ZoneId
+import java.util.Date
 
 /**
  * Sección que muestra una lista de planes disponibles.
@@ -113,12 +116,18 @@ fun PlansListSection(
 
     // Ordenar planes: primero los de la ciudad del usuario
     val sortedPlans = remember(plans, userCity) {
-        val now = Timestamp.now()
         val filteredByDate = plans.filter { plan ->
-            val fecha = plan.date
-            fecha != null && fecha >= now
-        }
+            val fechaPlan = plan.date?.toDate()
+            val fechaActual = LocalDate.now()
 
+            // Convertimos fecha del plan a LocalDate (sin hora)
+            val fechaDelPlan = fechaPlan?.toInstant()
+                ?.atZone(ZoneId.systemDefault())
+                ?.toLocalDate()
+
+            // Mostrar planes de hoy o posteriores
+            fechaDelPlan != null && (fechaDelPlan.isEqual(fechaActual) || fechaDelPlan.isAfter(fechaActual))
+        }
 
         if (userCity.isNullOrBlank()) {
             filteredByDate
@@ -127,15 +136,11 @@ fun PlansListSection(
                 val cityMatch = plan.location.city?.contains(userCity, ignoreCase = true) == true
                 val nameMatch = plan.location.name.contains(userCity, ignoreCase = true)
                 val addressMatch = plan.location.fullAddress.contains(userCity, ignoreCase = true)
-
-                when {
-                    cityMatch -> true
-                    nameMatch || addressMatch -> true
-                    else -> false
-                }
+                cityMatch || nameMatch || addressMatch
             }
         }
     }
+
 
     Column(
         modifier = Modifier
