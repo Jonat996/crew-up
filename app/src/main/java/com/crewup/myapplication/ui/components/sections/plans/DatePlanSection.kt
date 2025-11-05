@@ -16,6 +16,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -27,6 +28,7 @@ import com.crewup.myapplication.ui.components.plans.DatePlan
 import com.crewup.myapplication.ui.components.plans.TimePlan
 import com.crewup.myapplication.viewmodel.PlanDateViewModel
 import java.time.LocalDateTime
+import android.widget.Toast
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -39,6 +41,7 @@ fun DatePlanSection(
     viewModel: PlanDateViewModel? = null
 ) {
     val vm: PlanDateViewModel = viewModel ?: viewModel()
+    val context = LocalContext.current
 
     // Estado local para manejar las selecciones
     var localDate by remember(selectedDate) { mutableStateOf(selectedDate ?: java.time.LocalDate.now()) }
@@ -61,8 +64,13 @@ fun DatePlanSection(
         DatePlan(
             selectedDate = localDate,
             onDateSelected = { newDate ->
-                localDate = newDate
-                onDateSelected(newDate)
+                val today = java.time.LocalDate.now()
+                if (newDate.isBefore(today)) {
+                    Toast.makeText(context, "No puedes seleccionar una fecha anterior a hoy", Toast.LENGTH_SHORT).show()
+                } else {
+                    localDate = newDate
+                    onDateSelected(newDate)
+                }
             }
         )
 
@@ -80,15 +88,21 @@ fun DatePlanSection(
                 val now = LocalDateTime.now()
                 val selectedDateTime = LocalDateTime.of(localDate, newTime)
 
-                if (selectedDateTime.isAfter(now)) {
+                val isValid = when {
+                    localDate.isAfter(now.toLocalDate()) -> true // fecha futura
+                    localDate.isEqual(now.toLocalDate()) -> newTime.isAfter(now.toLocalTime()) // hoy, hora futura
+                    else -> false // fecha pasada
+                }
+
+                if (isValid) {
                     localTime = newTime
                     onTimeSelected(newTime)
                 } else {
-                    Log.d("DatePlanSelection", "La hora seleccionada debe ser posterior a la actual")
+                    Toast.makeText(context, "La hora seleccionada debe ser posterior a la actual", Toast.LENGTH_SHORT).show()
                 }
             },
 
-                    is24Hour = false
+            is24Hour = false
         )
 
 

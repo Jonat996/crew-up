@@ -1,5 +1,6 @@
 package com.crewup.myapplication.ui.components.plans
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -62,7 +63,6 @@ fun TimePlan(
         TimeSegment(
             value = displayHour,
             onValueChange = { newH -> hour = newH },
-            label = "",
             range = if (is24Hour) 0..23 else 1..12,
             twoDigit = true
         )
@@ -80,7 +80,6 @@ fun TimePlan(
         TimeSegment(
             value = minute,
             onValueChange = { minute = it },
-            label = "",
             range = 0..59,
             twoDigit = true
         )
@@ -91,7 +90,7 @@ fun TimePlan(
             AmPmSegment(
                 amPm = amPm,
                 onAmPmChange = { amPm = it },
-                modifier = Modifier.height(140.dp) // Ajustar altura para alineación
+                modifier = Modifier.height(180.dp) // Ajustar altura para alineación
             )
         }
     }
@@ -103,7 +102,6 @@ fun TimePlan(
 fun TimeSegment(
     value: Int,
     onValueChange: (Int) -> Unit,
-    label: String = "",
     range: IntRange,
     twoDigit: Boolean = true
 ) {
@@ -168,60 +166,29 @@ fun AmPmSegment(
     onAmPmChange: (AmPm) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val listState = rememberLazyListState()
-    val displayValues = listOf(AmPm.AM, AmPm.PM)
-    val snapLayoutInfoProvider = remember(listState) { SnapLayoutInfoProvider(listState) }
-    val flingBehavior = rememberSnapFlingBehavior(snapLayoutInfoProvider)
-
-    // Centrar valor inicial
-    LaunchedEffect(Unit) {
-        val index = displayValues.indexOf(amPm)
-        if (index >= 0) listState.scrollToItem(index)
-    }
-
-    // Detectar valor centrado
-    LaunchedEffect(listState.firstVisibleItemIndex, listState.layoutInfo) {
-        val visibleItems = listState.layoutInfo.visibleItemsInfo
-        if (visibleItems.isNotEmpty()) {
-            val centerY = listState.layoutInfo.viewportEndOffset / 2
-            val centeredItem = visibleItems.minByOrNull { item ->
-                kotlin.math.abs(item.offset + item.size / 2 - centerY)
-            }
-            centeredItem?.index?.let { centeredIndex ->
-                val newValue = displayValues.getOrNull(centeredIndex)
-                if (newValue != null && newValue != amPm) {
-                    onAmPmChange(newValue)
-                }
-            }
-        }
-    }
-
-    Box(
-        modifier = modifier.height(120.dp),
-        contentAlignment = Alignment.Center
+    Column(
+        modifier = modifier
+            .height(120.dp)
+            .width(70.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        LazyColumn(
-            state = listState,
-            flingBehavior = flingBehavior,
-            contentPadding = PaddingValues(vertical = 40.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            items(displayValues.size) { index ->
-                val item = displayValues[index]
-                val isSelected = item == amPm
-
-                Text(
-                    text = item.name,
-                    fontSize = if (isSelected) 30.sp else 24.sp,
-                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                    color = if (isSelected) Color(0xFF0056B3) else Color.Gray,
-                    modifier = Modifier.padding(vertical = 4.dp)
-                )
-            }
+        AmPm.values().forEach { item ->
+            val isSelected = item == amPm
+            Text(
+                text = item.name,
+                fontSize = if (isSelected) 30.sp else 24.sp,
+                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                color = if (isSelected) Color(0xFF0056B3) else Color.Gray,
+                modifier = Modifier
+                    .padding(vertical = 8.dp)
+                    .clickable {
+                        if (!isSelected) onAmPmChange(item)
+                    }
+            )
         }
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable
