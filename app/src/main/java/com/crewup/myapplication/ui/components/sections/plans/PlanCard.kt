@@ -203,18 +203,28 @@ private fun ParticipantsAndActionsRow(
                     }
                 }
                 isJoined -> {
+                    // CHAT (pequeño)
                     IconButton(onClick = onChatClick) {
                         Icon(Icons.Default.ChatBubbleOutline, "Chat", tint = Color(0xFF0056B3))
                     }
-                    OutlinedButton(
+
+                    // BOTÓN SALIR: SOLO ÍCONO
+                    IconButton(
                         onClick = onLeaveClick,
-                        modifier = Modifier.height(40.dp),
-                        colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Red),
-                        border = ButtonDefaults.outlinedButtonBorder.copy(width = 1.dp)
+                        modifier = Modifier
+                            .size(40.dp)
+                            .clip(RoundedCornerShape(20.dp))
+                            .background(Color.Transparent),
+                        colors = IconButtonDefaults.iconButtonColors(
+                            contentColor = Color.Red
+                        )
                     ) {
-                        Icon(Icons.Default.ExitToApp, "Salir", tint = Color.Red, modifier = Modifier.size(18.dp))
-                        Spacer(Modifier.width(4.dp))
-                        Text("Salir", fontSize = 14.sp, color = Color.Red)
+                        Icon(
+                            imageVector = Icons.Default.ExitToApp,
+                            contentDescription = "Salir del plan",
+                            tint = Color.Red,
+                            modifier = Modifier.size(28.dp)
+                        )
                     }
                 }
                 else -> {
