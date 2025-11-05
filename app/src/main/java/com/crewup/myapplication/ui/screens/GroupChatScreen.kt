@@ -1,8 +1,6 @@
-// app/src/main/java/com/crewup/myapplication/ui/screens/GroupChatScreen.kt
 package com.crewup.myapplication.ui.screens
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -12,7 +10,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.crewup.myapplication.R
 import com.crewup.myapplication.ui.components.chat.ChatHeader
-import com.crewup.myapplication.ui.components.chat.MessageInputField
 import com.crewup.myapplication.ui.components.chat.MessagesList
 import com.crewup.myapplication.viewmodel.GroupChatViewModel
 
@@ -47,36 +44,30 @@ fun GroupChatScreen(
                 onBackClick = onNavigateBack
             )
         },
-        bottomBar = {
-            // INPUT SUPERPUSTO
-            Box {
-                MessageInputField(
-                    messageText = messageText,
-                    onMessageTextChange = { viewModel.updateMessageText(it) },
-                    onSendClick = { viewModel.sendMessage() },
-                    enabled = !isLoading
-                )
-            }
-        },
         containerColor = Color(0xFF165BB0), // FONDO AZUL GLOBAL
         contentWindowInsets = WindowInsets(0, 0, 0, 0)
     ) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues) // Aplica padding del Scaffold
+                .padding(paddingValues)
         ) {
             if (plan == null) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             } else {
+                // TODO DENTRO DE MessagesList
                 MessagesList(
                     messages = messages,
                     currentUserId = currentUserId,
+                    messageText = messageText,
+                    onMessageTextChange = { viewModel.updateMessageText(it) },
+                    onSendClick = { viewModel.sendMessage() },
                     onMessageLongPress = { message ->
                         if (message.userId == currentUserId) {
                             viewModel.deleteMessage(message)
                         }
-                    }
+                    },
+                    enabled = !isLoading
                 )
             }
 
