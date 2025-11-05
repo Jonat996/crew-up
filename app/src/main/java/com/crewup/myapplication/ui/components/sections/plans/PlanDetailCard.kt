@@ -1,4 +1,3 @@
-// ui/components/sections/plans/PlanDetailCard.kt
 package com.crewup.myapplication.ui.components.sections.plans
 
 import androidx.compose.foundation.background

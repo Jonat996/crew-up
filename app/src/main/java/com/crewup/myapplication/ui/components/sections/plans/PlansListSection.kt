@@ -1,8 +1,7 @@
 package com.crewup.myapplication.ui.components.sections.plans
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import com.google.firebase.Timestamp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -21,6 +20,9 @@ import com.crewup.myapplication.ui.components.PlanConfirmationCard
 import com.crewup.myapplication.viewmodel.PlansListViewModel
 import com.crewup.myapplication.viewmodel.PlanViewModel
 import com.crewup.myapplication.viewmodel.UserViewModel
+import java.time.LocalDate
+import java.time.ZoneId
+import java.util.Date
 
 /**
  * Sección que muestra una lista de planes disponibles.
@@ -114,24 +116,31 @@ fun PlansListSection(
 
     // Ordenar planes: primero los de la ciudad del usuario
     val sortedPlans = remember(plans, userCity) {
+        val filteredByDate = plans.filter { plan ->
+            val fechaPlan = plan.date?.toDate()
+            val fechaActual = LocalDate.now()
+
+            // Convertimos fecha del plan a LocalDate (sin hora)
+            val fechaDelPlan = fechaPlan?.toInstant()
+                ?.atZone(ZoneId.systemDefault())
+                ?.toLocalDate()
+
+            // Mostrar planes de hoy o posteriores
+            fechaDelPlan != null && (fechaDelPlan.isEqual(fechaActual) || fechaDelPlan.isAfter(fechaActual))
+        }
+
         if (userCity.isNullOrBlank()) {
-            plans
+            filteredByDate
         } else {
-            plans.sortedByDescending { plan ->
-                // Priorizar si la ciudad del plan coincide con la ciudad del usuario
+            filteredByDate.sortedByDescending { plan ->
                 val cityMatch = plan.location.city?.contains(userCity, ignoreCase = true) == true
                 val nameMatch = plan.location.name.contains(userCity, ignoreCase = true)
                 val addressMatch = plan.location.fullAddress.contains(userCity, ignoreCase = true)
-
-                // Prioridad: 1. city exacta, 2. en el nombre, 3. en dirección completa
-                when {
-                    cityMatch -> true
-                    nameMatch || addressMatch -> true
-                    else -> false
-                }
+                cityMatch || nameMatch || addressMatch
             }
         }
     }
+
 
     Column(
         modifier = Modifier

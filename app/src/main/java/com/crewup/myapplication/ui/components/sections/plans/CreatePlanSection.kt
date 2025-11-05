@@ -90,7 +90,7 @@ private fun BenefitItem(text: String) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
-            painter = painterResource(id = android.R.drawable.ic_menu_compass), // Cambia por un checkmark
+            painter = painterResource(id = android.R.drawable.ic_menu_compass),
             contentDescription = null,
             tint = Color(0xFF0056B3),
             modifier = Modifier.size(24.dp)
