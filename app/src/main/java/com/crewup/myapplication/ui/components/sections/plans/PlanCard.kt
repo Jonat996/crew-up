@@ -10,6 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChatBubbleOutline
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.*
@@ -146,7 +147,7 @@ fun PlanCard(
     }
 }
 
-// === PARTICIPANTES + ACCIONES ===
+// === PARTICIPANTES + ACCIONES (EDITAR = LÁPIZ, CHAT PEQUEÑO) ===
 @Composable
 private fun ParticipantsAndActionsRow(
     participants: List<PlanUser>,
@@ -163,20 +164,40 @@ private fun ParticipantsAndActionsRow(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
+        // IZQUIERDA: PARTICIPANTES
         ParticipantsAvatarRow(participants = participants)
 
-        Row {
+        // DERECHA: ACCIONES
+        Row(
+            modifier = Modifier.wrapContentWidth(),
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             when {
                 isCreator -> {
-                    Button(
-                        onClick = onEditClick,
-                        modifier = Modifier.height(40.dp),
-                        colors = ButtonDefaults.buttonColors(Color(0xFF0056B3)),
-                        shape = RoundedCornerShape(20.dp)
+                    // 1. CHAT (PEQUEÑO)
+                    IconButton(
+                        onClick = onChatClick,
+                        modifier = Modifier.size(32.dp)
                     ) {
-                        Text("Editar", fontSize = 14.sp, fontWeight = FontWeight.Medium)
+                        Icon(
+                            Icons.Default.ChatBubbleOutline,
+                            "Chat",
+                            tint = Color(0xFF0056B3),
+                            modifier = Modifier.size(25.dp)
+                        )
                     }
-                    Spacer(Modifier.width(1.dp))
+
+                    // 2. EDITAR → SOLO LÁPIZ
+                    IconButton(onClick = onEditClick) {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = "Editar",
+                            tint = Color(0xFF0056B3)
+                        )
+                    }
+
+                    // 3. ELIMINAR → SOLO ÍCONO
                     IconButton(onClick = onDeleteClick) {
                         Icon(Icons.Default.Delete, "Eliminar", tint = Color.Red)
                     }
@@ -211,13 +232,12 @@ private fun ParticipantsAndActionsRow(
     }
 }
 
-// === AVATARES + CONTADOR ===
+// === AVATARES + CONTADOR (ESPACIO JUSTO) ===
 @Composable
 private fun ParticipantsAvatarRow(participants: List<PlanUser>) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .padding(end = 12.dp)
+        modifier = Modifier.padding(end = 8.dp)
     ) {
         participants.take(2).forEachIndexed { index, user ->
             AsyncImage(
@@ -233,7 +253,7 @@ private fun ParticipantsAvatarRow(participants: List<PlanUser>) {
                 contentScale = ContentScale.Crop
             )
         }
-        Spacer(Modifier.width(3.dp))
+        Spacer(Modifier.width(4.dp))
         Text(
             text = "${participants.size} Participantes",
             fontSize = 14.sp,
