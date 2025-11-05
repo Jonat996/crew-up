@@ -140,10 +140,10 @@ La arquitectura es escalable, con énfasis en flujos reactivos (e.g., actualizac
 ## Contribuciones
 
 **Forkea el repo.**
-Crear una branch: git checkout -b feature/nueva-funcion.
-Commit: git commit -m "Añadir nueva función".
-Push: git push origin feature/nueva-funcion.
-Abrir un Pull Request.
+* Crear una branch: git checkout -b feature/nueva-funcion.
+* Commit: git commit -m "Añadir nueva función".
+* Push: git push origin feature/nueva-funcion.
+* Abrir un Pull Request.
 
 **Contacto**
-Desarrollado por CrewUp. Para issues, abrir un ticket en el repo.
+* Desarrollado por CrewUp. Para issues, abrir un ticket en el repo.
