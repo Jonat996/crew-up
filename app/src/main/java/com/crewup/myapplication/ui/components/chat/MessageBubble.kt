@@ -17,6 +17,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
+import com.crewup.myapplication.R
 import com.crewup.myapplication.models.GroupMessage
 import com.google.firebase.Timestamp
 import java.text.SimpleDateFormat
@@ -44,10 +45,14 @@ fun MessageBubble(
     ) {
         // Avatar solo para mensajes de otros usuarios
         if (!isCurrentUser) {
+            val photoUrl = message.userPhotoUrl
+            val hasPhoto = !photoUrl.isNullOrBlank()
+
             Image(
                 painter = rememberAsyncImagePainter(
-                    model = message.userPhotoUrl ?: "https://ui-avatars.com/api/?name=${message.userName}&background=434343&color=fff&size=36",
-                    placeholder = rememberAsyncImagePainter("https://ui-avatars.com/api/?name=${message.userName}&background=434343&color=fff&size=36")
+                    model = if (hasPhoto) photoUrl else R.drawable.ic_pizza_logo_playstore,
+                    placeholder = rememberAsyncImagePainter(R.drawable.ic_pizza_logo_playstore),
+                    error = rememberAsyncImagePainter(R.drawable.ic_pizza_logo_playstore)
                 ),
                 contentDescription = "Avatar de ${message.userName}",
                 modifier = Modifier
@@ -67,7 +72,7 @@ fun MessageBubble(
                     text = message.userName,
                     style = MaterialTheme.typography.labelSmall,
                     fontWeight = FontWeight.Medium,
-                    color = Color(0xFFAAAAAA), // Gris claro para nombre
+                    color = Color(0xFFAAAAAA),
                     modifier = Modifier.padding(start = 4.dp)
                 )
                 Spacer(modifier = Modifier.height(2.dp))
@@ -82,13 +87,13 @@ fun MessageBubble(
                     bottomStart = if (isCurrentUser) 16.dp else 4.dp,
                     bottomEnd = if (isCurrentUser) 4.dp else 16.dp
                 ),
-                color = if (isCurrentUser) Color(0xFF165BB0) else Color(0xFF434343), // CAFÉ OSCURO
+                color = if (isCurrentUser) Color(0xFF165BB0) else Color(0xFF434343),
                 onClick = onLongPress
             ) {
                 Box(modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) {
                     Text(
                         text = message.message,
-                        color = if (isCurrentUser) Color.White else Color.White, // Texto blanco en café
+                        color = if (isCurrentUser) Color.White else Color.White,
                         style = MaterialTheme.typography.bodyMedium,
                         fontSize = 15.sp,
                         lineHeight = 20.sp
@@ -178,6 +183,28 @@ private fun MessageBubbleLongTextPreview() {
                         userName = "María González",
                         userPhotoUrl = "https://randomuser.me/api/portraits/women/44.jpg",
                         message = "Este es un mensaje mucho más largo para ver cómo se comporta el componente cuando el texto ocupa múltiples líneas. Debería verse bien formateado y ser fácil de leer.",
+                        timestamp = Timestamp.now()
+                    ),
+                    isCurrentUser = false
+                )
+            }
+        }
+    }
+}
+
+@Preview(name = "Mensaje sin foto de perfil", showBackground = true)
+@Composable
+private fun MessageBubbleNoPhotoPreview() {
+    MaterialTheme {
+        Surface(color = Color(0xFFF5F5F5)) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                MessageBubble(
+                    message = GroupMessage(
+                        id = "4",
+                        userId = "otherUser",
+                        userName = "Pedro",
+                        userPhotoUrl = "", // Sin foto
+                        message = "¡Hola! No tengo foto de perfil.",
                         timestamp = Timestamp.now()
                     ),
                     isCurrentUser = false
