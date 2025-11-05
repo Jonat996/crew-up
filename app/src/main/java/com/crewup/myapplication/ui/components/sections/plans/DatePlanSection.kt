@@ -1,21 +1,14 @@
 package com.crewup.myapplication.ui.components.sections.plans
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,6 +26,8 @@ import com.crewup.myapplication.R
 import com.crewup.myapplication.ui.components.plans.DatePlan
 import com.crewup.myapplication.ui.components.plans.TimePlan
 import com.crewup.myapplication.viewmodel.PlanDateViewModel
+import java.time.LocalDateTime
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -82,14 +77,24 @@ fun DatePlanSection(
         TimePlan(
             selectedTime = localTime,
             onTimeSelected = { newTime ->
-                localTime = newTime
-                onTimeSelected(newTime)
+                val now = LocalDateTime.now()
+                val selectedDateTime = LocalDateTime.of(localDate, newTime)
+
+                if (selectedDateTime.isAfter(now)) {
+                    localTime = newTime
+                    onTimeSelected(newTime)
+                } else {
+                    Log.d("DatePlanSelection", "La hora seleccionada debe ser posterior a la actual")
+                }
             },
-            is24Hour = false
+
+                    is24Hour = false
         )
+
 
     }
 }
+
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 fun PreviewDatePlanSection() {
