@@ -24,16 +24,9 @@ import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.crewup.myapplication.R
 import com.crewup.myapplication.models.PlanUser
-import com.crewup.myapplication.models.User
 
 /**
- * Componente de encabezado del chat.
- * Muestra 3 avatares debajo del título, con fotos reales.
- *
- * @param planTitle Título del plan
- * @param participantCount Cantidad total de participantes (incluye creador)
- * @param participants Lista de usuarios participantes (máximo 3 para mostrar)
- * @param onBackClick Callback para volver
+ * Encabezado del chat con 4 avatares + bolita solo si >4 participantes
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -59,28 +52,12 @@ fun ChatHeader(
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.Start
                 ) {
-                    ParticipantAvatarsSmall(participants = participants.take(5))
-
-                    // AUMENTADO: 16.dp para más separación
-                    Spacer(modifier = Modifier.width(30.dp))
-
-                    // Bolita negra
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier
-                            .size(28.dp)
-                            .background(Color.Black, CircleShape)
-                    ) {
-                        Text(
-                            text = if (participantCount > 10) "10+" else participantCount.toString(),
-                            color = Color.White,
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
-
+                    ParticipantAvatarsWithCount(
+                        participants = participants,
+                        totalCount = participantCount
+                    )
                     Spacer(modifier = Modifier.weight(1f))
                 }
             }
@@ -109,10 +86,22 @@ fun ChatHeader(
     )
 }
 
+/**
+ * 4 avatares + bolita negra solo si hay más de 4 participantes
+ */
 @Composable
-private fun ParticipantAvatarsSmall(participants: List<PlanUser>) {
+
+private fun ParticipantAvatarsWithCount(
+    participants: List<PlanUser>,
+    totalCount: Int
+) {
     Box {
-        participants.forEachIndexed { index, user ->
+        // Mostrar hasta 4 avatares
+        val visibleAvatars = participants.take(4)
+        val showCountBubble = totalCount > 4
+        val extraCount = totalCount - 5  // <--- AQUÍ RESTAMOS 1 (porque estás contando uno de más)
+
+        visibleAvatars.forEachIndexed { index, user ->
             Image(
                 painter = rememberAsyncImagePainter(
                     model = user.photoUrl ?: "https://ui-avatars.com/api/?name=${user.name}&background=ffffff&color=165BB0&size=32",
@@ -126,31 +115,91 @@ private fun ParticipantAvatarsSmall(participants: List<PlanUser>) {
                 contentScale = ContentScale.Crop
             )
         }
+
+        if (showCountBubble && extraCount > 0) {
+            val lastAvatarOffset = (visibleAvatars.size - 1) * 16
+            Box(
+                modifier = Modifier
+                    .offset(x = (lastAvatarOffset + 20).dp)
+                    .size(28.dp)
+                    .background(Color.Black, CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = if (extraCount >= 10) "10+" else "+$extraCount",
+                    color = Color.White,
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Medium
+                )
+            }
+        }
     }
 }
 
-// ==================== PREVIEWS (FUNCIONALES) ====================
+// ==================== PREVIEWS ====================
 
-@Preview(name = "Header con 3 participantes", showBackground = true)
+@Preview(name = "1 participante")
 @Composable
-private fun ChatHeaderPreview() {
-    MaterialTheme {
-        ChatHeader(
-            planTitle = "Paintball",
-            participantCount = 5,
-            onBackClick = { }
-        )
-    }
+private fun Preview1() {
+    ChatHeader(
+        planTitle = "Café",
+        participantCount = 1,
+        participants = listOf(PlanUser("1", "Ana")),
+        onBackClick = {}
+    )
 }
 
-@Preview(name = "Header con 12 participantes", showBackground = true)
+@Preview(name = "4 participantes")
 @Composable
-private fun ChatHeaderManyPreview() {
-    MaterialTheme {
-        ChatHeader(
-            planTitle = "Partido de fútbol",
-            participantCount = 12,
-            onBackClick = { }
-        )
-    }
+private fun Preview4() {
+    ChatHeader(
+        planTitle = "Cine",
+        participantCount = 4,
+        participants = List(4) { PlanUser("$it", "User $it") },
+        onBackClick = {}
+    )
+}
+
+@Preview(name = "5 participantes (+1)")
+@Composable
+private fun Preview5() {
+    ChatHeader(
+        planTitle = "Paintball",
+        participantCount = 5,
+        participants = List(5) { PlanUser("$it", "User $it") },
+        onBackClick = {}
+    )
+}
+
+@Preview(name = "8 participantes (+4)")
+@Composable
+private fun Preview8() {
+    ChatHeader(
+        planTitle = "Cena",
+        participantCount = 8,
+        participants = List(8) { PlanUser("$it", "User $it") },
+        onBackClick = {}
+    )
+}
+
+@Preview(name = "10 participantes (10+)")
+@Composable
+private fun Preview10() {
+    ChatHeader(
+        planTitle = "Viaje",
+        participantCount = 10,
+        participants = List(10) { PlanUser("$it", "User $it") },
+        onBackClick = {}
+    )
+}
+
+@Preview(name = "15 participantes (10+)")
+@Composable
+private fun Preview15() {
+    ChatHeader(
+        planTitle = "Fiesta",
+        participantCount = 15,
+        participants = List(15) { PlanUser("$it", "User $it") },
+        onBackClick = {}
+    )
 }
