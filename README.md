@@ -67,13 +67,6 @@ La arquitectura es escalable, con énfasis en flujos reactivos (e.g., actualizac
 * git clone https://github.com/Jonat996/crew-up.git
 * cd CrewUp
 
-**Configurar Firebase**:
-* Ir a Firebase Console, crear un proyecto.
-* Habilitar Authentication (Google y Email/Password).
-* Habilitar Firestore y Storage.
-* Descargar google-services.json y colócalo en app/.
-* Agregar a su Web Client ID en strings.xml para Google Sign-In.
-
 
 **Abrir en Android Studio**:
 * Abra el proyecto en Android Studio.
